@@ -1,0 +1,44 @@
+---
+title: Intents in Practice
+description: Quote, sign, and settle a swap with NEAR Intents and the 1Click API.
+order: 4
+tags: ["advanced", "intents", "defi"]
+---
+
+# Intents in Practice
+
+With NEAR Intents the user signs **what** they want, solvers compete to deliver it, and `intents.near` settles atomically. The fastest way in is the **1Click API**, which turns an intent into a deposit address.
+
+```bash
+# 1. Ask for a quote (dry run: nothing moves)
+curl -s https://1click.chaindefuser.com/v0/quote \
+  -H 'content-type: application/json' \
+  -d '{
+    "dry": true,
+    "swapType": "EXACT_INPUT",
+    "originAsset": "nep141:wrap.near",
+    "destinationAsset": "nep141:eth.omft.near",
+    "amount": "1000000000000000000000000",
+    "slippageTolerance": 100,
+    "depositType": "ORIGIN_CHAIN",
+    "refundTo": "you.near", "refundType": "ORIGIN_CHAIN",
+    "recipient": "0xYourEthAddress", "recipientType": "DESTINATION_CHAIN",
+    "deadline": "2026-12-01T00:00:00Z"
+  }'
+```
+
+2. With `"dry": false` the response includes a **deposit address**. Send the input asset there.
+3. Poll `GET /v0/status?depositAddress=...` until the status is `SUCCESS`. Solvers did the routing.
+
+| Concept | Meaning |
+| --- | --- |
+| Asset id | `nep141:<token contract>`; bridged assets use `*.omft.near` contracts |
+| Solver | Market maker that quotes and fills intents |
+| Verifier | `intents.near`, which checks signatures and settles balances atomically |
+| Refund | If nobody fills before the deadline, funds return to `refundTo` |
+
+<Warning>
+
+Intents run on **mainnet** only. Use tiny amounts and `dry: true` quotes while learning.
+
+</Warning>

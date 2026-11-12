@@ -1,0 +1,52 @@
+---
+title: Cross-Contract Calls
+description: Promises, callbacks, and why NEAR calls between contracts are asynchronous.
+order: 1
+tags: ["advanced", "promises", "rust"]
+---
+
+# Cross-Contract Calls
+
+On NEAR every contract lives on its own account, and accounts can sit on different shards. So a call from contract A to contract B is **asynchronous**: A creates a **Promise**, the call becomes a *receipt*, and B runs in a later block. If A needs the result, it attaches a **callback** that runs after B finishes.
+
+```rust
+use near_sdk::{env, ext_contract, near, AccountId, Gas, Promise, PromiseError};
+
+#[ext_contract(ext_diploma)]
+trait Diploma {
+    fn verify_diploma(&self, account_id: AccountId, track: String) -> Option<serde_json::Value>;
+}
+
+#[near]
+impl Contract {
+    /// Grant a role only to Retr0school diploma holders.
+    pub fn join_club(&mut self) -> Promise {
+        let who = env::predecessor_account_id();
+        ext_diploma::ext("diploma.retr0school.testnet".parse().unwrap())
+            .with_static_gas(Gas::from_tgas(5))
+            .verify_diploma(who.clone(), "near".into())
+            .then(Self::ext(env::current_account_id())
+                .with_static_gas(Gas::from_tgas(5))
+                .on_verified(who))
+    }
+
+    #[private]
+    pub fn on_verified(&mut self, who: AccountId,
+        #[callback_result] res: Result<Option<serde_json::Value>, PromiseError>) -> bool {
+        let ok = matches!(res, Ok(Some(_)));
+        if ok { self.members.insert(who); }
+        ok
+    }
+}
+```
+
+## Rules that bite
+
+| Rule | Why |
+| --- | --- |
+| State changes in A are **not** rolled back if B fails | Each receipt commits on its own. Undo manually in the callback. |
+| Mark callbacks `#[private]` | Only the contract itself may call them. |
+| Budget gas for both legs | Attach static gas to the call **and** the callback. |
+| Deposits you forward can be lost | Refund in the callback when B fails. |
+
+This is exactly how another dApp can gate features on your Retr0school diploma.

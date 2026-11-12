@@ -12,7 +12,7 @@ export default function DiplomaPage() {
       <p className="font-pixel text-[0.65rem] uppercase tracking-eyebrow text-muted">NEAR track · on-chain credential</p>
       <h1 className="mt-3 font-pixel text-title">Mint your NEAR diploma</h1>
       <p className="mt-3 max-w-lesson text-lead text-muted">
-        A soulbound NEP-171 NFT on NEAR testnet. One per account, graded by the smart contract, verifiable by anyone.
+        A soulbound NEP-171 NFT on NEAR testnet. One per account, minted only with a grader signature the contract verifies, and verifiable by anyone.
       </p>
       <DiplomaFlow />
     </main>

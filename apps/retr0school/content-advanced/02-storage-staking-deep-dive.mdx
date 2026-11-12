@@ -1,0 +1,38 @@
+---
+title: Storage Staking Deep Dive
+description: Measure bytes, charge users fairly, and refund the rest, like the diploma contract does.
+order: 2
+tags: ["advanced", "storage"]
+---
+
+# Storage Staking Deep Dive
+
+Every byte of contract state locks **10^19 yoctoNEAR** (1 NEAR per 100 KB) on the contract account. If the balance cannot cover storage, the transaction fails. Well-behaved contracts make the *caller* pay for the bytes they add.
+
+## Measure, charge, refund
+
+```rust
+let before = env::storage_usage();
+self.records.insert(key, value);               // write state
+let used = env::storage_usage() - before;      // bytes added
+let cost = env::storage_byte_cost().saturating_mul(used as u128);
+require!(env::attached_deposit() >= cost, "Attach more for storage");
+let refund = env::attached_deposit().saturating_sub(cost);
+if !refund.is_zero() {
+    Promise::new(env::predecessor_account_id()).transfer(refund);
+}
+```
+
+`internal_mint_with_refund` in `near-contract-standards` does exactly this. That is why the diploma mint asks for 0.02 NEAR but only keeps around 0.007.
+
+## NEP-145: storage management
+
+Token contracts expose `storage_deposit`, `storage_withdraw`, `storage_balance_of`, and `storage_balance_bounds` so wallets can pre-pay a user's row before the first transfer.
+
+| Pattern | Use when |
+| --- | --- |
+| Charge per call (refund extra) | Writes are occasional and sizes vary. NFTs, diplomas. |
+| NEP-145 pre-paid balance | Many small writes per user. Fungible tokens, DEXes. |
+| Contract pays | You run a sponsored app and top up the account yourself. |
+
+Deleting state releases the locked NEAR, so give users a way to clean up after themselves.

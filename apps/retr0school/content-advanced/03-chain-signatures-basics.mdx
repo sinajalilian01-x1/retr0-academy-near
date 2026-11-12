@@ -1,0 +1,43 @@
+---
+title: Chain Signatures Basics
+description: Derive a Bitcoin or Ethereum address from your NEAR account and get it signed by MPC.
+order: 3
+tags: ["advanced", "chain-signatures", "mpc"]
+---
+
+# Chain Signatures Basics
+
+Chain Signatures let a NEAR account control addresses on other chains. Three steps:
+
+1. **Derive** a key: the MPC network has one root public key. Your foreign address is derived from that root key, *your account id*, and a **path** string such as `ethereum-1`. Same inputs, same address, every time.
+2. **Request** a signature: call `sign` on the MPC contract (`v1.signer-prod.testnet`) with the 32-byte payload (for example an Ethereum transaction hash), your path, and the key domain.
+3. **Broadcast**: the MPC nodes return `(big_r, s, recovery_id)`. Assemble the signed transaction for the target chain and send it to that chain's RPC.
+
+```js
+// Ethereum via MPC on testnet, adapted from the chainsig.js README
+import { contracts, chainAdapters } from "chainsig.js";
+import { createPublicClient, http } from "viem";
+import { sepolia } from "viem/chains";
+
+const contract = new contracts.near.ChainSignatureContract({
+  networkId: "testnet",
+  contractId: "v1.signer-prod.testnet",
+  accountId, keypair, // a NEAR testnet account that pays for the sign call
+});
+const evm = new chainAdapters.evm.EVM({
+  publicClient: createPublicClient({ chain: sepolia, transport: http() }),
+  contract,
+});
+
+const { address } = await evm.deriveAddressAndPublicKey(accountId, "ethereum-1");
+const { transaction, hashesToSign } = await evm.prepareTransactionForSigning({ from: address, to, value: 1n });
+const signature = await contract.sign({ payload: hashesToSign[0].payload, path: "ethereum-1", key_version: 0 });
+const signed = evm.finalizeTransactionSigning({ transaction, rsvSignatures: [signature] });
+const txHash = await evm.broadcastTx(signed);
+```
+
+<Note>
+
+A **contract** can request signatures too, so a NEAR smart contract can custody BTC or ETH with rules no single person can bypass. That is the base for cross-chain vaults and agent wallets.
+
+</Note>
