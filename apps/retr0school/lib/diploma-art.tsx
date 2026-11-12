@@ -86,12 +86,12 @@ export async function diplomaArt(diploma: Verification | null, accountId: string
           }}
         >
           <div style={{ display: "flex", fontSize: 18, color: CYAN, letterSpacing: 4, textShadow: glow(CYAN) }}>
-            RETR0SCHOOL · NEAR TESTNET
+            RETR0 ACADEMY · NEAR TESTNET
           </div>
           <div style={{ display: "flex", fontSize: 64, color: MAGENTA, textShadow: glow(MAGENTA) }}>DIPLOMA</div>
           <div style={{ display: "flex", fontSize: 16, color: MUTED }}>{diploma ? "THIS CERTIFIES THAT" : "NO DIPLOMA FOUND FOR"}</div>
           <div style={{ display: "flex", fontSize: nameSize, color: INK, textShadow: glow("#b98cff") }}>{name}</div>
-          <div style={{ display: "flex", fontSize: 16, color: MUTED }}>{diploma ? "PASSED THE TRACK" : "EARN ONE AT RETR0SCHOOL"}</div>
+          <div style={{ display: "flex", fontSize: 16, color: MUTED }}>{diploma ? "PASSED THE TRACK" : "EARN ONE AT RETR0 ACADEMY"}</div>
           <div style={{ display: "flex", fontSize: 30, color: CYAN, textShadow: glow(CYAN) }}>
             {diploma ? (diploma.track_title || diploma.track).toUpperCase() : "NEAR FUNDAMENTALS"}
           </div>

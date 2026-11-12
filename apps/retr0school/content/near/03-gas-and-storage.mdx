@@ -19,7 +19,7 @@ Every transaction burns **gas**, measured in **Tgas** (10^12 gas). Gas has a pri
 
 State is not paid per transaction. Instead the account that **holds** the data must keep enough NEAR locked: about **1 NEAR per 100 KB** (10^19 yocto per byte). This is called **storage staking**. Delete the data and the NEAR unlocks again.
 
-That is why many contracts ask you to attach a small **deposit**. The Retr0school diploma contract does this: you attach 0.02 NEAR when you mint, the contract measures how many bytes your diploma used, keeps exactly that, and **refunds the rest** in the same call.
+That is why many contracts ask you to attach a small **deposit**. The Retr0 Academy diploma contract does this: you attach 0.02 NEAR when you mint, the contract measures how many bytes your diploma used, keeps exactly that, and **refunds the rest** in the same call.
 
 ```rust
 // from contracts/diploma/src/lib.rs

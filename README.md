@@ -1,4 +1,4 @@
-# Retr0school × Code E: the W3Schools of NEAR
+# Retr0 Academy × Code E: the W3Schools of NEAR
 
 Learn NEAR in short lessons, run every example in a browser playground, pass a quiz graded by a server whose answer key stays secret (the contract checks the grader's ed25519 signature), and mint a **soulbound NEP-171 diploma NFT** on NEAR testnet that anyone can verify.
 
@@ -6,7 +6,7 @@ Built at **NEAR HACKATHON** (Nov 2026). Primary track: **NFTs That Do Something*
 
 | | |
 | --- | --- |
-| Retr0school (learn, mint, verify) | https://retr0school-near.vercel.app |
+| Retr0 Academy (learn, mint, verify) | https://retr0school-near.vercel.app |
 | Code E (playground) | https://code-e-near.vercel.app |
 | Diploma contract (testnet) | [`diploma.retr0school.testnet`](https://testnet.nearblocks.io/address/diploma.retr0school.testnet) |
 | Example mint (signed grade, v2) | [`3bt1wodPU6bxW6qyenbU21Y2x74rETcx5ouoGpUkLUSZ`](https://testnet.nearblocks.io/txns/3bt1wodPU6bxW6qyenbU21Y2x74rETcx5ouoGpUkLUSZ) |
@@ -23,7 +23,7 @@ Web3 courses end with a PDF certificate or a badge on a private database. Neithe
 
 ## What we built
 
-1. **A NEAR track in Retr0school** (`/near`): 9 MDX lessons (named accounts, access keys, gas & storage, view vs change calls, Wallet Selector, NEP-141, NEP-171, a first Rust contract, Intents & Chain Signatures) with live examples that call NEAR testnet RPC and the diploma contract.
+1. **A NEAR track in Retr0 Academy** (`/near`): 9 MDX lessons (named accounts, access keys, gas & storage, view vs change calls, Wallet Selector, NEP-141, NEP-171, a first Rust contract, Intents & Chain Signatures) with live examples that call NEAR testnet RPC and the diploma contract.
 2. **"Open in Code E"** on every NEAR example. The example opens in Code E (a separate playground app) through Code E's existing `#code=` share link. Code E also gets a **NEAR starter** template (`#template=near`): connect a testnet account and call `verify_diploma`.
 3. **An 8-question quiz** (`/near/quiz`), graded on the server. The answer key is a Vercel env var, never shipped to the browser or the chain. Passing (6/8) returns a signed grade and unlocks the diploma page.
 4. **The diploma contract** (`contracts/diploma`, Rust, near-sdk 5): NEP-171 + NEP-177 metadata + NEP-181 enumeration + NEP-297 events.
@@ -62,7 +62,7 @@ site: verify_diploma / nft_tokens view calls → verify page, leaderboard, holde
 
 No install needed. Testnet only.
 
-1. Open https://retr0school-near.vercel.app → the hero says "Learn NEAR. Earn it on-chain." and the NEAR card is first in "Browse courses".
+1. Open https://retr0school-near.vercel.app → the hero says "Learn NEAR from scratch and graduate on-chain with Retr0 Academy." and the NEAR card is first in "Browse courses".
 2. Open https://retr0school-near.vercel.app/near/view-vs-change-calls → press **Try it Yourself** or **Open in Code E ↗**, then **Verify** → you see the JSON credential of `demo-learner.retr0school.testnet` read from the contract (score 7/8).
 3. Open https://code-e-near.vercel.app/#template=near → Code E loads the NEAR starter. Press **Connect**, then **Verify diploma** → the preview shows the account balance and "Valid diploma: NEAR Fundamentals, 7/8".
 4. Open https://retr0school-near.vercel.app/verify?account=demo-learner.retr0school.testnet → a diploma card shows owner, score 7/8, date, "Valid · soulbound".
@@ -139,7 +139,7 @@ contracts/diploma/    NEW: Rust NEP-171 diploma contract + unit tests
 
 ## Disclosure: what existed before the hackathon
 
-Retr0school (HTML, CSS, JavaScript and Web3 tracks, lesson engine, playground, design) and Code E (the playground) are **pre-existing off-chain apps by the same author**, with no blockchain code. They were imported untouched in the first commit, tagged **`pre-hackathon-baseline`** (`0c86187`). Everything NEAR (the contract, server grader, wallet integration, NEAR and Advanced NEAR lessons, quiz-to-mint flow, verify page, leaderboard, diploma art and sharing, Code E NEAR starter and the cross-links) was built during the hackathon in later commits. See the diff:
+Retr0school, now Retr0 Academy, (HTML, CSS, JavaScript and Web3 tracks, lesson engine, playground, design) and Code E (the playground) are **pre-existing off-chain apps by the same author**, with no blockchain code. They were imported untouched in the first commit, tagged **`pre-hackathon-baseline`** (`0c86187`). Everything NEAR (the contract, server grader, wallet integration, NEAR and Advanced NEAR lessons, quiz-to-mint flow, verify page, leaderboard, diploma art and sharing, Code E NEAR starter and the cross-links) was built during the hackathon in later commits. See the diff:
 
 ```bash
 git diff pre-hackathon-baseline..HEAD --stat
@@ -160,7 +160,7 @@ cd contracts/diploma
 cargo test                                   # 18 unit tests
 cargo near build non-reproducible-wasm       # -> target/near/retr0school_diploma.wasm
 
-# Retr0school (http://localhost:43123)
+# Retr0 Academy (http://localhost:43123)
 cd apps/retr0school
 npm ci
 NEXT_PUBLIC_CODE_E_URL=http://localhost:5173 npm run dev
@@ -177,12 +177,12 @@ Configuration (all optional, defaults shown):
 
 | Variable | App | Default |
 | --- | --- | --- |
-| `NEXT_PUBLIC_DIPLOMA_CONTRACT` | Retr0school | `diploma.retr0school.testnet` |
-| `NEXT_PUBLIC_CODE_E_URL` | Retr0school | `https://code-e-near.vercel.app` |
-| `NEXT_PUBLIC_SITE_URL` | Retr0school | `https://retr0school-near.vercel.app` |
-| `NEXT_PUBLIC_NEAR_RPC` | Retr0school | `https://rpc.testnet.near.org` |
-| `NEAR_ATTESTOR_SEED` | Retr0school (server, secret) | none: 32-byte ed25519 seed, hex |
-| `NEAR_QUIZ_ANSWER_KEY` | Retr0school (server, secret) | none: comma-separated correct option indexes |
+| `NEXT_PUBLIC_DIPLOMA_CONTRACT` | Retr0 Academy | `diploma.retr0school.testnet` |
+| `NEXT_PUBLIC_CODE_E_URL` | Retr0 Academy | `https://code-e-near.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | Retr0 Academy | `https://retr0school-near.vercel.app` |
+| `NEXT_PUBLIC_NEAR_RPC` | Retr0 Academy | `https://rpc.testnet.near.org` |
+| `NEAR_ATTESTOR_SEED` | Retr0 Academy (server, secret) | none: 32-byte ed25519 seed, hex |
+| `NEAR_QUIZ_ANSWER_KEY` | Retr0 Academy (server, secret) | none: comma-separated correct option indexes |
 | `VITE_RETR0SCHOOL_URL` | Code E | `https://retr0school-near.vercel.app` |
 | `VITE_DIPLOMA_CONTRACT` | Code E | `diploma.retr0school.testnet` |
 

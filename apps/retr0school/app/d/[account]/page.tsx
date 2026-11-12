@@ -19,7 +19,7 @@ async function load(params: Props["params"]) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { account, diploma } = await load(params);
-  const title = diploma ? `${account} earned a NEAR diploma` : `${account} on Retr0school`;
+  const title = diploma ? `${account} earned a NEAR diploma` : `${account} on Retr0 Academy`;
   const description = diploma
     ? `${diploma.track_title}: ${diploma.score}/${diploma.max_score} on ${diploma.date}. Soulbound NEP-171 credential on NEAR testnet, verifiable by anyone.`
     : "Learn NEAR and mint a soulbound diploma NFT.";

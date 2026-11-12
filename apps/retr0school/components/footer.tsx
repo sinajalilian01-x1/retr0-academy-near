@@ -13,7 +13,7 @@ export function Footer({ tracks }: { tracks: { slug: string; title: string }[] }
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="flex items-center gap-2 font-pixel text-xs leading-relaxed text-accent-text">
-              Retr0school
+              Retr0 Academy
               <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
             </p>
             <p className="mt-1 max-w-lesson text-sm text-muted">

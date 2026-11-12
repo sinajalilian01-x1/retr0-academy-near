@@ -4,7 +4,7 @@ import { DIPLOMA_CONTRACT, explorerAccount, explorerToken, listDiplomas, type Ve
 
 export const metadata: Metadata = {
   title: "Leaderboard",
-  description: "Every Retr0school diploma holder, read live from the NEAR contract.",
+  description: "Every Retr0 Academy diploma holder, read live from the NEAR contract.",
 };
 
 export const dynamic = "force-dynamic";

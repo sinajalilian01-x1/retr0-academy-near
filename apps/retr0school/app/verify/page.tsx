@@ -5,7 +5,7 @@ import { DIPLOMA_CONTRACT } from "@/lib/near";
 
 export const metadata: Metadata = {
   title: "Verify a diploma",
-  description: "Check any NEAR account for a Retr0school diploma, straight from the smart contract.",
+  description: "Check any NEAR account for a Retr0 Academy diploma, straight from the smart contract.",
 };
 
 export default function VerifyPage() {

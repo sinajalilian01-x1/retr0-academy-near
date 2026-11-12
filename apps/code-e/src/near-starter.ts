@@ -1,6 +1,6 @@
 import type { ProjectFile } from './types'
 
-/** Where the Retr0school NEAR app lives. Override with VITE_RETR0SCHOOL_URL at build time. */
+/** Where the Retr0 Academy NEAR app lives. Override with VITE_RETR0SCHOOL_URL at build time. */
 export const RETR0SCHOOL_URL = (import.meta.env.VITE_RETR0SCHOOL_URL || 'https://retr0school-near.vercel.app').replace(/\/+$/, '')
 export const DIPLOMA_CONTRACT = import.meta.env.VITE_DIPLOMA_CONTRACT || 'diploma.retr0school.testnet'
 
@@ -20,7 +20,7 @@ export const nearStarterFiles = (): ProjectFile[] => [
     <input id="account" value="demo-learner.retr0school.testnet" spellcheck="false" aria-label="NEAR account id">
     <button type="button" id="connect">Connect</button>
   </div>
-  <p class="hint">Want to sign transactions? <a id="wallet-link" target="_blank" rel="noopener">Connect a real wallet in Retr0school ↗</a></p>
+  <p class="hint">Want to sign transactions? <a id="wallet-link" target="_blank" rel="noopener">Connect a real wallet in Retr0 Academy ↗</a></p>
 
   <section>
     <h2>Account</h2>

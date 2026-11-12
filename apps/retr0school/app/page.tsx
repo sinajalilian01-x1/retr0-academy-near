@@ -27,10 +27,10 @@ export default function HomePage() {
       </section>
       <section id="about" className="border-t border-line">
         <div className="mx-auto grid max-w-page gap-8 px-5 py-16 md:px-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)]">
-          <h2 className="font-pixel text-title text-highlight">About Retr0school</h2>
+          <h2 className="font-pixel text-title text-highlight">About Retr0 Academy</h2>
           <div className="max-w-lesson text-muted">
             <p>
-              Retr0school is a beginner coding school for the web: short lessons in NEAR, HTML, CSS, JavaScript, and Web3,
+              Retr0 Academy is a beginner coding academy for the web: short lessons in NEAR, HTML, CSS, JavaScript, and Web3,
               with examples you can edit and run in the browser or open in Code E. Finish the NEAR track to mint a
               soulbound diploma NFT on NEAR testnet.
             </p>

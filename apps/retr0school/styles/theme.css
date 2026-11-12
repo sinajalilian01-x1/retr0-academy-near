@@ -23,7 +23,7 @@
   --w3h-radius-xl: 4px;
   --w3h-radius-full: 999px;
 
-  --w3h-text-hero: clamp(1.15rem, 3.5vw, 2.35rem);
+  --w3h-text-hero: clamp(0.95rem, 2.5vw, 1.55rem);
   --w3h-text-title: clamp(1.05rem, 2.2vw, 1.55rem);
   --w3h-text-lead: 1.125rem;
   --w3h-tracking-display: -0.03em;

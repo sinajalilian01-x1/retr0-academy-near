@@ -63,7 +63,7 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       const m = setupModal(s, {
         contractId: DIPLOMA_CONTRACT,
         theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
-        description: "Connect a NEAR testnet wallet to mint and show your Retr0school diploma.",
+        description: "Connect a NEAR testnet wallet to mint and show your Retr0 Academy diploma.",
       });
       const sync = () => setAccountId(s.store.getState().accounts.find((a) => a.active)?.accountId ?? null);
       sync();

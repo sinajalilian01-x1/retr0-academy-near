@@ -26,7 +26,7 @@ export function ogCard(kicker: string, title: string, subtitle: string) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", fontSize: 42, fontWeight: 700 }}>
-          Retr0school
+          Retr0 Academy
           <div
             style={{
               width: 18,

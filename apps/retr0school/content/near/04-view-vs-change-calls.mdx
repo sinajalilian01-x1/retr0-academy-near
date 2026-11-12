@@ -17,12 +17,12 @@ A NEAR contract exposes two kinds of methods.
 
 ## A view call over plain fetch
 
-You do not need any library to read a contract. The RPC accepts JSON, and arguments are JSON encoded as base64. This example reads the **live Retr0school diploma contract** on testnet and checks whether an account holds a diploma.
+You do not need any library to read a contract. The RPC accepts JSON, and arguments are JSON encoded as base64. This example reads the **live Retr0 Academy diploma contract** on testnet and checks whether an account holds a diploma.
 
 <TryIt
   codeE
   title="Verify a diploma with a view call"
-  html={`<h1>Verify a Retr0school diploma</h1>
+  html={`<h1>Verify a Retr0 Academy diploma</h1>
 <input id="acc" value="demo-learner.retr0school.testnet">
 <button id="go">Verify</button>
 <pre id="out">Press Verify.</pre>`}
@@ -78,7 +78,7 @@ await wallet.signAndSendTransaction({
   actions: [
     actionCreators.functionCall(
       "mint_diploma",
-      // signed by the Retr0school grader after you pass the quiz
+      // signed by the Retr0 Academy grader after you pass the quiz
       { track: "near", score, max_score, expires_at_ms, signature },
       100_000_000_000_000n,        // 100 Tgas
       20_000_000_000_000_000_000n, // 0.02 NEAR storage deposit

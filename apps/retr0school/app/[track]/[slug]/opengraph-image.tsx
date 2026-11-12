@@ -7,7 +7,7 @@ export function generateStaticParams() {
   );
 }
 
-export const alt = "Retr0school lesson";
+export const alt = "Retr0 Academy lesson";
 export const size = ogSize;
 export const contentType = ogContentType;
 
@@ -15,5 +15,5 @@ export default async function Image({ params }: { params: Promise<{ track: strin
   const { track: trackSlug, slug } = await params;
   const track = getTrack(trackSlug);
   const lesson = getLesson(trackSlug, slug);
-  return ogCard(track?.title ?? "Course", lesson?.title ?? "Lesson", lesson?.description ?? "A Retr0school lesson.");
+  return ogCard(track?.title ?? "Course", lesson?.title ?? "Lesson", lesson?.description ?? "A Retr0 Academy lesson.");
 }

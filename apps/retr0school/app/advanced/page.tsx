@@ -5,7 +5,7 @@ import { getAdvancedLessons } from "@/lib/advanced";
 
 export const metadata: Metadata = {
   title: "Advanced NEAR",
-  description: "Bonus lessons for Retr0school diploma holders: cross-contract calls, storage staking, Chain Signatures, Intents.",
+  description: "Bonus lessons for Retr0 Academy diploma holders: cross-contract calls, storage staking, Chain Signatures, Intents.",
 };
 
 export default function AdvancedPage() {

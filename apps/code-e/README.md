@@ -1,6 +1,6 @@
 # Code E
 
-Code E is a browser playground for HTML, CSS, and JavaScript. It is the editor companion to Retr0school: a file tree, tabs, a sandboxed preview, and a console, with nothing to install and no server of its own.
+Code E is a browser playground for HTML, CSS, and JavaScript. It is the editor companion to Retr0 Academy: a file tree, tabs, a sandboxed preview, and a console, with nothing to install and no server of its own.
 
 ## Run it
 

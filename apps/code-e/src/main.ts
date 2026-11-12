@@ -673,7 +673,7 @@ async function resetProject(): Promise<void> {
 async function loadNearStarter(): Promise<void> {
   const result = await showDialog({
     title: 'Open the NEAR starter?',
-    description: 'Replace your files with a NEAR testnet starter: connect an account and call the Retr0school diploma contract with a view call.',
+    description: 'Replace your files with a NEAR testnet starter: connect an account and call the Retr0 Academy diploma contract with a view call.',
     confirmLabel: 'Open NEAR starter',
   })
   if (!result) return

@@ -19,7 +19,7 @@ trait Diploma {
 
 #[near]
 impl Contract {
-    /// Grant a role only to Retr0school diploma holders.
+    /// Grant a role only to Retr0 Academy diploma holders.
     pub fn join_club(&mut self) -> Promise {
         let who = env::predecessor_account_id();
         ext_diploma::ext("diploma.retr0school.testnet".parse().unwrap())
@@ -49,4 +49,4 @@ impl Contract {
 | Budget gas for both legs | Attach static gas to the call **and** the callback. |
 | Deposits you forward can be lost | Refund in the callback when B fails. |
 
-This is exactly how another dApp can gate features on your Retr0school diploma.
+This is exactly how another dApp can gate features on your Retr0 Academy diploma.

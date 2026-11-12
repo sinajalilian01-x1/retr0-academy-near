@@ -60,7 +60,7 @@
     "explanation": "NEP-141 defines ft_transfer, ft_balance_of, ft_transfer_call, and friends. NEP-171 is the NFT standard."
   },
   {
-    "question": "Why does the Retr0school diploma contract reject nft_transfer?",
+    "question": "Why does the Retr0 Academy diploma contract reject nft_transfer?",
     "options": [
       "Because of a bug",
       "Transfers cost too much gas",

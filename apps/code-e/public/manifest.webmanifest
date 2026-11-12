@@ -1,7 +1,7 @@
 {
   "name": "Code E",
   "short_name": "Code E",
-  "description": "A beginner-friendly HTML, CSS, and JavaScript playground. Companion to Retr0school.",
+  "description": "A beginner-friendly HTML, CSS, and JavaScript playground. Companion to Retr0 Academy.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

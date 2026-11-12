@@ -1,5 +1,5 @@
 export const starter = {
-  html: `<h1>Retr0school playground</h1>
+  html: `<h1>Retr0 Academy playground</h1>
 <p id="out">Edit the panels, then press Run.</p>`,
   css: `body {
   margin: 0;

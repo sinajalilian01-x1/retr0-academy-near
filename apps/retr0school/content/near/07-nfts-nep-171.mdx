@@ -14,7 +14,7 @@ tags: ["nft", "nep-171", "standards", "credentials"]
 
 ## NFTs as credentials
 
-The Retr0school diploma is an NFT, but it is not a collectible. It is a **credential**, so the contract makes three choices:
+The Retr0 Academy diploma is an NFT, but it is not a collectible. It is a **credential**, so the contract makes three choices:
 
 1. **One per account per track.** The token id is `near:your-account.testnet`, so a second mint fails.
 2. **Signed grades.** The answer key lives only on the grading server, which signs your score for your account. `mint_diploma` verifies that ed25519 signature on chain and only mints if you passed.
@@ -34,7 +34,7 @@ The diploma's `extra` field stores JSON: track, score, max score, owner, and dat
 <TryIt
   codeE
   title="List diplomas from the contract"
-  html={`<h1>Retr0school diplomas</h1>
+  html={`<h1>Retr0 Academy diplomas</h1>
 <button id="go">Load diplomas</button>
 <pre id="out">Press Load diplomas.</pre>`}
   css={`body { font-family: system-ui, sans-serif; background: #0d0b1a; color: #ece8ff; padding: 20px; }

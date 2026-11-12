@@ -14,7 +14,7 @@ export function DiplomaCard({ diploma }: { diploma: Verification }) {
         className="pointer-events-none absolute inset-2 border-2 border-dashed"
         style={{ borderColor: "#00EC97" }}
       />
-      <p className="font-pixel text-[0.6rem] uppercase tracking-eyebrow text-muted">Retr0school · NEAR testnet</p>
+      <p className="font-pixel text-[0.6rem] uppercase tracking-eyebrow text-muted">Retr0 Academy · NEAR testnet</p>
       <h2 className="mt-4 font-pixel text-title leading-snug text-ink">Diploma</h2>
       <p className="mt-4 text-sm text-muted">This certifies that</p>
       <p data-testid="diploma-owner" className="mt-1 break-all font-mono text-lg font-semibold text-ink">

@@ -23,7 +23,7 @@ export function HolderGate({ title, children }: { title: string; children: React
           <Lock className="h-4 w-4" aria-hidden /> Holders only
         </p>
         <p className="text-ink">
-          <strong>{title}</strong> is part of Advanced NEAR, unlocked by the on-chain Retr0school diploma.
+          <strong>{title}</strong> is part of Advanced NEAR, unlocked by the on-chain Retr0 Academy diploma.
         </p>
         <p className="text-sm text-muted">
           {checking
