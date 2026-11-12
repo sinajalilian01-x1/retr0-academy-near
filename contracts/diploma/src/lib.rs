@@ -1,13 +1,15 @@
 //! Retr0school Diploma — soulbound NEP-171 credentials for "The W3Schools of NEAR".
 //!
-//! * The owner registers tracks (e.g. `near`) with a public answer key and a pass score.
-//! * A learner calls `mint_diploma(track, answers)`; the contract grades the quiz on-chain
-//!   and, if the score passes, mints a diploma NFT to the caller.
+//! * The owner registers tracks (e.g. `near`) with a question count and a pass score.
+//!   The answer key is NOT stored on chain.
+//! * Quizzes are graded off chain by the Retr0school grading function, which signs an ed25519
+//!   attestation `(contract, account, track, score, max_score, expires_at_ms)`.
+//! * A learner calls `mint_diploma(track, score, max_score, expires_at_ms, signature)`. The contract
+//!   checks the signature against the attestor public key stored on chain, the expiry, the caller,
+//!   and the pass mark, then mints a diploma NFT to the caller.
 //! * One diploma per account per track (token id = `"{track}:{account}"`).
 //! * Diplomas are soulbound: `nft_transfer` / `nft_transfer_call` always panic.
 //! * Anyone can verify a credential with the `verify_diploma` view method.
-//!
-//! Note: the answer key is public on-chain. This is a learning credential, not a proctored exam.
 
 use near_contract_standards::non_fungible_token::core::NonFungibleTokenCore;
 use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEnumeration;
@@ -17,10 +19,11 @@ use near_contract_standards::non_fungible_token::metadata::{
 };
 use near_contract_standards::non_fungible_token::{NonFungibleToken, Token, TokenId};
 use near_sdk::collections::LazyOption;
-use near_sdk::json_types::U128;
+use near_sdk::json_types::{Base64VecU8, U128};
 use near_sdk::store::IterableMap;
 use near_sdk::{
-    env, near, require, AccountId, BorshStorageKey, NearToken, PanicOnDefault, PromiseOrValue,
+    env, near, require, AccountId, BorshStorageKey, CurveType, NearToken, PanicOnDefault,
+    PromiseOrValue, PublicKey,
 };
 
 #[near(serializers = [borsh])]
@@ -31,20 +34,38 @@ enum StorageKey {
     TokenMetadata,
     Enumeration,
     Tracks,
+    TracksV2,
 }
 
-/// A course track that can issue diplomas.
+/// A course track that can issue diplomas. No answer key: grading happens off chain.
 #[near(serializers = [borsh, json])]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Track {
     pub title: String,
-    /// Index of the correct option for each question.
-    pub answer_key: Vec<u8>,
+    /// Number of quiz questions (the attested max score must match).
+    pub questions: u8,
     /// Minimum number of correct answers to pass.
     pub pass_score: u8,
 }
 
-/// Public view of a track (the answer key is omitted for brevity, it is still public state).
+/// v1 track layout (answer key on chain). Only used by `migrate`.
+#[near(serializers = [borsh])]
+pub struct TrackV1 {
+    pub title: String,
+    pub answer_key: Vec<u8>,
+    pub pass_score: u8,
+}
+
+/// v1 contract layout. Only used by `migrate`.
+#[near(serializers = [borsh])]
+pub struct ContractV1 {
+    owner_id: AccountId,
+    tokens: NonFungibleToken,
+    metadata: LazyOption<NFTContractMetadata>,
+    tracks: IterableMap<String, TrackV1>,
+}
+
+/// Public view of a track.
 #[near(serializers = [json])]
 #[derive(Clone, Debug, PartialEq)]
 pub struct TrackView {
@@ -90,6 +111,8 @@ pub struct Contract {
     tokens: NonFungibleToken,
     metadata: LazyOption<NFTContractMetadata>,
     tracks: IterableMap<String, Track>,
+    /// ed25519 public key of the off-chain grader.
+    attestor_pk: Option<[u8; 32]>,
 }
 
 pub fn token_id_for(track: &str, account_id: &AccountId) -> TokenId {
@@ -108,6 +131,31 @@ fn civil_from_days(z: i64) -> (i64, u32, u32) {
     let d = (doy - (153 * mp + 2) / 5 + 1) as u32;
     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32;
     (if m <= 2 { y + 1 } else { y }, m, d)
+}
+
+/// The exact bytes the grader signs.
+pub fn attestation_message(
+    contract_id: &AccountId,
+    account_id: &AccountId,
+    track: &str,
+    score: u8,
+    max_score: u8,
+    expires_at_ms: u64,
+) -> String {
+    format!(
+        "retr0school-diploma|v1|{}|{}|{}|{}|{}|{}",
+        contract_id, account_id, track, score, max_score, expires_at_ms
+    )
+}
+
+fn parse_ed25519(public_key: &PublicKey) -> [u8; 32] {
+    require!(
+        public_key.curve_type() == CurveType::ED25519,
+        "Attestor key must be ed25519"
+    );
+    public_key.as_bytes()[1..33]
+        .try_into()
+        .unwrap_or_else(|_| env::panic_str("Bad ed25519 key"))
 }
 
 pub fn date_from_ms(ms: u64) -> String {
@@ -138,7 +186,36 @@ impl Contract {
                 None::<StorageKey>,
             ),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
-            tracks: IterableMap::new(StorageKey::Tracks),
+            tracks: IterableMap::new(StorageKey::TracksV2),
+            attestor_pk: None,
+        }
+    }
+
+    /// v1 -> v2: drop the on-chain answer keys, keep every minted diploma.
+    #[private]
+    #[init(ignore_state)]
+    pub fn migrate(attestor_public_key: PublicKey) -> Self {
+        let mut old: ContractV1 =
+            env::state_read().unwrap_or_else(|| env::panic_str("No v1 state"));
+        let mut tracks = IterableMap::new(StorageKey::TracksV2);
+        for (id, t) in old.tracks.iter() {
+            tracks.insert(
+                id.clone(),
+                Track {
+                    title: t.title.clone(),
+                    questions: t.answer_key.len() as u8,
+                    pass_score: t.pass_score,
+                },
+            );
+        }
+        old.tracks.clear();
+        old.tracks.flush();
+        Self {
+            owner_id: old.owner_id,
+            tokens: old.tokens,
+            metadata: old.metadata,
+            tracks,
+            attestor_pk: Some(parse_ed25519(&attestor_public_key)),
         }
     }
 
@@ -152,32 +229,29 @@ impl Contract {
     // ---------- admin ----------
 
     /// Create or update a track.
-    pub fn set_track(
-        &mut self,
-        track_id: String,
-        title: String,
-        answer_key: Vec<u8>,
-        pass_score: u8,
-    ) {
+    pub fn set_track(&mut self, track_id: String, title: String, questions: u8, pass_score: u8) {
         self.assert_owner();
         require!(!track_id.is_empty() && track_id.len() <= 32, "Bad track id");
-        require!(!track_id.contains(':'), "Track id cannot contain ':'");
         require!(
-            !answer_key.is_empty() && answer_key.len() <= 50,
-            "Bad answer key"
+            !track_id.contains(':') && !track_id.contains('|') && !track_id.contains('/'),
+            "Track id cannot contain ':', '|' or '/'"
         );
-        require!(
-            pass_score > 0 && (pass_score as usize) <= answer_key.len(),
-            "Bad pass score"
-        );
+        require!(questions > 0 && questions <= 50, "Bad question count");
+        require!(pass_score > 0 && pass_score <= questions, "Bad pass score");
         self.tracks.insert(
             track_id,
             Track {
                 title,
-                answer_key,
+                questions,
                 pass_score,
             },
         );
+    }
+
+    /// Set the ed25519 public key of the off-chain grader, e.g. "ed25519:...".
+    pub fn set_attestor(&mut self, public_key: PublicKey) {
+        self.assert_owner();
+        self.attestor_pk = Some(parse_ed25519(&public_key));
     }
 
     pub fn set_base_uri(&mut self, base_uri: Option<String>) {
@@ -189,10 +263,17 @@ impl Contract {
 
     // ---------- learner ----------
 
-    /// Grade `answers` against the track's answer key and mint a soulbound diploma to the caller.
+    /// Mint a soulbound diploma to the caller, given a grader attestation for the caller's quiz.
     /// Attach a small deposit (0.02 NEAR is plenty) to cover storage; the unused part is refunded.
     #[payable]
-    pub fn mint_diploma(&mut self, track: String, answers: Vec<u8>) -> Token {
+    pub fn mint_diploma(
+        &mut self,
+        track: String,
+        score: u8,
+        max_score: u8,
+        expires_at_ms: u64,
+        signature: Base64VecU8,
+    ) -> Token {
         let account_id = env::predecessor_account_id();
         let t = self
             .tracks
@@ -200,15 +281,34 @@ impl Contract {
             .cloned()
             .unwrap_or_else(|| env::panic_str("Unknown track"));
         require!(
-            answers.len() == t.answer_key.len(),
-            format!("Expected {} answers", t.answer_key.len())
+            max_score == t.questions,
+            "Attested max score does not match the track"
         );
-        let score = answers
-            .iter()
-            .zip(t.answer_key.iter())
-            .filter(|(a, k)| a == k)
-            .count() as u8;
-        let max_score = t.answer_key.len() as u8;
+        require!(score <= max_score, "Bad score");
+        require!(
+            env::block_timestamp_ms() <= expires_at_ms,
+            "Attestation expired, grade the quiz again"
+        );
+        let pk = self
+            .attestor_pk
+            .unwrap_or_else(|| env::panic_str("No attestor configured"));
+        let sig: [u8; 64] = signature
+            .0
+            .as_slice()
+            .try_into()
+            .unwrap_or_else(|_| env::panic_str("Signature must be 64 bytes"));
+        let message = attestation_message(
+            &env::current_account_id(),
+            &account_id,
+            &track,
+            score,
+            max_score,
+            expires_at_ms,
+        );
+        require!(
+            env::ed25519_verify(&sig, message.as_bytes(), &pk),
+            "Invalid grader signature"
+        );
         require!(
             score >= t.pass_score,
             format!(
@@ -237,7 +337,7 @@ impl Contract {
                 "{} passed the Retr0school \"{}\" track with {}/{} on {} (UTC). Soulbound credential.",
                 account_id, t.title, score, max_score, extra.date
             )),
-            media: Some(format!("diploma/{}.svg", track)),
+            media: Some(self.media_for(&track, &account_id)),
             media_hash: None,
             copies: Some(1),
             issued_at: Some(issued_at_ms.to_string()),
@@ -265,6 +365,14 @@ impl Contract {
         }
         .emit();
         token
+    }
+
+    fn media_for(&self, track: &str, account_id: &AccountId) -> String {
+        let path = format!("api/diploma/{}/{}", track, account_id);
+        match self.metadata.get().and_then(|m| m.base_uri) {
+            Some(base) => format!("{}/{}", base.trim_end_matches('/'), path),
+            None => path,
+        }
     }
 
     // ---------- views ----------
@@ -299,10 +407,19 @@ impl Contract {
             .map(|(id, t)| TrackView {
                 id: id.clone(),
                 title: t.title.clone(),
-                questions: t.answer_key.len() as u8,
+                questions: t.questions,
                 pass_score: t.pass_score,
             })
             .collect()
+    }
+
+    /// The grader public key as "ed25519:<base58>".
+    pub fn get_attestor(&self) -> Option<String> {
+        self.attestor_pk.map(|pk| {
+            let key = PublicKey::from_parts(CurveType::ED25519, pk.to_vec())
+                .unwrap_or_else(|_| env::panic_str("Bad stored key"));
+            String::from(&key)
+        })
     }
 
     pub fn get_owner(&self) -> AccountId {
