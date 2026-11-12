@@ -1,5 +1,6 @@
 import { decodeShare, clearCodeHash } from './share'
 import { starterFiles } from './starter'
+import { nearStarterFiles } from './near-starter'
 import {
   STORAGE_KEY,
   defaultSettings,
@@ -135,6 +136,18 @@ export function bootProject(): BootResult {
   const saved = readStorage()
   const stored = saved ? withMigratedNames(saved) : null
   const hash = location.hash
+  if (hash === '#template=near') {
+    clearCodeHash()
+    const files = nearStarterFiles()
+    const project: Project = {
+      settings: stored?.settings ?? defaultSettings(),
+      files,
+      open: files.map((file) => file.name),
+      active: 'script.js',
+    }
+    writeStorage(project)
+    return { project, source: 'import', error: null }
+  }
   if (hash.startsWith('#code=')) {
     const decoded = decodeShare(hash.slice('#code='.length))
     clearCodeHash()

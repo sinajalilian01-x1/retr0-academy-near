@@ -698,3 +698,20 @@ iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff;
     transition: none !important;
   }
 }
+
+/* NEAR hackathon additions */
+.near-link {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--control-border);
+  border-radius: inherit;
+  color: inherit;
+  text-decoration: none;
+  font-size: 13px;
+}
+.near-link:hover { background: var(--raised); }
+.near-btn {
+  color: #00ec97;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}

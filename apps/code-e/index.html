@@ -68,6 +68,7 @@
               <button type="button" role="menuitem" data-action="download-zip">Download ZIP</button>
               <button type="button" role="menuitem" data-action="share">Share</button>
               <div class="menu-sep"></div>
+              <button type="button" role="menuitem" data-action="near-starter">NEAR starter</button>
               <button type="button" role="menuitem" data-action="reset">Reset project</button>
             </div>
           </div>
@@ -109,6 +110,8 @@
           </div>
         </nav>
         <div class="top-actions">
+          <a class="ghost near-link desktop-only" id="retr0school-link" href="https://retr0school-near.vercel.app/near" title="Learn NEAR in Retr0school">Retr0school ↗</a>
+          <button type="button" class="ghost near-btn" data-action="near-starter" title="Load the NEAR testnet starter">NEAR</button>
           <button type="button" class="ghost" id="format-btn">
             <span class="visually-hidden">Format</span>
             <span aria-hidden="true" class="label-long">Format</span>
@@ -210,7 +213,7 @@
             </header>
             <div class="preview-stage" id="preview-stage" data-device="desktop">
               <div class="preview-frame">
-                <iframe id="preview" data-testid="preview" title="Live preview" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+                <iframe id="preview" data-testid="preview" title="Live preview" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
               </div>
             </div>
           </div>

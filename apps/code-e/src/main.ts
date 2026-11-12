@@ -8,6 +8,7 @@ import { downloadBlob, downloadProjectZip } from './download'
 import { createEditor, type EditorController } from './editor'
 import { formatCode } from './format'
 import { bootProject, writeStorage } from './project'
+import { RETR0SCHOOL_URL, nearStarterFiles } from './near-starter'
 import { assembleDocument, runPreview, watchPreview } from './preview'
 import { shareUrl } from './share'
 import { starterFiles } from './starter'
@@ -669,6 +670,29 @@ async function resetProject(): Promise<void> {
   toast('Project reset')
 }
 
+async function loadNearStarter(): Promise<void> {
+  const result = await showDialog({
+    title: 'Open the NEAR starter?',
+    description: 'Replace your files with a NEAR testnet starter: connect an account and call the Retr0school diploma contract with a view call.',
+    confirmLabel: 'Open NEAR starter',
+  })
+  if (!result) return
+  const fresh = nearStarterFiles()
+  project.files = fresh
+  project.open = fresh.map((file) => file.name)
+  project.active = 'script.js'
+  for (const key of Object.keys(cursors)) delete cursors[key]
+  editor.setDoc('script.js', fresh.find((file) => file.name === 'script.js')?.content ?? '', 0)
+  renderTabs()
+  renderTree()
+  syncChrome()
+  logs.length = 0
+  run('manual')
+  outputPush('Loaded the NEAR starter.')
+  persist(true)
+  toast('NEAR starter loaded')
+}
+
 function showShare(): void {
   flushEditor()
   const url = shareUrl(payload())
@@ -826,6 +850,9 @@ async function handleAction(action: string | undefined): Promise<void> {
       break
     case 'reset':
       await resetProject()
+      break
+    case 'near-starter':
+      await loadNearStarter()
       break
     case 'undo':
       editor.undo()
@@ -989,6 +1016,11 @@ function bind(): void {
   must<HTMLButtonElement>('dock-full').addEventListener('click', () => void toggleFullscreen())
   must<HTMLButtonElement>('dock-console').addEventListener('click', () => setPane('console'))
   must<HTMLButtonElement>('dock-reset').addEventListener('click', () => void resetProject())
+  document.querySelectorAll<HTMLButtonElement>('.top-actions [data-action="near-starter"]').forEach((button) => {
+    button.addEventListener('click', () => void loadNearStarter())
+  })
+  const retr0schoolLink = document.getElementById('retr0school-link')
+  if (retr0schoolLink instanceof HTMLAnchorElement) retr0schoolLink.href = `${RETR0SCHOOL_URL}/near`
   must<HTMLButtonElement>('console-peek').addEventListener('click', () => setPane('console'))
   must<HTMLButtonElement>('clear-console').addEventListener('click', () => {
     logs.length = 0
