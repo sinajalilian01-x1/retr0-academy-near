@@ -37,7 +37,7 @@ Recording tips: use a fresh testnet account with a short name, dark theme, 1280Ã
 | --- | --- |
 | projectName | Retr0school Ã— Code E: the W3Schools of NEAR (Sina to confirm) |
 | leadName | Sina to provide |
-| email | Sina to provide (max 2 projects per email; TriagePay is the other one) |
+| email | Sina to provide (max 2 projects per email) |
 | size | Sina to provide |
 | tracks | `nfts` (primary), optionally `open` |
 | nearAddress | Sina's own **mainnet** account for the payout (never the testnet accounts in this repo) |

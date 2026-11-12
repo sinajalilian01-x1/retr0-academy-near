@@ -107,7 +107,6 @@ Once the repository is public on GitHub, the same diff is at `https://github.com
 
 Libraries used (Q-005): near-sdk / near-contract-standards 5.x, cargo-near, near-cli-rs, @near-wallet-selector 10.x (core, modal-ui, my-near-wallet, meteor-wallet), lz-string, Next.js, React, Vite, CodeMirror, Tailwind. Parts of the code were written with AI assistance.
 
-Other NEAR HACKATHON project by the same author (Q-015): **TriagePay**, an independent project.
 
 ## Local development
 
