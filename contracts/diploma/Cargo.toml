@@ -1,6 +1,6 @@
 [package]
 name = "retr0school-diploma"
-description = "Retr0school soulbound NEP-171 diploma NFTs: quiz graded on-chain, one diploma per account per track."
+description = "Retr0 Academy soulbound NEP-171 diploma NFTs: quiz graded on-chain, one diploma per account per track."
 version = "0.1.0"
 edition = "2021"
 license = "MIT"

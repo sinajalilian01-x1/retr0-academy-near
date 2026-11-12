@@ -91,7 +91,7 @@ export async function listDiplomas(limit = 500): Promise<Verification[]> {
           token_id: t.token_id,
           owner_id: t.owner_id,
           track: x.track,
-          track_title: (t.metadata?.title ?? "").replace("Retr0school Diploma: ", ""),
+          track_title: (t.metadata?.title ?? "").replace(/^.*?Diploma:\s*/, ""),
           score: x.score,
           max_score: x.max_score,
           issued_at_ms: x.issued_at_ms,

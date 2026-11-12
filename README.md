@@ -1,4 +1,4 @@
-# Retr0 Academy × Code E: the W3Schools of NEAR
+# Retr0 Academy × Code E on NEAR
 
 Learn NEAR in short lessons, run every example in a browser playground, pass a quiz graded by a server whose answer key stays secret (the contract checks the grader's ed25519 signature), and mint a **soulbound NEP-171 diploma NFT** on NEAR testnet that anyone can verify.
 
@@ -139,7 +139,7 @@ contracts/diploma/    NEW: Rust NEP-171 diploma contract + unit tests
 
 ## Disclosure: what existed before the hackathon
 
-Retr0school, now Retr0 Academy, (HTML, CSS, JavaScript and Web3 tracks, lesson engine, playground, design) and Code E (the playground) are **pre-existing off-chain apps by the same author**, with no blockchain code. They were imported untouched in the first commit, tagged **`pre-hackathon-baseline`** (`0c86187`). Everything NEAR (the contract, server grader, wallet integration, NEAR and Advanced NEAR lessons, quiz-to-mint flow, verify page, leaderboard, diploma art and sharing, Code E NEAR starter and the cross-links) was built during the hackathon in later commits. See the diff:
+Retr0 Academy (HTML, CSS, JavaScript and Web3 tracks, lesson engine, playground, design) and Code E (the playground) are **pre-existing off-chain apps by the same author**, with no blockchain code. They were imported untouched in the first commit, tagged **`pre-hackathon-baseline`** (`0c86187`). Everything NEAR (the contract, server grader, wallet integration, NEAR and Advanced NEAR lessons, quiz-to-mint flow, verify page, leaderboard, diploma art and sharing, Code E NEAR starter and the cross-links) was built during the hackathon in later commits. See the diff:
 
 ```bash
 git diff pre-hackathon-baseline..HEAD --stat

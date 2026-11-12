@@ -8,7 +8,7 @@ import { downloadBlob, downloadProjectZip } from './download'
 import { createEditor, type EditorController } from './editor'
 import { formatCode } from './format'
 import { bootProject, writeStorage } from './project'
-import { RETR0SCHOOL_URL, nearStarterFiles } from './near-starter'
+import { ACADEMY_URL, nearStarterFiles } from './near-starter'
 import { assembleDocument, runPreview, watchPreview } from './preview'
 import { shareUrl } from './share'
 import { starterFiles } from './starter'
@@ -1023,8 +1023,8 @@ function bind(): void {
   window.addEventListener('hashchange', () => {
     if (location.hash.startsWith('#code=') || location.hash === '#template=near') location.reload()
   })
-  const retr0schoolLink = document.getElementById('retr0school-link')
-  if (retr0schoolLink instanceof HTMLAnchorElement) retr0schoolLink.href = `${RETR0SCHOOL_URL}/near`
+  const academyLink = document.getElementById('academy-link')
+  if (academyLink instanceof HTMLAnchorElement) academyLink.href = `${ACADEMY_URL}/near`
   must<HTMLButtonElement>('console-peek').addEventListener('click', () => setPane('console'))
   must<HTMLButtonElement>('clear-console').addEventListener('click', () => {
     logs.length = 0

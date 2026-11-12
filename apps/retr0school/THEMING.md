@@ -1,4 +1,4 @@
-# Theming Retr0school
+# Theming Retr0 Academy
 
 All UI colors, font choices, radii, spacing, shadows, and syntax colors live in `styles/theme.css`.
 

@@ -65,7 +65,7 @@ fn mint_and_verify() {
     assert_eq!(t.token_id, "near:bob");
     assert_eq!(t.owner_id, accounts(1));
     let m = t.metadata.unwrap();
-    assert_eq!(m.title.unwrap(), "Retr0school Diploma: NEAR Fundamentals");
+    assert_eq!(m.title.unwrap(), "Retr0 Academy Diploma: NEAR Fundamentals");
     assert_eq!(m.media.unwrap(), "https://example.com/api/diploma/near/bob");
     let extra: DiplomaExtra = near_sdk::serde_json::from_str(&m.extra.unwrap()).unwrap();
     assert_eq!(extra.score, 6);

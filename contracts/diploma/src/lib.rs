@@ -1,8 +1,8 @@
-//! Retr0school Diploma — soulbound NEP-171 credentials for "The W3Schools of NEAR".
+//! Retr0 Academy Diploma — soulbound NEP-171 credentials on NEAR.
 //!
 //! * The owner registers tracks (e.g. `near`) with a question count and a pass score.
 //!   The answer key is NOT stored on chain.
-//! * Quizzes are graded off chain by the Retr0school grading function, which signs an ed25519
+//! * Quizzes are graded off chain by the Retr0 Academy grading function, which signs an ed25519
 //!   attestation `(contract, account, track, score, max_score, expires_at_ms)`.
 //! * A learner calls `mint_diploma(track, score, max_score, expires_at_ms, signature)`. The contract
 //!   checks the signature against the attestor public key stored on chain, the expiry, the caller,
@@ -169,7 +169,7 @@ impl Contract {
     pub fn new(owner_id: AccountId, base_uri: Option<String>) -> Self {
         let metadata = NFTContractMetadata {
             spec: NFT_METADATA_SPEC.to_string(),
-            name: "Retr0school Diploma".to_string(),
+            name: "Retr0 Academy Diploma".to_string(),
             symbol: "R0DIPLOMA".to_string(),
             icon: None,
             base_uri,
@@ -332,9 +332,9 @@ impl Contract {
             date: date_from_ms(issued_at_ms),
         };
         let metadata = TokenMetadata {
-            title: Some(format!("Retr0school Diploma: {}", t.title)),
+            title: Some(format!("Retr0 Academy Diploma: {}", t.title)),
             description: Some(format!(
-                "{} passed the Retr0school \"{}\" track with {}/{} on {} (UTC). Soulbound credential.",
+                "{} passed the Retr0 Academy \"{}\" track with {}/{} on {} (UTC). Soulbound credential.",
                 account_id, t.title, score, max_score, extra.date
             )),
             media: Some(self.media_for(&track, &account_id)),
@@ -361,7 +361,7 @@ impl Contract {
         NftMint {
             owner_id: &token.owner_id,
             token_ids: &[&token.token_id],
-            memo: Some("Retr0school diploma"),
+            memo: Some("Retr0 Academy diploma"),
         }
         .emit();
         token

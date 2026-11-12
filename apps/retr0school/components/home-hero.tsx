@@ -8,7 +8,7 @@ export function HomeHero() {
     <div className="max-w-2xl">
       <p className="mb-4 inline-flex items-center gap-2 border-2 border-line bg-elevated px-3 py-1 font-pixel text-[0.55rem] uppercase tracking-wide text-ink">
         <span className="inline-block h-2 w-2" style={{ background: "#00EC97" }} aria-hidden />
-        New · The W3Schools of NEAR
+        New · Retr0 Academy on NEAR
       </p>
       <h1 className="font-pixel text-hero text-ink">
         Learn NEAR from scratch and graduate on-chain with Retr0 Academy.

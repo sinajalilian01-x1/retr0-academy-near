@@ -1,8 +1,8 @@
-# Retr0school
+# Retr0 Academy
 
 Beginner lessons in HTML, CSS, JavaScript, and Web3. Each lesson has syntax-highlighted examples, a Try it Yourself editor, and a quiz at the end of the track. Progress stays in the browser.
 
-Live site: [w3hschool.vercel.app](https://w3hschool.vercel.app)
+Live site: [retr0school-near.vercel.app](https://retr0school-near.vercel.app)
 
 The look is controlled from one file. See [THEMING.md](THEMING.md). Lesson files follow [CONTENT_GUIDE.md](CONTENT_GUIDE.md).
 

@@ -44,7 +44,7 @@ Storing images on the blockchain is very expensive, so an NFT usually stores jus
 
 ```json
 {
-  "name": "Retr0school Graduate #1",
+  "name": "Retr0 Academy Graduate #1",
   "description": "Awarded for completing the Web3 track.",
   "image": "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi/1.png",
   "attributes": [
@@ -79,7 +79,7 @@ IPFS does not keep files alive forever automatically. Someone must **pin** them 
 This shows how a wallet or marketplace turns metadata JSON into a card. Edit the JSON and press **Render**.
 
 <TryIt html={`<textarea id="json" rows="12" cols="48">{
-  "name": "Retr0school Graduate #1",
+  "name": "Retr0 Academy Graduate #1",
   "description": "Awarded for completing the Web3 track.",
   "image": "https://picsum.photos/seed/w3h/300/300",
   "attributes": [
@@ -154,7 +154,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract GraduateBadge is ERC721URIStorage, Ownable {
     uint256 private _nextTokenId;
 
-    constructor() ERC721("Retr0school Graduate", "GRAD") Ownable(msg.sender) {}
+    constructor() ERC721("Retr0 Academy Graduate", "GRAD") Ownable(msg.sender) {}
 
     function award(address student, string memory metadataURI)
         external

@@ -47,7 +47,6 @@ export function normalizeProject(raw: unknown): Project | null {
 
 const LEGACY_NAMES: Array<[string, string]> = [
   ['Retr0 Code E', 'Code E'],
-  ['Retr0school', 'Retr0 Academy'],
   ['Academy X', 'Retr0 Academy'],
   ['Retr0code', 'Code E'],
   ['Code X', 'Code E'],

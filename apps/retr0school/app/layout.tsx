@@ -30,7 +30,7 @@ const jetbrains = JetBrains_Mono({
 const themeBoot = `(function(){try{var stored=localStorage.getItem("w3h-theme");var dark=stored!=="light";var root=document.documentElement;root.classList.toggle("dark",dark);root.style.colorScheme=dark?"dark":"light";}catch(e){}})();`;
 
 const siteDescription =
-  "The W3Schools of NEAR. Learn NEAR step by step, run every example in Code E, pass the quiz, and mint a soulbound diploma NFT on NEAR testnet.";
+  "Learn NEAR from scratch and graduate on-chain with Retr0 Academy. Short lessons, examples you run in Code E, a quiz, and a soulbound diploma NFT on NEAR testnet.";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
 
 export const metadata: Metadata = {

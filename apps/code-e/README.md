@@ -50,7 +50,7 @@ https://<host>/#code=<payload>
 {"html":"<h1>Hi</h1>","css":"h1{color:red}","js":"console.log('hi')"}
 ```
 
-On load, Code E decodes that object into `index.html`, `style.css`, and `script.js`, replaces the autosaved project, and removes the hash. Share creates the same kind of link. The storage key stays `retr0code.project.v1`, so a project saved under the previous name still opens.
+On load, Code E decodes that object into `index.html`, `style.css`, and `script.js`, replaces the autosaved project, and removes the hash. Share creates the same kind of link. The browser storage key is unchanged, so a project saved under a previous name still opens.
 
 ```js
 import { compressToEncodedURIComponent } from 'lz-string'

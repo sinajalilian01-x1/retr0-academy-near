@@ -113,7 +113,7 @@ Always name the language. Supported languages:
 
 ````md
 ```html
-<h1>Hello, Retr0school</h1>
+<h1>Hello, Retr0 Academy</h1>
 ```
 ````
 
@@ -126,7 +126,7 @@ Fenced blocks are syntax highlighted. They do not get a Run button. Use `<TryIt>
 ```mdx
 <TryIt
   title="Say hello"
-  html={`<h1>Hello, Retr0school</h1>
+  html={`<h1>Hello, Retr0 Academy</h1>
 <p id="out">Waiting.</p>`}
   css={`body { font-family: Georgia, serif; margin: 0; padding: 24px; }
 h1 { margin-top: 0; }`}

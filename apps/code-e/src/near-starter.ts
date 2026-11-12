@@ -1,7 +1,7 @@
 import type { ProjectFile } from './types'
 
 /** Where the Retr0 Academy NEAR app lives. Override with VITE_RETR0SCHOOL_URL at build time. */
-export const RETR0SCHOOL_URL = (import.meta.env.VITE_RETR0SCHOOL_URL || 'https://retr0school-near.vercel.app').replace(/\/+$/, '')
+export const ACADEMY_URL = (import.meta.env.VITE_RETR0SCHOOL_URL || 'https://retr0school-near.vercel.app').replace(/\/+$/, '')
 export const DIPLOMA_CONTRACT = import.meta.env.VITE_DIPLOMA_CONTRACT || 'diploma.retr0school.testnet'
 
 /**
@@ -122,12 +122,12 @@ a {
     name: 'script.js',
     content: `const RPC = "https://rpc.testnet.near.org";
 const CONTRACT = "${DIPLOMA_CONTRACT}";
-const RETR0SCHOOL = "${RETR0SCHOOL_URL}";
+const ACADEMY = "${ACADEMY_URL}";
 
 let accountId = null;
 
 document.querySelector("#contract").textContent = CONTRACT;
-document.querySelector("#wallet-link").href = RETR0SCHOOL + "/diploma";
+document.querySelector("#wallet-link").href = ACADEMY + "/diploma";
 
 async function rpc(params) {
   const res = await fetch(RPC, {
@@ -176,7 +176,7 @@ document.querySelector("#verify").addEventListener("click", async () => {
     const diploma = await view(CONTRACT, "verify_diploma", { account_id: accountId, track: "near" });
     out.textContent = diploma
       ? "Valid diploma: " + diploma.track_title + ", " + diploma.score + "/" + diploma.max_score + " on " + diploma.date
-      : "No diploma yet. Earn one at " + RETR0SCHOOL + "/near";
+      : "No diploma yet. Earn one at " + ACADEMY + "/near";
     console.log("verify_diploma", diploma);
   } catch (error) {
     out.textContent = "Error: " + error.message;

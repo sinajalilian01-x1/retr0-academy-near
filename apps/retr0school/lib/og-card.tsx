@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const ogSize = { width: 1200, height: 630 };
 export const ogContentType = "image/png";
 
-// Raster snapshot of the dark Retr0school palette in styles/theme.css.
+// Raster snapshot of the dark Retr0 Academy palette in styles/theme.css.
 // next/og cannot read CSS variables, so these hex values mirror the dark set.
 const canvas = "#0d0b1a";
 const ink = "#e8e6ff";
