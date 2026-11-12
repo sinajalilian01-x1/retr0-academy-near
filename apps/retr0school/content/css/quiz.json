@@ -1,0 +1,62 @@
+[
+  {
+    "question": "In the rule `p { color: red; }`, what is `color`?",
+    "options": ["The selector", "The property", "The value", "The declaration block"],
+    "answer": 1,
+    "explanation": "`p` is the selector, `color` is the property, and `red` is the value. Together `color: red;` is a declaration."
+  },
+  {
+    "question": "Which is the recommended way to add CSS to a multi-page website?",
+    "options": ["Inline style attributes", "A <style> tag on every page", "An external stylesheet linked with <link>", "Using <font> tags"],
+    "answer": 2,
+    "explanation": "An external stylesheet can style every page from one file, is easy to maintain, and is cached by the browser."
+  },
+  {
+    "question": "Which selector has the highest specificity?",
+    "options": ["p", ".intro", "#main", "div p"],
+    "answer": 2,
+    "explanation": "ID selectors beat class selectors, which beat type selectors. #main has the highest specificity here."
+  },
+  {
+    "question": "What does `a:hover` select?",
+    "options": ["All links", "Links that have been visited", "A link while the mouse pointer is over it", "The first link on the page"],
+    "answer": 2,
+    "explanation": ":hover is a pseudo-class that matches an element while the pointer is over it."
+  },
+  {
+    "question": "With `box-sizing: border-box`, what does `width: 200px` include?",
+    "options": ["Only the content", "Content and padding", "Content, padding, and border", "Content, padding, border, and margin"],
+    "answer": 2,
+    "explanation": "border-box makes width include content, padding, and border. Margin is always outside the box."
+  },
+  {
+    "question": "If the root font size is 16px, how big is 2rem?",
+    "options": ["16px", "18px", "32px", "2px"],
+    "answer": 2,
+    "explanation": "rem is relative to the root (html) font size: 2 × 16px = 32px."
+  },
+  {
+    "question": "In Flexbox with the default `flex-direction: row`, which property centers items horizontally?",
+    "options": ["align-items: center", "justify-content: center", "text-align: center", "place-content: middle"],
+    "answer": 1,
+    "explanation": "justify-content aligns items along the main axis, which is horizontal for flex-direction: row."
+  },
+  {
+    "question": "What does `grid-template-columns: repeat(3, 1fr)` create?",
+    "options": ["Three rows of equal height", "Three equal-width columns", "One column repeated three times its width", "A 3px gap between columns"],
+    "answer": 1,
+    "explanation": "repeat(3, 1fr) creates three columns that each take one equal fraction of the available space."
+  },
+  {
+    "question": "In mobile-first CSS, which media query typically adds styles for larger screens?",
+    "options": ["@media (max-width: 768px)", "@media (min-width: 768px)", "@media screen-large", "@media (orientation: mobile)"],
+    "answer": 1,
+    "explanation": "Mobile-first means base styles target small screens, and min-width queries add styles as the screen gets larger."
+  },
+  {
+    "question": "Which properties are cheapest for the browser to animate smoothly?",
+    "options": ["width and height", "top and left", "transform and opacity", "margin and padding"],
+    "answer": 2,
+    "explanation": "transform and opacity can usually be animated without recalculating layout, so they stay smooth even on phones."
+  }
+]

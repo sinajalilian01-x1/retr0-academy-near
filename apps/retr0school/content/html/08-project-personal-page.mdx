@@ -1,0 +1,133 @@
+---
+title: "Project: Build Your Personal Page"
+description: "Put everything together into a complete, accessible personal profile page, plus a checklist of HTML best practices."
+order: 8
+tags: ["project", "accessibility", "best-practices"]
+---
+
+# Project: Build Your Personal Page
+
+Time to combine everything you have learned into a real page: a personal profile with a bio, skills list, project table, and contact form.
+
+## The plan
+
+1. A `<header>` with your name and navigation
+2. An **About** section with a photo and bio
+3. A **Skills** list
+4. A **Projects** table
+5. A **Contact** form
+6. A `<footer>`
+
+## The full page
+
+Edit anything you like. Make it yours!
+
+<TryIt html={`<header>
+  <h1>Alex Rivera</h1>
+  <p>Aspiring web developer</p>
+  <nav>
+    <a href="#about">About</a> |
+    <a href="#skills">Skills</a> |
+    <a href="#projects">Projects</a> |
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section id="about">
+    <h2>About me</h2>
+    <figure>
+      <img src="https://picsum.photos/seed/alex/160/160" alt="Portrait of Alex Rivera" width="160" height="160">
+      <figcaption>That's me!</figcaption>
+    </figure>
+    <p>I'm learning to build websites with <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JavaScript</strong>. I love making things that are <em>useful</em> and <em>accessible</em>.</p>
+  </section>
+
+  <section id="skills">
+    <h2>Skills</h2>
+    <ul>
+      <li>Semantic HTML</li>
+      <li>Accessible forms</li>
+      <li>Learning CSS next</li>
+    </ul>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <table>
+      <thead>
+        <tr><th scope="col">Project</th><th scope="col">Year</th><th scope="col">Link</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Recipe page</td><td>2026</td><td><a href="#">View</a></td></tr>
+        <tr><td>Photo gallery</td><td>2026</td><td><a href="#">View</a></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <form>
+      <label for="c-name">Your name</label><br>
+      <input id="c-name" name="name" required><br><br>
+      <label for="c-msg">Message</label><br>
+      <textarea id="c-msg" name="message" rows="4" required></textarea><br><br>
+      <button type="submit">Send message</button>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 Alex Rivera. Built with plain HTML.</p>
+</footer>`} css={`body { font-family: system-ui, sans-serif; max-width: 640px; margin: 0 auto; padding: 16px; line-height: 1.5; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid #ddd; padding: 6px 10px; }
+img { border-radius: 50%; }`} />
+
+<Tip>
+Notice that the page already works and makes sense with almost no CSS. That is the power of good HTML: style is layered on top of solid structure.
+</Tip>
+
+## HTML entities
+
+Some characters have special meaning in HTML, so you write them as **entities**:
+
+| Character | Entity |
+| --- | --- |
+| `<` | `&lt;` |
+| `>` | `&gt;` |
+| `&` | `&amp;` |
+| `"` | `&quot;` |
+| © | `&copy;` |
+| non-breaking space | `&nbsp;` |
+
+## Accessibility checklist
+
+Accessibility (often written **a11y**) means everyone can use your page, including people using screen readers, keyboards, or zoom.
+
+- Every image has a meaningful `alt` (or `alt=""` if decorative).
+- Headings follow a logical order, with one `<h1>`.
+- Every form control has a `<label>`.
+- Link text describes where it goes.
+- You can reach and use everything with only the **Tab** and **Enter** keys.
+- The page has `lang` on the `<html>` element.
+- Use real `<button>` elements for actions and `<a>` for navigation.
+
+<Warning>
+Do not make a clickable `<div>`. It cannot be focused with the keyboard and screen readers do not announce it as a button. Use `<button>` instead.
+</Warning>
+
+## Validate your HTML
+
+Paste your code into the free W3C Markup Validator (validator.w3.org) to catch missing tags, typos, and invalid nesting.
+
+## Challenge
+
+1. Add a "Hobbies" section using a description list.
+2. Embed a favorite video with `<iframe>` (remember the `title`).
+3. Add a `<details>` FAQ to the bottom.
+4. Run the page through the validator and fix any errors.
+
+<Note>
+Congratulations on finishing the HTML track! Next up: **CSS**, where you will make this page look amazing.
+</Note>

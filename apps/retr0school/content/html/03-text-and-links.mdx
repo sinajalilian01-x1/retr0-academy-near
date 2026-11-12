@@ -1,0 +1,110 @@
+---
+title: "Text Formatting and Links"
+description: "Emphasize text with meaningful tags and connect pages together with hyperlinks."
+order: 3
+tags: ["text", "links", "anchors"]
+---
+
+# Text Formatting and Links
+
+## Meaningful text tags
+
+HTML has tags that give text *meaning*, not just a look:
+
+| Tag | Meaning | Usually displayed as |
+| --- | --- | --- |
+| `<strong>` | Strong importance | **Bold** |
+| `<em>` | Emphasis (stress) | *Italic* |
+| `<mark>` | Highlighted / relevant | Yellow background |
+| `<code>` | A piece of code | Monospace font |
+| `<small>` | Side comments, fine print | Smaller text |
+| `<del>` / `<ins>` | Deleted / inserted text | Strikethrough / underline |
+| `<sub>` / `<sup>` | Subscript / superscript | H₂O, x² |
+| `<blockquote>` | A long quotation | Indented block |
+
+<TryIt html={`<p>This is <strong>really important</strong>.</p>
+<p>I <em>love</em> learning HTML.</p>
+<p>Search results for <mark>HTML</mark>.</p>
+<p>Type <code>npm install</code> in your terminal.</p>
+<p>Water is H<sub>2</sub>O and area is x<sup>2</sup>.</p>
+<p>Price: <del>$50</del> <ins>$35</ins></p>
+<blockquote>The best way to learn to code is to write code.</blockquote>
+<p><small>Terms and conditions apply.</small></p>`} />
+
+<Note>
+You may also see `<b>` and `<i>`. They make text bold or italic without adding importance. Screen readers can use `<strong>` and `<em>` to change tone, so prefer them when the meaning matters.
+</Note>
+
+## Links
+
+Links are what make the web a *web*. You create one with the **anchor** element, `<a>`, and its `href` attribute (hypertext reference):
+
+```html
+<a href="https://developer.mozilla.org">Read the MDN docs</a>
+```
+
+### Absolute vs. relative URLs
+
+```html
+<!-- Absolute: a full address to another site -->
+<a href="https://example.com/about">About Example</a>
+
+<!-- Relative: a file on your own site -->
+<a href="about.html">About us</a>
+<a href="blog/first-post.html">My first post</a>
+<a href="../index.html">Back up one folder</a>
+```
+
+### Opening in a new tab
+
+```html
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
+  Opens in a new tab
+</a>
+```
+
+<Tip>
+Add `rel="noopener noreferrer"` when using `target="_blank"` on links to other sites. It stops the new page from controlling your page through JavaScript.
+</Tip>
+
+### Jumping within a page
+
+Give an element an `id`, then link to it with `#`:
+
+```html
+<a href="#contact">Jump to contact</a>
+
+<!-- ...lots of content... -->
+
+<h2 id="contact">Contact</h2>
+```
+
+### Email and phone links
+
+```html
+<a href="mailto:hello@example.com">Email us</a>
+<a href="tel:+15551234567">Call us</a>
+```
+
+## Try it: a mini navigation
+
+<TryIt html={`<nav>
+  <a href="#home">Home</a> |
+  <a href="#lessons">Lessons</a> |
+  <a href="https://developer.mozilla.org" target="_blank" rel="noopener noreferrer">MDN (new tab)</a>
+</nav>
+<h2 id="home">Home</h2>
+<p>Welcome to my site.</p>
+<h2 id="lessons">Lessons</h2>
+<p>Here are my lessons.</p>`} />
+
+<Warning>
+Write link text that makes sense on its own. "Download the course syllabus" is far better than "click here", both for people using screen readers and for search engines.
+</Warning>
+
+## Summary
+
+- Use `<strong>`, `<em>`, `<mark>`, and friends to give text meaning.
+- Create links with `<a href="...">`.
+- Use relative URLs for your own pages and absolute URLs for other sites.
+- Use `#id` to jump to a section on the same page.

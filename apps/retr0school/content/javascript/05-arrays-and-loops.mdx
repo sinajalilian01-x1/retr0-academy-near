@@ -1,0 +1,150 @@
+---
+title: "Arrays and Loops"
+description: "Store lists of values in arrays, repeat work with loops, and transform data with map, filter, and reduce."
+order: 5
+tags: ["arrays", "loops", "map", "filter"]
+---
+
+# Arrays and Loops
+
+## Arrays
+
+An **array** is an ordered list of values, written in square brackets:
+
+```js
+const fruits = ["apple", "banana", "cherry"];
+
+fruits[0];        // "apple"   (indexes start at 0!)
+fruits[2];        // "cherry"
+fruits.length;    // 3
+fruits[fruits.length - 1]; // "cherry" (last item)
+```
+
+<Note>
+`const` stops you from reassigning the variable, but you can still change the array's contents. `fruits.push("kiwi")` works fine on a `const` array.
+</Note>
+
+### Changing arrays
+
+```js
+const list = ["a", "b"];
+list.push("c");      // add to end      → ["a", "b", "c"]
+list.pop();          // remove from end → ["a", "b"]
+list.unshift("z");   // add to start    → ["z", "a", "b"]
+list.shift();        // remove start    → ["a", "b"]
+
+list.includes("a");  // true
+list.indexOf("b");   // 1
+list.join(" - ");    // "a - b"
+```
+
+## Loops
+
+Loops repeat code.
+
+### for
+
+```js
+for (let i = 0; i < 5; i++) {
+  console.log("Count:", i); // 0, 1, 2, 3, 4
+}
+```
+
+The three parts are: start (`let i = 0`), condition (`i < 5`), and step (`i++`).
+
+### for...of
+
+The easiest way to visit every item in an array:
+
+```js
+for (const fruit of fruits) {
+  console.log(fruit);
+}
+```
+
+### while
+
+Repeats as long as a condition is true:
+
+```js
+let lives = 3;
+while (lives > 0) {
+  console.log("Lives left:", lives);
+  lives--;
+}
+```
+
+<Warning>
+Make sure the loop condition eventually becomes false. Otherwise you create an **infinite loop** and the browser tab freezes.
+</Warning>
+
+## Array methods: map, filter, reduce
+
+These methods take a callback function and are the modern way to work with lists.
+
+```js
+const prices = [12, 5, 30, 8];
+
+// map: transform each item → new array of the same length
+const withTax = prices.map((p) => p * 1.2);      // [14.4, 6, 36, 9.6]
+
+// filter: keep items that pass a test
+const cheap = prices.filter((p) => p < 10);      // [5, 8]
+
+// reduce: combine all items into one value
+const total = prices.reduce((sum, p) => sum + p, 0); // 55
+
+// find: first item that passes a test
+const firstBig = prices.find((p) => p > 20);     // 30
+
+// forEach: do something with each item (returns nothing)
+prices.forEach((p, index) => console.log(index, p));
+
+// sort numbers (give a compare function!)
+const sorted = [...prices].sort((a, b) => a - b); // [5, 8, 12, 30]
+```
+
+<Tip>
+`map`, `filter`, and `reduce` do not change the original array. They return new values, which makes bugs less likely.
+</Tip>
+
+## Try it: a dynamic list
+
+<TryIt html={`<input id="item" placeholder="Add a topic to learn">
+<button id="add">Add</button>
+<ul id="list"></ul>
+<p id="stats"></p>`} js={`const topics = ["HTML", "CSS", "JavaScript"];
+const list = document.getElementById("list");
+const stats = document.getElementById("stats");
+
+function render() {
+  list.innerHTML = "";
+  for (const topic of topics) {
+    const li = document.createElement("li");
+    li.textContent = topic;
+    list.appendChild(li);
+  }
+  const longOnes = topics.filter((t) => t.length > 4);
+  const totalLetters = topics.reduce((sum, t) => sum + t.length, 0);
+  stats.textContent = topics.length + " topics, " + longOnes.length +
+    " with more than 4 letters, " + totalLetters + " letters in total.";
+}
+
+document.getElementById("add").addEventListener("click", () => {
+  const input = document.getElementById("item");
+  const value = input.value.trim();
+  if (value !== "") {
+    topics.push(value);
+    input.value = "";
+    render();
+  }
+});
+
+render();`} />
+
+## Summary
+
+- Arrays hold ordered lists; indexes start at 0.
+- Use `push`, `pop`, `includes`, and friends to work with arrays.
+- Loop with `for`, `for...of`, or `while`.
+- `map`, `filter`, `reduce`, and `find` transform data cleanly.

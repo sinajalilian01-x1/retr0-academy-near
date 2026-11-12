@@ -1,0 +1,110 @@
+---
+title: "Introduction to CSS"
+description: "What CSS is, how a CSS rule is written, and the three ways to add CSS to a page."
+order: 1
+tags: ["basics", "getting-started"]
+---
+
+# Introduction to CSS
+
+**CSS** (Cascading Style Sheets) controls how HTML looks: colors, fonts, spacing, layout, and animation. HTML is the structure; CSS is the style.
+
+## Anatomy of a CSS rule
+
+```css
+h1 {
+  color: crimson;
+  font-size: 40px;
+}
+```
+
+- `h1` is the **selector**: which elements to style.
+- Everything between the curly braces is the **declaration block**.
+- `color: crimson;` is a **declaration**: a **property** (`color`) and a **value** (`crimson`), separated by a colon and ending with a semicolon.
+
+<TryIt html={`<h1>Hello, CSS!</h1>
+<p>CSS makes the web beautiful.</p>`} css={`h1 {
+  color: crimson;
+  font-size: 40px;
+}
+p {
+  color: #555;
+  font-family: Georgia, serif;
+}`} />
+
+Try changing `crimson` to `teal`, or `40px` to `60px`.
+
+## Three ways to add CSS
+
+### 1. External stylesheet (recommended)
+
+Put your CSS in a separate file and link it in the `<head>`:
+
+```html
+<link rel="stylesheet" href="styles.css">
+```
+
+One file can style your whole website, and the browser caches it.
+
+### 2. Internal stylesheet
+
+Use a `<style>` element in the `<head>`:
+
+```html
+<style>
+  body { background: #fafafa; }
+</style>
+```
+
+### 3. Inline styles
+
+Use the `style` attribute directly on an element:
+
+```html
+<p style="color: purple;">Purple text</p>
+```
+
+<Warning>
+Avoid inline styles for real projects. They are hard to reuse and override, and they mix style back into your HTML.
+</Warning>
+
+## The "cascade"
+
+What happens when two rules style the same element? CSS decides with the **cascade**, using three ideas:
+
+1. **Importance**: declarations marked `!important` win (use this rarely).
+2. **Specificity**: more specific selectors win (an `id` beats a `class`, which beats a tag name).
+3. **Order**: if everything else is equal, the rule that comes *last* wins.
+
+```css
+p { color: blue; }
+p { color: green; } /* this one wins: it comes later */
+```
+
+## Inheritance
+
+Some properties, like `color` and `font-family`, are **inherited** by child elements. Set a font on `body` and every element inside uses it.
+
+```css
+body {
+  font-family: system-ui, sans-serif;
+  color: #222;
+}
+```
+
+<Tip>
+Use your browser's DevTools (right-click, then **Inspect**) to see which CSS rules apply to an element, and to edit them live.
+</Tip>
+
+## Comments
+
+```css
+/* This is a CSS comment */
+```
+
+## Summary
+
+- A CSS rule is a selector plus a block of `property: value;` declarations.
+- Prefer external stylesheets linked with `<link>`.
+- The cascade decides which rule wins: importance, specificity, then order.
+- Some properties are inherited by child elements.

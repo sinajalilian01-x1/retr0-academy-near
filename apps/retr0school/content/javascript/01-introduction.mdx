@@ -1,0 +1,93 @@
+---
+title: "Introduction to JavaScript"
+description: "What JavaScript is, where it runs, and how to write and run your first lines of code."
+order: 1
+tags: ["basics", "getting-started", "console"]
+---
+
+# Introduction to JavaScript
+
+**JavaScript** (JS) is the programming language of the web. HTML gives a page structure, CSS gives it style, and JavaScript gives it **behavior**: responding to clicks, validating forms, loading new data, animating, and much more.
+
+JavaScript runs in every web browser, and with tools like Node.js it also runs on servers, in command-line tools, and even on tiny devices.
+
+<Note>
+Despite the name, JavaScript has nothing to do with Java. The name was a marketing decision from the 1990s.
+</Note>
+
+## Adding JavaScript to a page
+
+Place a `<script>` element at the end of the `<body>`, or in the `<head>` with `defer`:
+
+```html
+<!-- External file (recommended) -->
+<script src="app.js" defer></script>
+
+<!-- Inline -->
+<script>
+  console.log("Hello from JavaScript!");
+</script>
+```
+
+<Tip>
+`defer` tells the browser to download the script in the background and run it after the HTML has been parsed, so your code can safely find elements on the page.
+</Tip>
+
+## Your first program
+
+<TryIt html={`<h1 id="greeting">Hello!</h1>
+<button id="btn">Click me</button>`} js={`const greeting = document.getElementById("greeting");
+const button = document.getElementById("btn");
+
+button.addEventListener("click", function () {
+  greeting.textContent = "You clicked the button! 🎉";
+});
+
+console.log("The script is running.");`} />
+
+Click the button. In just a few lines, JavaScript found elements on the page and changed them when something happened.
+
+## The console
+
+The **console** is a developer's best friend. Open it in your browser with **F12** (or right-click, **Inspect**, then the **Console** tab).
+
+```js
+console.log("Hello, world!");   // prints a message
+console.log(2 + 3);             // 5
+console.error("Something broke"); // prints an error
+console.table([{ name: "Ada", age: 36 }]); // prints a table
+```
+
+You can also type JavaScript directly into the console and press Enter to run it. Try `2 * 21`.
+
+## Statements and comments
+
+A program is a list of **statements**, run from top to bottom. End each one with a semicolon.
+
+```js
+// A single-line comment
+/*
+  A multi-line
+  comment
+*/
+console.log("First");
+console.log("Second");
+```
+
+## Showing output on the page
+
+Besides the console, you can show results in the page itself:
+
+<TryIt html={`<p id="out"></p>`} js={`const out = document.getElementById("out");
+out.textContent = "2 + 2 = " + (2 + 2);`} />
+
+<Warning>
+JavaScript is case-sensitive. `console.log` works, but `Console.Log` throws an error. Watch your capital letters!
+</Warning>
+
+## Summary
+
+- JavaScript adds behavior to web pages and runs in every browser.
+- Load it with `<script src="..." defer>`.
+- `console.log()` prints values to the developer console.
+- Statements run top to bottom; comments start with `//` or `/* */`.

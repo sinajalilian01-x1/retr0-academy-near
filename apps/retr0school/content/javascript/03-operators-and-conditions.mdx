@@ -1,0 +1,143 @@
+---
+title: "Operators and Conditions"
+description: "Do math, compare values, combine logic, and make decisions with if, else, and switch."
+order: 3
+tags: ["operators", "conditionals", "logic"]
+---
+
+# Operators and Conditions
+
+## Arithmetic operators
+
+```js
+10 + 3;   // 13
+10 - 3;   // 7
+10 * 3;   // 30
+10 / 3;   // 3.3333...
+10 % 3;   // 1   (remainder)
+2 ** 3;   // 8   (exponent)
+
+let count = 5;
+count += 2;  // 7  (same as count = count + 2)
+count++;     // 8
+count--;     // 7
+```
+
+## Comparison operators
+
+Comparisons produce a boolean (`true` or `false`):
+
+```js
+5 > 3;      // true
+5 <= 5;     // true
+5 === 5;    // true   strictly equal (same value AND type)
+5 === "5";  // false  number vs string
+5 !== 4;    // true   strictly not equal
+5 == "5";   // true   loose equality converts types (avoid!)
+```
+
+<Warning>
+Always use `===` and `!==`. The loose versions `==` and `!=` convert types in surprising ways, for example `0 == ""` is `true`.
+</Warning>
+
+## Logical operators
+
+```js
+true && false;  // false  AND: both must be true
+true || false;  // true   OR: at least one must be true
+!true;          // false  NOT: flips the value
+```
+
+### Truthy and falsy
+
+In a condition, every value acts like `true` or `false`. These values are **falsy**: `false`, `0`, `""` (empty string), `null`, `undefined`, and `NaN`. Everything else is **truthy**, including `"0"`, `[]`, and `"false"`.
+
+```js
+const username = "";
+const displayName = username || "Guest"; // "Guest"
+
+const visits = 0;
+const shown = visits ?? 10; // 0  (?? only falls back for null or undefined)
+```
+
+## if, else if, else
+
+```js
+const score = 82;
+
+if (score >= 90) {
+  console.log("A");
+} else if (score >= 80) {
+  console.log("B");
+} else {
+  console.log("Keep practicing!");
+}
+```
+
+## The ternary operator
+
+A compact if/else that produces a value:
+
+```js
+const age = 20;
+const label = age >= 18 ? "adult" : "minor";
+```
+
+## switch
+
+`switch` is handy when comparing one value against many options:
+
+```js
+const day = "sat";
+
+switch (day) {
+  case "sat":
+  case "sun":
+    console.log("Weekend!");
+    break;
+  case "fri":
+    console.log("Almost there");
+    break;
+  default:
+    console.log("Weekday");
+}
+```
+
+<Tip>
+Do not forget `break` in each `case`. Without it, the code "falls through" and keeps running the next case.
+</Tip>
+
+## Try it: a grade checker
+
+<TryIt html={`<label for="score">Your score (0-100): </label>
+<input id="score" type="number" value="75" min="0" max="100">
+<button id="check">Check</button>
+<p id="result"></p>`} js={`const input = document.getElementById("score");
+const result = document.getElementById("result");
+
+document.getElementById("check").addEventListener("click", function () {
+  const score = Number(input.value);
+  let message;
+
+  if (input.value === "" || score < 0 || score > 100) {
+    message = "Please enter a number from 0 to 100.";
+  } else if (score >= 90) {
+    message = "A: Outstanding! 🏆";
+  } else if (score >= 80) {
+    message = "B: Great work! 🎉";
+  } else if (score >= 70) {
+    message = "C: Good, keep going! 💪";
+  } else {
+    message = "Keep practicing, you've got this! 📚";
+  }
+
+  const passed = score >= 70 ? "Passed" : "Not passed yet";
+  result.textContent = message + " (" + passed + ")";
+});`} />
+
+## Summary
+
+- Arithmetic: `+ - * / % **`; shortcuts like `+=` and `++`.
+- Compare with `===`, `!==`, `>`, `<`, `>=`, `<=`.
+- Combine conditions with `&&`, `||`, and `!`.
+- Make decisions with `if`/`else`, the ternary `? :`, and `switch`.

@@ -1,0 +1,129 @@
+---
+title: "Selectors"
+description: "Target exactly the elements you want with type, class, id, attribute, combinator, and pseudo-class selectors."
+order: 2
+tags: ["selectors", "specificity"]
+---
+
+# Selectors
+
+A **selector** chooses which elements a rule applies to. Mastering selectors is the key to writing clean CSS.
+
+## Basic selectors
+
+| Selector | Example | Selects |
+| --- | --- | --- |
+| Type | `p` | All `<p>` elements |
+| Class | `.card` | All elements with `class="card"` |
+| ID | `#hero` | The element with `id="hero"` |
+| Universal | `*` | Every element |
+| Attribute | `[type="email"]` | Elements with that attribute value |
+
+```css
+p { line-height: 1.6; }
+.card { border: 1px solid #ddd; }
+#hero { background: navy; }
+input[type="email"] { border-color: teal; }
+```
+
+## Grouping
+
+Apply the same styles to several selectors with a comma:
+
+```css
+h1, h2, h3 { font-family: Georgia, serif; }
+```
+
+## Combinators
+
+Combinators select elements based on their relationship to other elements:
+
+```css
+article p { }    /* descendant: any p inside an article */
+ul > li { }      /* child: li directly inside ul */
+h2 + p { }       /* adjacent sibling: the p right after an h2 */
+h2 ~ p { }       /* general sibling: every p after an h2, same parent */
+```
+
+## Pseudo-classes
+
+A **pseudo-class** selects elements in a particular *state* or *position*. It starts with one colon.
+
+```css
+a:hover { color: orange; }           /* mouse is over it */
+button:focus-visible { outline: 3px solid gold; } /* focused by keyboard */
+li:first-child { font-weight: bold; }
+li:nth-child(even) { background: #f5f5f5; }
+input:invalid { border-color: red; }
+```
+
+## Pseudo-elements
+
+A **pseudo-element** styles a *part* of an element. It starts with two colons.
+
+```css
+p::first-line { font-weight: bold; }
+.required::after { content: " *"; color: red; }
+::selection { background: hotpink; }
+```
+
+<TryIt html={`<ul class="menu">
+  <li>Home</li>
+  <li class="active">Lessons</li>
+  <li>Quizzes</li>
+  <li>Profile</li>
+</ul>
+<p id="note">Hover over the list items. Select some text too!</p>
+<label class="required">Email</label>`} css={`.menu li {
+  padding: 8px;
+  list-style: none;
+}
+.menu li:nth-child(even) {
+  background: #eef5fb;
+}
+.menu li:hover {
+  background: #1572B6;
+  color: white;
+  cursor: pointer;
+}
+.active {
+  font-weight: bold;
+}
+#note {
+  font-style: italic;
+}
+.required::after {
+  content: " *";
+  color: red;
+}
+::selection {
+  background: gold;
+}`} />
+
+## Specificity
+
+When selectors conflict, the more **specific** one wins. Think of specificity as a score with three columns: IDs, classes (plus attributes and pseudo-classes), and types (plus pseudo-elements).
+
+| Selector | Score (ID, class, type) |
+| --- | --- |
+| `p` | 0, 0, 1 |
+| `.intro` | 0, 1, 0 |
+| `p.intro` | 0, 1, 1 |
+| `#main p` | 1, 0, 1 |
+
+Compare from left to right: any ID beats any number of classes.
+
+<Tip>
+Style mostly with classes. They are reusable and keep specificity low and predictable. Save IDs for linking and JavaScript.
+</Tip>
+
+<Warning>
+`!important` overrides normal specificity. It might fix a problem today but makes CSS hard to maintain. Use it only as a last resort.
+</Warning>
+
+## Summary
+
+- Use type, class, ID, and attribute selectors to target elements.
+- Combinators (space, `>`, `+`, `~`) select by relationship.
+- Pseudo-classes (`:hover`) target states; pseudo-elements (`::after`) target parts.
+- Specificity decides conflicts: ID, then class, then type.

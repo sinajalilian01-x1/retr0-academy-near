@@ -1,0 +1,127 @@
+---
+title: "Typography and Text"
+description: "Choose fonts, sizes, weights, and spacing to make text beautiful and easy to read."
+order: 5
+tags: ["typography", "fonts", "text"]
+---
+
+# Typography and Text
+
+Most of the web is text, so good typography makes a huge difference.
+
+## Font family
+
+```css
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+```
+
+This is a **font stack**: the browser uses the first font that is available. Always end with a generic family: `serif`, `sans-serif`, `monospace`, `cursive`, or `system-ui`.
+
+### Web fonts
+
+You can load fonts from a service like Google Fonts or from your own files:
+
+```css
+@font-face {
+  font-family: "MyFont";
+  src: url("/fonts/myfont.woff2") format("woff2");
+  font-display: swap; /* show fallback text while the font loads */
+}
+```
+
+## Size, weight, and style
+
+```css
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;   /* 100 (thin) to 900 (black); 400 normal, 700 bold */
+  font-style: italic;
+}
+```
+
+### Fluid type with clamp()
+
+`clamp(min, preferred, max)` lets text grow with the screen, within limits:
+
+```css
+h1 { font-size: clamp(2rem, 5vw, 4rem); }
+```
+
+## Spacing and alignment
+
+```css
+p {
+  line-height: 1.6;        /* unitless: 1.6 times the font size */
+  letter-spacing: 0.02em;
+  word-spacing: 0.1em;
+  text-align: left;        /* left | center | right | justify */
+  max-width: 65ch;         /* comfortable line length */
+}
+```
+
+<Tip>
+For body text, a `line-height` around 1.5 to 1.7 and a line length of roughly 50 to 75 characters (`max-width: 65ch`) makes reading much more comfortable.
+</Tip>
+
+## Decoration and transformation
+
+```css
+a { text-decoration: underline wavy hotpink; }
+.label { text-transform: uppercase; }
+.title { text-shadow: 2px 2px 0 #00000033; }
+.clip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+```
+
+<TryIt html={`<article>
+  <p class="eyebrow">Lesson 5</p>
+  <h1>Beautiful Type</h1>
+  <p class="lead">Good typography is invisible. Readers simply enjoy the words.</p>
+  <p>Typography is the art of arranging text so it is legible and appealing. Try changing the font family, line height, and sizes to see how the mood of this page changes.</p>
+  <p class="clip">This very long line will be cut off with an ellipsis when it is too long to fit in its box.</p>
+</article>`} css={`body {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #1e293b;
+  padding: 24px;
+}
+article { max-width: 60ch; }
+.eyebrow {
+  font-family: system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.75rem;
+  color: #1572B6;
+  font-weight: 700;
+}
+h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.1;
+  margin: 0.2em 0;
+}
+.lead { font-size: 1.25rem; font-style: italic; }
+p { line-height: 1.7; }
+.clip {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px dashed #94a3b8;
+}`} />
+
+## The font shorthand
+
+```css
+/* style weight size/line-height family */
+p { font: italic 400 1rem/1.6 Georgia, serif; }
+```
+
+<Note>
+Limit yourself to one or two font families per site. Create variety with size, weight, and color instead of many different fonts.
+</Note>
+
+## Summary
+
+- Use font stacks that end with a generic family.
+- Control size with `rem` or `clamp()` and weight with numbers like 400 and 700.
+- Comfortable reading needs good `line-height` and a limited line length.
+- `text-transform`, `text-decoration`, and `text-shadow` add flair.

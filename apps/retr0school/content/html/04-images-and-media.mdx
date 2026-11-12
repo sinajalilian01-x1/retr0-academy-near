@@ -1,0 +1,115 @@
+---
+title: "Images and Media"
+description: "Add images, audio, and video to your pages, and describe them so everyone can understand them."
+order: 4
+tags: ["images", "media", "video", "audio"]
+---
+
+# Images and Media
+
+## Adding an image
+
+Use the void element `<img>` with two essential attributes:
+
+```html
+<img src="images/mountain.jpg" alt="Snowy mountain peak at sunrise">
+```
+
+- `src` (source): the path or URL of the image file.
+- `alt` (alternative text): a description of the image.
+
+### Why `alt` matters
+
+The `alt` text is read aloud by screen readers, shown if the image fails to load, and used by search engines. Describe what the image *shows* or *does*.
+
+```html
+<!-- Good -->
+<img src="chart.png" alt="Bar chart: sales doubled from 2024 to 2026">
+
+<!-- Decorative image: empty alt so screen readers skip it -->
+<img src="divider-swirl.png" alt="">
+```
+
+<Warning>
+Never leave out the `alt` attribute. If an image is purely decorative, use `alt=""` (empty) rather than removing it.
+</Warning>
+
+## Setting the size
+
+```html
+<img src="photo.jpg" alt="A red bicycle" width="400" height="300">
+```
+
+Providing `width` and `height` lets the browser reserve space before the image loads, so the page does not jump around.
+
+<TryIt html={`<h2>Random landscape</h2>
+<img src="https://picsum.photos/400/250" alt="A random landscape photo" width="400" height="250">
+<p>Try changing the numbers in the URL and the width/height attributes.</p>`} />
+
+## Images with captions
+
+Use `<figure>` and `<figcaption>` to attach a caption to an image:
+
+```html
+<figure>
+  <img src="eiffel.jpg" alt="The Eiffel Tower at night, lit up in gold">
+  <figcaption>The Eiffel Tower, Paris.</figcaption>
+</figure>
+```
+
+## Common image formats
+
+| Format | Best for |
+| --- | --- |
+| JPEG (`.jpg`) | Photos |
+| PNG (`.png`) | Graphics needing transparency or sharp edges |
+| SVG (`.svg`) | Logos and icons (scales to any size without blur) |
+| WebP / AVIF | Modern formats, smaller files with good quality |
+| GIF | Simple animations (often replaced by video today) |
+
+## Video
+
+```html
+<video src="intro.mp4" controls width="480" poster="thumbnail.jpg">
+  Your browser does not support the video tag.
+</video>
+```
+
+- `controls` shows play, pause, and volume buttons.
+- `poster` is the image shown before the video plays.
+- Other useful attributes: `autoplay`, `muted`, `loop`.
+
+<Note>
+Most browsers only allow `autoplay` if the video is also `muted`. Autoplaying sound annoys users, so browsers block it.
+</Note>
+
+## Audio
+
+```html
+<audio src="podcast.mp3" controls>
+  Your browser does not support the audio element.
+</audio>
+```
+
+## Embedding other pages
+
+The `<iframe>` element embeds another web page, such as a map or a video player:
+
+```html
+<iframe
+  src="https://www.openstreetmap.org/export/embed.html"
+  width="400" height="300"
+  title="Map of the area">
+</iframe>
+```
+
+<Tip>
+Always give an `<iframe>` a `title` so screen reader users know what it contains.
+</Tip>
+
+## Summary
+
+- `<img>` needs `src` and a helpful `alt`.
+- Set `width` and `height` to avoid layout shifts.
+- Use `<figure>` and `<figcaption>` for captions.
+- `<video>` and `<audio>` play media; add `controls` so users can control playback.

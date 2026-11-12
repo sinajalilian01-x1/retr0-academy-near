@@ -1,0 +1,165 @@
+---
+title: "Objects and JSON"
+description: "Group related data into objects, add methods, destructure values, and convert data to and from JSON."
+order: 6
+tags: ["objects", "json", "destructuring"]
+---
+
+# Objects and JSON
+
+An **object** groups related data as **key: value** pairs, called **properties**.
+
+```js
+const student = {
+  name: "Ada",
+  age: 36,
+  tracks: ["HTML", "CSS"],
+  isPremium: false,
+};
+```
+
+## Reading and changing properties
+
+```js
+student.name;          // "Ada"       (dot notation)
+student["age"];        // 36          (bracket notation)
+
+const key = "tracks";
+student[key];          // ["HTML", "CSS"]  (brackets work with variables)
+
+student.age = 37;               // update
+student.country = "UK";         // add a new property
+delete student.isPremium;       // remove a property
+"name" in student;              // true
+```
+
+## Methods
+
+A function stored in an object is called a **method**. Inside it, `this` refers to the object:
+
+```js
+const counter = {
+  count: 0,
+  increment() {
+    this.count++;
+    return this.count;
+  },
+};
+
+counter.increment(); // 1
+counter.increment(); // 2
+```
+
+## Looping over objects
+
+```js
+const scores = { html: 90, css: 75, js: 60 };
+
+Object.keys(scores);    // ["html", "css", "js"]
+Object.values(scores);  // [90, 75, 60]
+
+for (const [track, score] of Object.entries(scores)) {
+  console.log(track + ": " + score);
+}
+```
+
+## Destructuring and spread
+
+**Destructuring** pulls values out into variables. **Spread** (`...`) copies properties.
+
+```js
+const user = { name: "Grace", role: "admiral", city: "NYC" };
+
+const { name, role } = user;        // name = "Grace", role = "admiral"
+
+const updated = { ...user, city: "Arlington" }; // copy with one change
+
+const [first, second] = ["gold", "silver", "bronze"]; // arrays too
+```
+
+## Arrays of objects
+
+Real data is often a list of objects. Combine this with array methods:
+
+```js
+const courses = [
+  { title: "HTML", lessons: 8, done: true },
+  { title: "CSS", lessons: 8, done: false },
+  { title: "JS", lessons: 8, done: false },
+];
+
+const unfinished = courses.filter((c) => !c.done).map((c) => c.title);
+// ["CSS", "JS"]
+```
+
+## JSON
+
+**JSON** (JavaScript Object Notation) is a text format for data, used by almost every web API. It looks like a JavaScript object, but keys must be in double quotes and it cannot contain functions.
+
+```json
+{
+  "name": "Ada",
+  "age": 36,
+  "tracks": ["HTML", "CSS"]
+}
+```
+
+Convert between objects and JSON text:
+
+```js
+const text = JSON.stringify(student);   // object → JSON string
+const back = JSON.parse(text);          // JSON string → object
+```
+
+<Tip>
+`JSON.stringify(obj, null, 2)` produces nicely indented, human-readable JSON.
+</Tip>
+
+## Try it: a profile card from data
+
+<TryIt html={`<div id="card"></div>
+<button id="level">Level up</button>
+<pre id="json"></pre>`} css={`#card { font-family: sans-serif; padding: 16px; border-radius: 12px; background: #fff8d6; max-width: 280px; }
+pre { background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 8px; font-size: 12px; }`} js={`const learner = {
+  name: "Sam",
+  level: 1,
+  badges: ["First Lesson"],
+  describe() {
+    return this.name + " is level " + this.level + " with " + this.badges.length + " badge(s).";
+  },
+};
+
+function render() {
+  const { name, level, badges } = learner;
+  const card = document.getElementById("card");
+  card.innerHTML = "";
+
+  const title = document.createElement("h3");
+  title.textContent = name + " ⭐ Level " + level;
+  const info = document.createElement("p");
+  info.textContent = learner.describe() + " Badges: " + badges.join(", ");
+
+  card.append(title, info);
+  document.getElementById("json").textContent = JSON.stringify(learner, null, 2);
+}
+
+document.getElementById("level").addEventListener("click", () => {
+  learner.level++;
+  learner.badges.push("Level " + learner.level);
+  render();
+});
+
+render();`} />
+
+Notice that `JSON.stringify` skips the `describe` method: JSON cannot store functions.
+
+<Warning>
+`JSON.parse` throws an error if the text is not valid JSON. When parsing data from outside your app, wrap it in `try...catch`.
+</Warning>
+
+## Summary
+
+- Objects store data as key: value properties; read them with dot or bracket notation.
+- Methods are functions inside objects; `this` refers to the object.
+- Destructuring and spread make copying and extracting values easy.
+- JSON is the text format for data; use `JSON.stringify` and `JSON.parse`.

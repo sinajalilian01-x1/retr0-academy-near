@@ -1,0 +1,160 @@
+---
+title: "Flexbox"
+description: "Lay out items in a row or column, align them, and distribute space with CSS Flexbox."
+order: 6
+tags: ["layout", "flexbox"]
+---
+
+# Flexbox
+
+**Flexbox** is a one-dimensional layout system: it arranges items in a **row** or a **column**, and makes aligning and spacing them easy. Navbars, button groups, cards in a row, and perfectly centered content are all classic Flexbox jobs.
+
+## Turn it on
+
+```css
+.container {
+  display: flex;
+}
+```
+
+The element with `display: flex` is the **flex container**; its direct children become **flex items**.
+
+## The two axes
+
+- The **main axis** follows `flex-direction` (horizontal for `row`, the default).
+- The **cross axis** runs perpendicular to it.
+
+```css
+.container {
+  flex-direction: row;       /* row | row-reverse | column | column-reverse */
+  justify-content: center;   /* alignment on the main axis */
+  align-items: center;       /* alignment on the cross axis */
+  gap: 16px;                 /* space between items */
+  flex-wrap: wrap;           /* allow items to wrap onto new lines */
+}
+```
+
+### justify-content values
+
+`flex-start`, `center`, `flex-end`, `space-between`, `space-around`, `space-evenly`
+
+### align-items values
+
+`stretch` (default), `flex-start`, `center`, `flex-end`, `baseline`
+
+<TryIt html={`<div class="row">
+  <div class="item">1</div>
+  <div class="item">2</div>
+  <div class="item">3</div>
+</div>
+<p>Change justify-content to space-between, flex-end, or space-evenly. Try flex-direction: column!</p>`} css={`.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  height: 160px;
+  background: #eef5fb;
+  border-radius: 12px;
+}
+.item {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1572B6;
+  color: white;
+  font: bold 1.2rem sans-serif;
+  border-radius: 10px;
+}
+.item:nth-child(2) { height: 100px; }`} />
+
+## Perfect centering
+
+The famous "how do I center a div?" question has a two-line answer:
+
+```css
+.parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+```
+
+## Growing and shrinking items
+
+Flex items have three properties that control their size:
+
+```css
+.item {
+  flex-grow: 1;     /* how much of the extra space this item takes */
+  flex-shrink: 1;   /* how much it shrinks when space is tight */
+  flex-basis: 200px;/* its starting size before growing or shrinking */
+}
+
+/* Shorthand: grow shrink basis */
+.item { flex: 1 1 200px; }
+.sidebar { flex: 0 0 250px; } /* fixed 250px, never grows or shrinks */
+.content { flex: 1; }         /* takes all remaining space */
+```
+
+## Try it: a responsive navbar
+
+<TryIt html={`<nav class="nav">
+  <a class="logo" href="#">Retr0school</a>
+  <ul class="links">
+    <li><a href="#">HTML</a></li>
+    <li><a href="#">CSS</a></li>
+    <li><a href="#">JS</a></li>
+  </ul>
+  <button>Sign in</button>
+</nav>`} css={`body { margin: 0; font-family: system-ui, sans-serif; }
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  background: #0f172a;
+}
+.logo { color: white; font-weight: 800; text-decoration: none; }
+.links {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-right: auto;
+}
+.links a { color: #cbd5e1; text-decoration: none; }
+.links a:hover { color: white; }
+button {
+  background: #1572B6;
+  color: white;
+  border: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+}`} />
+
+<Tip>
+`margin-right: auto` on a flex item pushes everything after it to the far end. It is a handy trick for navbars.
+</Tip>
+
+## Item-level alignment and order
+
+```css
+.special { align-self: flex-end; } /* override align-items for one item */
+.first   { order: -1; }            /* visually move an item first */
+```
+
+<Warning>
+`order` changes only the visual order. Keyboard and screen reader users still follow the HTML order, so do not use it to reorder meaningful content.
+</Warning>
+
+## Summary
+
+- `display: flex` creates a flex container; its children become flex items.
+- `justify-content` aligns on the main axis, `align-items` on the cross axis.
+- `gap` adds space between items; `flex-wrap: wrap` allows wrapping.
+- `flex: grow shrink basis` controls how items share space.

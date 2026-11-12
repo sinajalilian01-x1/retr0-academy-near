@@ -1,0 +1,135 @@
+---
+title: "CSS Grid"
+description: "Build two-dimensional layouts with rows and columns using CSS Grid."
+order: 7
+tags: ["layout", "grid"]
+---
+
+# CSS Grid
+
+Flexbox handles one direction at a time. **CSS Grid** handles **rows and columns together**, which makes it perfect for whole page layouts, galleries, and dashboards.
+
+## Define a grid
+
+```css
+.grid {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr;
+  grid-template-rows: auto 300px;
+  gap: 16px;
+}
+```
+
+- `grid-template-columns` defines the columns. Here: one 200px column and two flexible ones.
+- `fr` means "fraction of the remaining space". `1fr 2fr` gives the second column twice as much as the first.
+- `gap` sets the space between rows and columns.
+
+## repeat() and minmax()
+
+```css
+grid-template-columns: repeat(3, 1fr);          /* three equal columns */
+grid-template-columns: repeat(4, minmax(150px, 1fr));
+```
+
+### The responsive card grid
+
+This one line creates a grid that fits as many columns as possible, each at least 180px wide, with no media queries:
+
+```css
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+```
+
+<TryIt html={`<div class="cards">
+  <div class="card">🧱 HTML</div>
+  <div class="card">🎨 CSS</div>
+  <div class="card">⚡ JavaScript</div>
+  <div class="card">⛓️ Web3</div>
+  <div class="card">🧪 Quizzes</div>
+  <div class="card">🏆 Projects</div>
+</div>
+<p>Resize the preview to watch the columns change automatically.</p>`} css={`body { font-family: system-ui, sans-serif; padding: 16px; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+.card {
+  padding: 28px 16px;
+  text-align: center;
+  font-weight: 700;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e0f2fe, #ede9fe);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 8%);
+}`} />
+
+## Placing items
+
+Grid lines are numbered starting at 1. Items can span across lines:
+
+```css
+.featured {
+  grid-column: 1 / 3;     /* from line 1 to line 3: spans 2 columns */
+  grid-row: span 2;       /* spans 2 rows */
+}
+.full-width { grid-column: 1 / -1; } /* -1 means the last line */
+```
+
+## Named areas
+
+`grid-template-areas` lets you draw your layout with words:
+
+<TryIt html={`<div class="page">
+  <header>Header</header>
+  <nav>Sidebar</nav>
+  <main>Main content</main>
+  <footer>Footer</footer>
+</div>`} css={`body { margin: 0; font-family: system-ui, sans-serif; }
+.page {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  grid-template-rows: 60px 1fr 50px;
+  grid-template-areas:
+    "header header"
+    "nav    main"
+    "footer footer";
+  gap: 8px;
+  height: 320px;
+  padding: 8px;
+}
+header { grid-area: header; background: #1572B6; }
+nav    { grid-area: nav;    background: #38bdf8; }
+main   { grid-area: main;   background: #e0f2fe; color: #0f172a; }
+footer { grid-area: footer; background: #0f172a; }
+header, nav, main, footer {
+  display: grid;
+  place-items: center;
+  color: white;
+  border-radius: 8px;
+}`} />
+
+Try rewriting the areas, for example put the sidebar on the right: `"main nav"`.
+
+## Alignment in Grid
+
+```css
+.grid {
+  justify-items: center;  /* horizontal alignment inside each cell */
+  align-items: center;    /* vertical alignment inside each cell */
+  place-items: center;    /* shorthand for both */
+}
+```
+
+<Tip>
+Grid or Flexbox? Use **Grid** when you think in rows *and* columns (page layout, galleries). Use **Flexbox** when you think in a single line of items (navbars, toolbars). They work great together: a grid of cards, with Flexbox inside each card.
+</Tip>
+
+## Summary
+
+- `display: grid` with `grid-template-columns` and `grid-template-rows` defines the grid.
+- `fr`, `repeat()`, and `minmax()` make flexible tracks.
+- `repeat(auto-fit, minmax(...))` creates responsive grids with no media queries.
+- Place items with line numbers or named `grid-template-areas`.

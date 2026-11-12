@@ -1,0 +1,62 @@
+[
+  {
+    "question": "What does HTML stand for?",
+    "options": ["HyperText Markup Language", "High-Level Text Machine Language", "Hyperlink and Text Management Language", "Home Tool Markup Language"],
+    "answer": 0,
+    "explanation": "HTML stands for HyperText Markup Language. It is a markup language that describes the structure of web pages."
+  },
+  {
+    "question": "Which part of an HTML document contains the content visible on the page?",
+    "options": ["<head>", "<title>", "<body>", "<meta>"],
+    "answer": 2,
+    "explanation": "The <body> element holds everything visible on the page. The <head> holds information about the page, such as the title and metadata."
+  },
+  {
+    "question": "Which of these is a void (empty) element with no closing tag?",
+    "options": ["<p>", "<img>", "<a>", "<li>"],
+    "answer": 1,
+    "explanation": "<img> has no content and no closing tag. Other void elements include <br>, <hr>, <input>, and <meta>."
+  },
+  {
+    "question": "Which attribute provides a text description of an image for screen readers?",
+    "options": ["title", "src", "alt", "desc"],
+    "answer": 2,
+    "explanation": "The alt attribute describes the image. It is read by screen readers and shown if the image fails to load."
+  },
+  {
+    "question": "How do you create a link that jumps to the element with id=\"faq\" on the same page?",
+    "options": ["<a href=\"faq\">", "<a href=\"#faq\">", "<a link=\"faq\">", "<a id=\"#faq\">"],
+    "answer": 1,
+    "explanation": "A # followed by the id in href links to that element on the same page."
+  },
+  {
+    "question": "Which list should you use for step-by-step instructions where order matters?",
+    "options": ["<ul>", "<dl>", "<ol>", "<li>"],
+    "answer": 2,
+    "explanation": "<ol> creates an ordered (numbered) list, which is ideal when the order of items matters."
+  },
+  {
+    "question": "Why should every form input have a connected <label>?",
+    "options": ["It makes the input bigger", "It is required for the form to submit", "It tells users and screen readers what the input is for, and clicking it focuses the input", "It encrypts the data"],
+    "answer": 2,
+    "explanation": "Labels describe inputs for everyone, are announced by screen readers, and enlarge the clickable area by focusing the input when clicked."
+  },
+  {
+    "question": "Is browser form validation (like required or pattern) enough to keep bad data out of your server?",
+    "options": ["Yes, it cannot be bypassed", "No, it can be bypassed, so the server must validate too", "Only for email fields", "Only when using method=\"post\""],
+    "answer": 1,
+    "explanation": "Client-side validation improves user experience, but anyone can bypass it. Always validate on the server as well."
+  },
+  {
+    "question": "Which element should wrap the main, unique content of a page?",
+    "options": ["<section>", "<div>", "<main>", "<article>"],
+    "answer": 2,
+    "explanation": "<main> represents the dominant content of the page. Use only one visible <main> per page."
+  },
+  {
+    "question": "What is the best element to use for a clickable action like \"Open menu\"?",
+    "options": ["<div onclick=...>", "<span>", "<button>", "<p>"],
+    "answer": 2,
+    "explanation": "A <button> is keyboard-focusable and announced as a button by screen readers. A clickable div is not accessible by default."
+  }
+]

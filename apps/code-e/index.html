@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <title>Code E — HTML, CSS, and JavaScript playground</title>
+    <meta
+      name="description"
+      content="Code E is a beginner-friendly browser playground for HTML, CSS, and JavaScript. Edit files, run a live preview, and share a link. Companion to Retr0school."
+    />
+    <meta name="theme-color" content="#0d0b1a" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="application-name" content="Code E" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Code E" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:title" content="Code E — HTML, CSS, and JavaScript playground" />
+    <meta
+      property="og:description"
+      content="Write HTML, CSS, and JavaScript in the browser. Live preview, a real console, and a link you can share. Companion to Retr0school."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og.png" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Code E — HTML, CSS, and JavaScript playground" />
+    <meta
+      name="twitter:description"
+      content="Write HTML, CSS, and JavaScript in the browser. Live preview, a real console, and a link you can share."
+    />
+    <meta name="twitter:image" content="/og.png" />
+    <script>
+      try {
+        var raw = localStorage.getItem("retr0code.project.v1");
+        if (raw) {
+          var theme = JSON.parse(raw).settings && JSON.parse(raw).settings.theme;
+          if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#editor">Skip to editor</a>
+    <div id="app" data-pane="html">
+      <header class="topbar">
+        <button type="button" class="mobile-only" id="files-btn" aria-expanded="false" aria-controls="explorer">Files</button>
+        <a class="logo" href="./" title="Code E, companion to Retr0school">
+          <svg class="logo-mark" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="#ff3fa4" />
+            <path d="M12.2 10.5 8.2 16l4 5.5" fill="none" stroke="#1a0a14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M19.8 10.5 23.8 16l-4 5.5" fill="none" stroke="#1a0a14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <h1>Code E</h1>
+        </a>
+        <nav class="menus desktop-only" aria-label="Menus">
+          <div class="menu">
+            <button type="button" class="menu-trigger" aria-expanded="false" aria-haspopup="menu" aria-controls="menu-file">File</button>
+            <div id="menu-file" class="menu-pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-action="new-file">New file</button>
+              <button type="button" role="menuitem" data-action="rename-file">Rename file</button>
+              <button type="button" role="menuitem" data-action="delete-file">Delete file</button>
+              <div class="menu-sep"></div>
+              <button type="button" role="menuitem" data-action="download-html">Download HTML</button>
+              <button type="button" role="menuitem" data-action="download-zip">Download ZIP</button>
+              <button type="button" role="menuitem" data-action="share">Share</button>
+              <div class="menu-sep"></div>
+              <button type="button" role="menuitem" data-action="reset">Reset project</button>
+            </div>
+          </div>
+          <div class="menu">
+            <button type="button" class="menu-trigger" aria-expanded="false" aria-haspopup="menu" aria-controls="menu-edit">Edit</button>
+            <div id="menu-edit" class="menu-pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-action="undo">Undo <span class="shortcut" aria-hidden="true" data-shortcut="Mod+Z"></span></button>
+              <button type="button" role="menuitem" data-action="redo">Redo <span class="shortcut" aria-hidden="true" data-shortcut="Mod+Y"></span></button>
+              <div class="menu-sep"></div>
+              <button type="button" role="menuitem" data-action="find">Find <span class="shortcut" aria-hidden="true" data-shortcut="Mod+F"></span></button>
+              <button type="button" role="menuitem" data-action="replace">Replace</button>
+              <button type="button" role="menuitem" data-action="next-cursor">Add next cursor <span class="shortcut" aria-hidden="true" data-shortcut="Mod+D"></span></button>
+              <div class="menu-sep"></div>
+              <button type="button" role="menuitem" data-action="format">Format <span class="shortcut" aria-hidden="true" data-shortcut="Shift+Alt+F"></span></button>
+              <button type="button" role="menuitem" data-action="copy">Copy code</button>
+            </div>
+          </div>
+          <div class="menu">
+            <button type="button" class="menu-trigger" aria-expanded="false" aria-haspopup="menu" aria-controls="menu-view">View</button>
+            <div id="menu-view" class="menu-pop" role="menu" hidden>
+              <button type="button" role="menuitemcheckbox" id="menu-theme" data-action="theme" aria-checked="false">Switch to light theme</button>
+              <button type="button" role="menuitemcheckbox" id="menu-wrap" data-action="wrap" aria-checked="false">Word wrap</button>
+              <button type="button" role="menuitem" data-action="font-inc">Increase font size</button>
+              <button type="button" role="menuitem" data-action="font-dec">Decrease font size</button>
+              <div class="menu-sep"></div>
+              <button type="button" role="menuitemradio" data-action="device-mobile" aria-checked="false">Mobile view</button>
+              <button type="button" role="menuitemradio" data-action="device-desktop" aria-checked="true">Desktop view</button>
+              <div class="menu-sep"></div>
+              <button type="button" role="menuitem" data-action="fullscreen">Fullscreen</button>
+              <button type="button" role="menuitem" data-action="focus-console">Focus console</button>
+            </div>
+          </div>
+          <div class="menu">
+            <button type="button" class="menu-trigger" aria-expanded="false" aria-haspopup="menu" aria-controls="menu-run" aria-label="Run menu">Run</button>
+            <div id="menu-run" class="menu-pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-action="run">Run <span class="shortcut" aria-hidden="true" data-shortcut="Mod+Enter"></span></button>
+              <button type="button" role="menuitemcheckbox" id="menu-autorun" data-action="autorun" aria-checked="true">Auto-run</button>
+            </div>
+          </div>
+        </nav>
+        <div class="top-actions">
+          <button type="button" class="ghost" id="format-btn">
+            <span class="visually-hidden">Format</span>
+            <span aria-hidden="true" class="label-long">Format</span>
+            <span aria-hidden="true" class="label-short">Fmt</span>
+          </button>
+          <button type="button" class="ghost desktop-only" id="share-btn">Share</button>
+          <label class="switch" title="Run the preview again shortly after you stop typing">
+            <input type="checkbox" id="autorun" checked />
+            <span class="visually-hidden">Auto-run</span>
+            <span aria-hidden="true" class="label-long">Auto-run</span>
+            <span aria-hidden="true" class="label-short">Auto</span>
+          </label>
+          <button type="button" class="ghost icon-btn theme-toggle mobile-only" id="theme-mobile" aria-label="Switch to light theme" title="Switch to light theme">
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="8" cy="8" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6" />
+              <path d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M9.2 1.8a5.6 5.6 0 1 0 5 7.6 4.4 4.4 0 0 1-5-7.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button type="button" class="primary" id="run-btn" title="Run the preview (Ctrl+Enter or Cmd+Enter)" aria-keyshortcuts="Control+Enter">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5v9l8-4.5-8-4.5z" fill="currentColor" /></svg>
+            Run
+          </button>
+        </div>
+      </header>
+
+      <div id="banner" class="banner" role="alert" hidden>
+        <p id="banner-text"></p>
+        <button type="button" id="banner-dismiss">Dismiss</button>
+      </div>
+
+      <div class="segments" id="segments" role="tablist" aria-label="Editor sections">
+        <button type="button" role="tab" data-pane="html" aria-selected="true">HTML</button>
+        <button type="button" role="tab" data-pane="css" aria-selected="false" tabindex="-1">CSS</button>
+        <button type="button" role="tab" data-pane="js" aria-selected="false" tabindex="-1">JS</button>
+        <button type="button" role="tab" data-pane="preview" aria-selected="false" tabindex="-1">Preview</button>
+        <button type="button" role="tab" data-pane="console" aria-selected="false" tabindex="-1">Console</button>
+      </div>
+
+      <main class="workspace">
+        <aside id="explorer" class="sidebar" aria-label="Explorer">
+          <div class="sidebar-head">
+            <h2>Explorer</h2>
+            <div class="file-actions" role="group" aria-label="File actions">
+              <button type="button" id="new-file">New file</button>
+              <button type="button" id="rename-file">Rename</button>
+              <button type="button" id="delete-file">Delete</button>
+            </div>
+          </div>
+          <p class="folder-label">project</p>
+          <ul id="file-tree" aria-label="Project files"></ul>
+          <p class="sidebar-note">Companion to Retr0school</p>
+        </aside>
+        <div class="splitter vertical" id="splitter-sidebar" role="separator" aria-orientation="vertical" aria-label="Resize explorer" tabindex="0"></div>
+        <section class="editor-pane" aria-label="Editor">
+          <div class="tabbar">
+            <div id="tabs" class="tabs" role="tablist" aria-label="Open files"></div>
+            <button type="button" class="ghost icon-btn" id="copy-btn" aria-label="Copy code" title="Copy code">
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <rect x="5.2" y="5.2" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+                <path d="M10.6 5.2V3.7A1.2 1.2 0 0 0 9.4 2.5H3.7A1.2 1.2 0 0 0 2.5 3.7v5.7a1.2 1.2 0 0 0 1.2 1.2h1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div id="editor" data-testid="editor" tabindex="-1"></div>
+          <p id="editor-empty" class="empty" hidden>Open a file from the explorer to start editing.</p>
+        </section>
+        <div class="splitter vertical" id="splitter-right" role="separator" aria-orientation="vertical" aria-label="Resize preview" tabindex="0"></div>
+        <section class="stage-pane">
+          <div class="preview-pane">
+            <header class="pane-head">
+              <div>
+                <h2>Preview</h2>
+                <p class="pane-sub">Sandboxed live page</p>
+              </div>
+              <div class="pane-tools">
+                <div class="device-toggle" role="group" aria-label="Preview size">
+                  <button type="button" data-device="mobile" aria-pressed="false" aria-label="Mobile view" title="Mobile view">
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                      <rect x="4.5" y="1.8" width="7" height="12.4" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6" />
+                      <path d="M7 12.2h2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                  <button type="button" data-device="desktop" aria-pressed="true" aria-label="Desktop view" title="Desktop view">
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                      <rect x="1.8" y="2.4" width="12.4" height="8.2" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6" />
+                      <path d="M6 13.6h4M8 10.6v3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                </div>
+                <button type="button" class="ghost icon-btn preview-fullscreen" id="preview-full" aria-label="Fullscreen" title="Fullscreen">
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M6.2 3H3.5v2.7M9.8 3h2.7v2.7M12.5 9.8V12.5H9.8M3.5 9.8V12.5h2.7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </header>
+            <div class="preview-stage" id="preview-stage" data-device="desktop">
+              <div class="preview-frame">
+                <iframe id="preview" data-testid="preview" title="Live preview" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+              </div>
+            </div>
+          </div>
+          <div class="splitter horizontal" id="splitter-console" role="separator" aria-orientation="horizontal" aria-label="Resize console" tabindex="0"></div>
+          <section class="tool-pane" id="tool-pane">
+            <div class="tool-tabs" role="tablist" aria-label="Tool panels">
+              <button type="button" role="tab" id="tab-console" aria-selected="true" aria-controls="panel-console">Console</button>
+              <button type="button" role="tab" id="tab-problems" aria-selected="false" tabindex="-1" aria-controls="panel-problems">
+                Problems <span id="problems-badge" class="badge" hidden>0</span>
+              </button>
+              <button type="button" role="tab" id="tab-output" aria-selected="false" tabindex="-1" aria-controls="panel-output">Output</button>
+              <button type="button" class="tool-clear" id="clear-console">Clear</button>
+            </div>
+            <div id="panel-console" class="tool-panel" role="tabpanel" data-testid="console" aria-labelledby="tab-console">
+              <div id="console-list" class="log-list" role="log"></div>
+              <p id="console-empty" class="empty">Run the preview. console.log, warnings, and errors show up here.</p>
+            </div>
+            <div id="panel-problems" class="tool-panel" role="tabpanel" hidden aria-labelledby="tab-problems">
+              <div id="problems-list" class="log-list"></div>
+              <p id="problems-empty" class="empty">No problems yet. Errors from the preview show up here.</p>
+            </div>
+            <div id="panel-output" class="tool-panel" role="tabpanel" hidden aria-labelledby="tab-output">
+              <div id="output-list" class="log-list"></div>
+              <p id="output-empty" class="empty">Run, format, and downloads are noted here.</p>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <footer class="statusbar">
+        <span id="status-pos">Ln 1, Col 1</span>
+        <button type="button" id="wrap-toggle" aria-pressed="false">Wrap</button>
+        <span class="spacer"></span>
+        <span id="status-lang">HTML</span>
+        <button type="button" id="font-dec" aria-label="Decrease font size">A−</button>
+        <span id="font-size">14px</span>
+        <button type="button" id="font-inc" aria-label="Increase font size">A+</button>
+        <button type="button" class="theme-toggle" id="theme-desktop" aria-label="Switch to light theme" title="Switch to light theme">
+          <svg class="icon-sun" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="8" cy="8" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <path d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <svg class="icon-moon" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M9.2 1.8a5.6 5.6 0 1 0 5 7.6 4.4 4.4 0 0 1-5-7.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+          </svg>
+          <span class="theme-label">Dark</span>
+        </button>
+        <span class="status-brand">UTF-8 · Code E</span>
+      </footer>
+      <button type="button" class="peek" id="console-peek" data-testid="console-peek">
+        <span aria-hidden="true">›</span>
+        <span id="peek-text">Ready</span>
+      </button>
+      <nav class="dock" aria-label="Actions" data-testid="dock">
+        <button type="button" id="dock-share">Share</button>
+        <button type="button" id="dock-full" aria-label="Fullscreen" title="Fullscreen">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M6.2 3H3.5v2.7M9.8 3h2.7v2.7M12.5 9.8V12.5H9.8M3.5 9.8V12.5h2.7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button type="button" id="dock-console">Console</button>
+        <button type="button" id="dock-reset">Reset</button>
+      </nav>
+    </div>
+    <div id="backdrop" class="backdrop" hidden></div>
+    <div id="toast" class="toast" role="status"></div>
+    <div id="modal-root"></div>
+    <noscript><p class="noscript">Code E needs JavaScript to run the editor.</p></noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

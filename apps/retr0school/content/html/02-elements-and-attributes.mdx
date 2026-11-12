@@ -1,0 +1,103 @@
+---
+title: "Elements, Tags, and Attributes"
+description: "Understand how HTML elements are built, how to nest them, and how attributes add extra information."
+order: 2
+tags: ["basics", "elements", "attributes"]
+---
+
+# Elements, Tags, and Attributes
+
+An **element** is the building block of HTML. Most elements have three parts:
+
+```html
+<p>I am a paragraph.</p>
+```
+
+- The **opening tag**: `<p>`
+- The **content**: `I am a paragraph.`
+- The **closing tag**: `</p>` (note the forward slash)
+
+## Empty (void) elements
+
+Some elements have no content and no closing tag. They are called *void elements*:
+
+```html
+<br>                      <!-- line break -->
+<hr>                      <!-- horizontal rule (divider) -->
+<img src="cat.jpg" alt="A sleepy cat">
+<input type="text">
+```
+
+## Nesting elements
+
+Elements can live inside other elements. This is called **nesting**. Always close the inner element before the outer one.
+
+```html
+<!-- Correct -->
+<p>This is <strong>very</strong> important.</p>
+
+<!-- Wrong: tags overlap -->
+<p>This is <strong>very</p></strong> important.
+```
+
+<Warning>
+Overlapping tags are invalid HTML. Think of tags like boxes: a box must be fully inside another box, never half in and half out.
+</Warning>
+
+## Headings and paragraphs
+
+HTML has six heading levels, from `<h1>` (most important) to `<h6>` (least important).
+
+<TryIt html={`<h1>Heading level 1</h1>
+<h2>Heading level 2</h2>
+<h3>Heading level 3</h3>
+<h4>Heading level 4</h4>
+<h5>Heading level 5</h5>
+<h6>Heading level 6</h6>
+<p>A paragraph of normal text.</p>
+<p>Another paragraph.<br>This line comes after a line break.</p>
+<hr>
+<p>Text after a divider.</p>`} />
+
+<Tip>
+Use headings to show the outline of your page, not to make text big. Use one `<h1>` per page and do not skip levels (go from `<h2>` to `<h3>`, not `<h2>` to `<h5>`). Size is a job for CSS.
+</Tip>
+
+## Attributes
+
+**Attributes** give extra information about an element. They always go in the opening tag, written as `name="value"`.
+
+```html
+<a href="https://example.com" title="Visit Example">Example</a>
+<img src="logo.png" alt="Company logo" width="200">
+<p id="intro" class="highlight">Welcome!</p>
+```
+
+Common attributes you will see everywhere:
+
+| Attribute | Purpose |
+| --- | --- |
+| `id` | A unique name for one element on the page |
+| `class` | A group name; many elements can share it (used a lot by CSS) |
+| `title` | Extra info shown as a tooltip on hover |
+| `lang` | The language of the content |
+| `style` | Inline CSS (handy for quick tests, but prefer a stylesheet) |
+
+## Comments
+
+Comments are notes for humans. The browser ignores them.
+
+```html
+<!-- This is a comment. It will not appear on the page. -->
+```
+
+## Whitespace
+
+HTML collapses multiple spaces and line breaks into a single space. To start a new paragraph, use a new `<p>`; for a single line break, use `<br>`.
+
+## Summary
+
+- Elements usually have an opening tag, content, and a closing tag.
+- Void elements like `<img>` and `<br>` have no closing tag.
+- Nest elements properly, never overlap them.
+- Attributes like `id`, `class`, and `href` add information to elements.

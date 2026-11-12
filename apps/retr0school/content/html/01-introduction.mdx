@@ -1,0 +1,75 @@
+---
+title: "Introduction to HTML"
+description: "What HTML is, how browsers read it, and how to write your very first web page."
+order: 1
+tags: ["basics", "getting-started"]
+---
+
+# Introduction to HTML
+
+**HTML** (HyperText Markup Language) is the language that describes the *structure* of a web page. It tells the browser "this is a heading", "this is a paragraph", "this is an image". Every website you have ever visited is built on HTML.
+
+HTML is not a programming language. It has no loops or logic. It is a **markup language**: you wrap content in *tags* to give it meaning.
+
+## The three languages of the web
+
+| Language | Job | Analogy |
+| --- | --- | --- |
+| HTML | Structure and content | The skeleton of a house |
+| CSS | Style and layout | The paint and furniture |
+| JavaScript | Behavior and interactivity | The electricity and plumbing |
+
+In this track you focus on HTML. CSS and JavaScript have their own tracks.
+
+## Your first page
+
+Here is a complete, minimal HTML document:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>My First Page</title>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+    <p>This is my very first web page.</p>
+  </body>
+</html>
+```
+
+Let's break it down:
+
+- `<!DOCTYPE html>` tells the browser this is a modern HTML5 document.
+- `<html lang="en">` is the root element. The `lang` attribute says the page is in English.
+- `<head>` holds information *about* the page (title, character set, links to CSS). It is not shown in the page body.
+- `<title>` is the text shown in the browser tab.
+- `<body>` holds everything visible on the page.
+- `<h1>` is a top-level heading and `<p>` is a paragraph.
+
+## Try it yourself
+
+Edit the text below and watch the result update.
+
+<TryIt html={`<h1>Hello, world!</h1>
+<p>This is my very first web page.</p>
+<p>Change this text to say something about yourself!</p>`} />
+
+<Tip>
+You do not need any special software to write HTML. Any text editor works. Save the file with a `.html` extension (for example `index.html`) and open it in your browser.
+</Tip>
+
+## How the browser reads HTML
+
+When you open a page, the browser downloads the HTML file, reads it from top to bottom, and builds a tree of elements called the **DOM** (Document Object Model). It then paints that tree onto the screen. Later, CSS styles the tree and JavaScript can change it.
+
+<Note>
+Browsers are forgiving: if you forget a closing tag, they will usually guess what you meant. Do not rely on this. Clean, valid HTML behaves the same in every browser.
+</Note>
+
+## Summary
+
+- HTML describes the structure and meaning of content.
+- A page has a `<head>` (info about the page) and a `<body>` (visible content).
+- Tags like `<h1>` and `<p>` wrap content to tell the browser what it is.

@@ -1,0 +1,125 @@
+---
+title: "The Box Model"
+description: "Every element is a box. Learn content, padding, border, and margin, plus box-sizing and display."
+order: 4
+tags: ["box-model", "spacing", "display"]
+---
+
+# The Box Model
+
+In CSS, **every element is a rectangular box**. Understanding that box is the single most important step to controlling layout.
+
+From the inside out, each box has:
+
+1. **Content**: the text or image itself (`width` and `height`)
+2. **Padding**: space between the content and the border (inside the box)
+3. **Border**: a line around the padding
+4. **Margin**: space outside the border, pushing other elements away
+
+```css
+.box {
+  width: 200px;
+  padding: 20px;
+  border: 4px solid #1572B6;
+  margin: 30px;
+}
+```
+
+<TryIt html={`<div class="box">I am a box. Inspect me in DevTools!</div>
+<div class="box">Another box.</div>`} css={`body { font-family: sans-serif; background: #fff7e6; }
+.box {
+  width: 200px;
+  padding: 20px;
+  border: 4px solid #1572B6;
+  margin: 30px;
+  background: #dbeafe;
+}`} />
+
+Open DevTools and hover over a box: the browser highlights content, padding, border, and margin in different colors.
+
+## Shorthand for sides
+
+```css
+margin: 10px;                /* all four sides */
+margin: 10px 20px;           /* top & bottom | left & right */
+margin: 10px 20px 30px;      /* top | left & right | bottom */
+margin: 10px 20px 30px 40px; /* top | right | bottom | left (clockwise) */
+margin-top: 5px;             /* just one side */
+```
+
+Padding works exactly the same way.
+
+<Tip>
+Remember the clockwise order with "TRouBLe": Top, Right, Bottom, Left.
+</Tip>
+
+## box-sizing: the most useful reset
+
+By default, `width` sets only the *content* width. Padding and border are added on top, so a `width: 200px` box with 20px padding and a 4px border is actually 248px wide. Confusing!
+
+`box-sizing: border-box` makes `width` include padding and border:
+
+```css
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+```
+
+<Note>
+Almost every modern project starts with this rule. It makes sizes behave the way you expect.
+</Note>
+
+## Borders and rounded corners
+
+```css
+.card {
+  border: 2px dashed hotpink;   /* width style color */
+  border-radius: 12px;          /* rounded corners */
+}
+.avatar { border-radius: 50%; } /* a perfect circle (on a square) */
+```
+
+## Centering a block
+
+A block with a set width can be centered horizontally with auto margins:
+
+```css
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+```
+
+## Margin collapse
+
+When two vertical margins touch, they **collapse** into one, using the larger value. A paragraph with `margin-bottom: 20px` followed by one with `margin-top: 30px` ends up 30px apart, not 50px.
+
+## The display property
+
+`display` changes how a box behaves in the layout:
+
+| Value | Behavior |
+| --- | --- |
+| `block` | Starts on a new line, takes full width (`div`, `p`, `h1`) |
+| `inline` | Flows within text; width/height are ignored (`span`, `a`) |
+| `inline-block` | Flows within text but respects width/height |
+| `none` | Removed from the page entirely |
+| `flex` / `grid` | Turns the box into a layout container (next lessons!) |
+
+<TryIt html={`<p>Some <span class="pill">inline-block</span> pills inside a <span class="pill">sentence</span> of text.</p>
+<div class="hidden">You cannot see me.</div>`} css={`.pill {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 2px;
+  background: #1572B6;
+  color: white;
+  border-radius: 999px;
+}
+.hidden { display: none; }`} />
+
+## Summary
+
+- Every element is a box: content, padding, border, margin.
+- Use `box-sizing: border-box` so widths include padding and border.
+- Shorthands go clockwise: top, right, bottom, left.
+- `display` controls whether a box is block, inline, hidden, or a layout container.

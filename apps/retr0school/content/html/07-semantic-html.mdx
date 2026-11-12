@@ -1,0 +1,142 @@
+---
+title: "Semantic HTML and Page Layout"
+description: "Use meaningful elements like header, nav, main, article, and footer to structure a real page."
+order: 7
+tags: ["semantics", "layout", "seo"]
+---
+
+# Semantic HTML and Page Layout
+
+**Semantic** means "having meaning". Semantic HTML uses elements that describe their content, instead of generic boxes.
+
+Compare these two snippets:
+
+```html
+<!-- Not semantic: what is each div for? -->
+<div class="top">...</div>
+<div class="menu">...</div>
+<div class="content">...</div>
+
+<!-- Semantic: the purpose is clear -->
+<header>...</header>
+<nav>...</nav>
+<main>...</main>
+```
+
+Both look the same without CSS, but the semantic version helps screen readers, search engines, and other developers (including future you).
+
+## The main layout elements
+
+| Element | Purpose |
+| --- | --- |
+| `<header>` | Introductory content: logo, site title, sometimes navigation |
+| `<nav>` | A block of main navigation links |
+| `<main>` | The main, unique content of the page (only one per page) |
+| `<article>` | Self-contained content that makes sense alone: a blog post, news story, product card |
+| `<section>` | A themed group of content, usually with a heading |
+| `<aside>` | Side content related to the main content: sidebars, tips |
+| `<footer>` | Closing content: copyright, contact links |
+
+A typical page outline:
+
+```html
+<body>
+  <header>
+    <h1>Retr0school Blog</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/lessons">Lessons</a>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h2>Why semantic HTML matters</h2>
+      <p>Published <time datetime="2026-10-28">October 28, 2026</time></p>
+      <p>...</p>
+    </article>
+
+    <aside>
+      <h3>Related lessons</h3>
+    </aside>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Retr0school</p>
+  </footer>
+</body>
+```
+
+<TryIt html={`<header>
+  <h1>My Portfolio</h1>
+  <nav><a href="#work">Work</a> <a href="#about">About</a></nav>
+</header>
+<main>
+  <section id="work">
+    <h2>Work</h2>
+    <article>
+      <h3>Weather App</h3>
+      <p>A small app that shows the forecast.</p>
+    </article>
+  </section>
+  <aside>Tip: hover over each colored box.</aside>
+</main>
+<footer>Made with HTML</footer>`} css={`body { font-family: sans-serif; margin: 0; }
+header, main, footer, section, article, aside, nav { outline: 2px dashed; outline-offset: -4px; padding: 12px; margin: 6px; }
+header { color: #E34F26; }
+nav { color: #1572B6; }
+main { color: #2a9d8f; }
+article { color: #8338ec; }
+aside { color: #f4a261; }
+footer { color: #555; }`} />
+
+The colored outlines show how each semantic element is a box in the layout.
+
+## div and span
+
+`<div>` (a block) and `<span>` (inline) are generic containers with no meaning. They are still useful, mainly as hooks for CSS when no semantic element fits.
+
+```html
+<div class="card-grid">...</div>
+<p>Total: <span class="price">$20</span></p>
+```
+
+<Tip>
+Ask yourself: "Is there an element that describes this?" If yes, use it. If not, a `div` or `span` is fine.
+</Tip>
+
+## Other useful semantic elements
+
+- `<time datetime="2026-10-28">` for dates and times
+- `<address>` for contact info
+- `<details>` and `<summary>` for a built-in expandable section
+
+<TryIt html={`<details>
+  <summary>What is semantic HTML?</summary>
+  <p>HTML that uses elements describing their meaning, like nav, article and footer.</p>
+</details>`} />
+
+## The head: metadata for the page
+
+Semantics also apply to the `<head>`. These tags help browsers, phones, and search engines:
+
+```html
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free beginner lessons for HTML, CSS and JavaScript.">
+  <title>Retr0school | Learn to code</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+```
+
+<Note>
+The `viewport` meta tag is what makes your page display properly on phones. Include it on every page.
+</Note>
+
+## Summary
+
+- Semantic elements describe their content: `header`, `nav`, `main`, `article`, `section`, `aside`, `footer`.
+- Use one `<main>` per page.
+- Use `div` and `span` only when no meaningful element fits.
+- Good metadata in the `<head>` helps search engines and mobile devices.

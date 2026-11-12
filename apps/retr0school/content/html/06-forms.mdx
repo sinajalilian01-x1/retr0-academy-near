@@ -1,0 +1,125 @@
+---
+title: "Forms and Inputs"
+description: "Collect information from users with text fields, checkboxes, dropdowns, and buttons."
+order: 6
+tags: ["forms", "inputs", "validation"]
+---
+
+# Forms and Inputs
+
+Forms let users send information: sign-ups, searches, comments, checkouts. A form is built with the `<form>` element and filled with controls like `<input>`, `<select>`, `<textarea>`, and `<button>`.
+
+```html
+<form action="/subscribe" method="post">
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" required>
+  <button type="submit">Subscribe</button>
+</form>
+```
+
+- `action` is the URL that receives the data.
+- `method` is how it is sent: `get` (data in the URL, good for searches) or `post` (data in the request body, good for sign-ups).
+- `name` is the key each value is sent under. Without a `name`, the field is not sent.
+
+## Labels
+
+Every input needs a `<label>`. Connect them by matching the label's `for` with the input's `id`. Clicking the label then focuses the input, and screen readers announce it.
+
+```html
+<label for="username">Username</label>
+<input type="text" id="username" name="username">
+```
+
+## Input types
+
+The `type` attribute changes how an input looks and behaves:
+
+| Type | Use |
+| --- | --- |
+| `text` | Single line of text |
+| `email` | Email address (checks the format) |
+| `password` | Hidden characters |
+| `number` | Numbers, with optional `min`, `max`, `step` |
+| `date` | A date picker |
+| `checkbox` | On/off choices, pick many |
+| `radio` | Pick one from a group (same `name`) |
+| `range` | A slider |
+| `color` | A color picker |
+| `file` | Upload a file |
+
+## Try it: a sign-up form
+
+<TryIt html={`<form>
+  <p>
+    <label for="name">Name</label><br>
+    <input type="text" id="name" name="name" placeholder="Ada Lovelace" required>
+  </p>
+  <p>
+    <label for="mail">Email</label><br>
+    <input type="email" id="mail" name="email" required>
+  </p>
+  <p>
+    <label for="level">Experience</label><br>
+    <select id="level" name="level">
+      <option value="new">Brand new</option>
+      <option value="some">Some experience</option>
+      <option value="pro">I code daily</option>
+    </select>
+  </p>
+  <fieldset>
+    <legend>Favorite track</legend>
+    <label><input type="radio" name="track" value="html" checked> HTML</label>
+    <label><input type="radio" name="track" value="css"> CSS</label>
+    <label><input type="radio" name="track" value="js"> JavaScript</label>
+  </fieldset>
+  <p>
+    <label for="bio">About you</label><br>
+    <textarea id="bio" name="bio" rows="3" cols="30"></textarea>
+  </p>
+  <p>
+    <label><input type="checkbox" name="news"> Send me the newsletter</label>
+  </p>
+  <button type="submit">Sign up</button>
+</form>`} css={`body { font-family: sans-serif; }
+input, select, textarea { padding: 6px; font: inherit; }
+fieldset { border: 1px solid #ccc; border-radius: 6px; }
+button { padding: 8px 16px; background: #E34F26; color: white; border: 0; border-radius: 6px; cursor: pointer; }`} />
+
+Try clicking **Sign up** with the email field empty or filled with "hello". The browser blocks the submission and shows a message.
+
+## Built-in validation
+
+HTML can check input before it is sent, no JavaScript needed:
+
+```html
+<input type="text" name="user" required minlength="3" maxlength="20">
+<input type="number" name="age" min="13" max="120">
+<input type="text" name="zip" pattern="[0-9]{5}" title="Five digits">
+```
+
+<Warning>
+Browser validation is a convenience for users, not security. Anyone can bypass it. Always validate data again on the server.
+</Warning>
+
+## Grouping with fieldset
+
+`<fieldset>` groups related controls and `<legend>` gives the group a title. This is especially important for radio buttons and checkboxes.
+
+## Buttons
+
+```html
+<button type="submit">Send</button>   <!-- submits the form -->
+<button type="reset">Clear</button>   <!-- resets all fields -->
+<button type="button">Do something</button> <!-- does nothing until JavaScript is added -->
+```
+
+<Tip>
+A `<button>` inside a form defaults to `type="submit"`. Always set the type explicitly so you never submit a form by accident.
+</Tip>
+
+## Summary
+
+- Wrap controls in `<form>` with `action` and `method`.
+- Give every input a `name` and a connected `<label>`.
+- Pick the right `type` for better keyboards and built-in checks.
+- Use `required`, `min`, `max`, and `pattern` for simple validation, but always validate on the server too.

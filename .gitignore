@@ -1,0 +1,22 @@
+# deps / builds
+node_modules/
+.next/
+.next-dev/
+dist/
+out/
+target/
+*.tsbuildinfo
+# env & secrets — never commit
+.env*
+!.env.example
+*.pem
+secrets/
+**/neardev/
+*.key.json
+# tooling
+.vercel/
+.DS_Store
+test-results/
+playwright-report/
+blob-report/
+.playwright/

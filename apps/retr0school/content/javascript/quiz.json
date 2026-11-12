@@ -1,0 +1,62 @@
+[
+  {
+    "question": "Which keyword declares a variable that cannot be reassigned?",
+    "options": ["let", "var", "const", "static"],
+    "answer": 2,
+    "explanation": "const creates a binding that cannot be reassigned. Use it by default, and use let when the value must change."
+  },
+  {
+    "question": "What does `typeof 42` return?",
+    "options": ["\"integer\"", "\"number\"", "\"numeric\"", "\"float\""],
+    "answer": 1,
+    "explanation": "JavaScript has a single number type for both integers and decimals, so typeof 42 is \"number\"."
+  },
+  {
+    "question": "What is the result of `5 === \"5\"`?",
+    "options": ["true", "false", "undefined", "It throws an error"],
+    "answer": 1,
+    "explanation": "Strict equality (===) compares both value and type. A number and a string are different types, so the result is false."
+  },
+  {
+    "question": "Which of these values is falsy?",
+    "options": ["\"0\"", "[]", "0", "\"false\""],
+    "answer": 2,
+    "explanation": "The number 0 is falsy. The strings \"0\" and \"false\" and the empty array [] are all truthy."
+  },
+  {
+    "question": "What does this arrow function return: `const double = (n) => n * 2; double(4);`",
+    "options": ["undefined", "4", "8", "\"n * 2\""],
+    "answer": 2,
+    "explanation": "An arrow function with a single expression and no braces returns that expression automatically: 4 * 2 = 8."
+  },
+  {
+    "question": "Given `const a = [\"x\", \"y\", \"z\"];`, what is `a[1]`?",
+    "options": ["\"x\"", "\"y\"", "\"z\"", "undefined"],
+    "answer": 1,
+    "explanation": "Array indexes start at 0, so a[0] is \"x\" and a[1] is \"y\"."
+  },
+  {
+    "question": "What does `[1, 2, 3, 4].filter((n) => n > 2)` return?",
+    "options": ["[3, 4]", "[1, 2]", "true", "[false, false, true, true]"],
+    "answer": 0,
+    "explanation": "filter returns a new array with only the items that pass the test: 3 and 4."
+  },
+  {
+    "question": "Which method converts a JavaScript object into a JSON string?",
+    "options": ["JSON.parse()", "JSON.stringify()", "Object.toJSON()", "String(obj)"],
+    "answer": 1,
+    "explanation": "JSON.stringify turns an object into JSON text. JSON.parse does the opposite."
+  },
+  {
+    "question": "Why is `textContent` safer than `innerHTML` for showing user input?",
+    "options": ["It is faster to type", "It treats the input as plain text, so injected HTML or scripts are not run", "It works in more browsers", "It automatically translates text"],
+    "answer": 1,
+    "explanation": "innerHTML parses the string as HTML, which can let attackers inject code (XSS). textContent always inserts plain text."
+  },
+  {
+    "question": "When does a `fetch` promise reject?",
+    "options": ["On any HTTP status other than 200", "Only on 404 errors", "On network failures; HTTP errors like 404 still resolve, so check response.ok", "Never"],
+    "answer": 2,
+    "explanation": "fetch resolves for any HTTP response, including 404 and 500. It rejects only for network-level failures, so always check response.ok."
+  }
+]

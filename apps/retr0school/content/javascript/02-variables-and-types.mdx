@@ -1,0 +1,122 @@
+---
+title: "Variables and Data Types"
+description: "Store values with let and const, and learn the core data types: strings, numbers, booleans, null, and undefined."
+order: 2
+tags: ["variables", "types", "strings", "numbers"]
+---
+
+# Variables and Data Types
+
+A **variable** is a named container for a value. You create variables with `let` or `const`.
+
+```js
+let score = 0;          // can be reassigned later
+const name = "Ada";     // cannot be reassigned
+
+score = 10;             // ✅ fine
+// name = "Grace";      // ❌ TypeError: Assignment to constant variable
+```
+
+<Tip>
+Use `const` by default. Switch to `let` only when you know the value needs to change. This makes your code easier to reason about.
+</Tip>
+
+<Note>
+You will also see `var` in older code. It has confusing scoping rules, so modern JavaScript uses `let` and `const` instead.
+</Note>
+
+### Naming rules
+
+- Names can contain letters, digits, `_`, and `$`, but cannot start with a digit.
+- They are case-sensitive: `age` and `Age` are different.
+- Use **camelCase** for multi-word names: `totalPrice`, `isLoggedIn`.
+- Choose descriptive names: `userAge` beats `x`.
+
+## Data types
+
+JavaScript has a handful of **primitive** types:
+
+| Type | Example | Notes |
+| --- | --- | --- |
+| String | `"hello"`, `'hi'` | Text |
+| Number | `42`, `3.14`, `-7` | Integers and decimals share one type |
+| Boolean | `true`, `false` | Yes or no |
+| Undefined | `undefined` | A variable declared but not given a value |
+| Null | `null` | Intentionally "no value" |
+| BigInt | `9007199254740993n` | Very large integers |
+| Symbol | `Symbol("id")` | Unique identifiers (advanced) |
+
+Everything else (arrays, functions, dates) is an **object**, covered later.
+
+Check a type with `typeof`:
+
+```js
+typeof "hi";      // "string"
+typeof 42;        // "number"
+typeof true;      // "boolean"
+typeof undefined; // "undefined"
+typeof null;      // "object"  (a famous historical bug!)
+```
+
+## Strings
+
+```js
+const first = "Ada";
+const last = 'Lovelace';
+
+// Joining strings (concatenation)
+const full = first + " " + last;   // "Ada Lovelace"
+
+// Template literals use backticks and can embed expressions
+const intro = `Hi, I'm ${first}. 2 + 2 is ${2 + 2}.`;
+
+// Useful properties and methods
+full.length;            // 12
+full.toUpperCase();     // "ADA LOVELACE"
+full.includes("Love");  // true
+full.slice(0, 3);       // "Ada"
+"  padded  ".trim();    // "padded"
+```
+
+## Numbers
+
+```js
+const price = 19.99;
+const qty = 3;
+const total = price * qty;       // 59.97
+
+Math.round(4.6);    // 5
+Math.floor(4.6);    // 4
+Math.max(3, 9, 1);  // 9
+Math.random();      // a random number from 0 up to (not including) 1
+
+Number("42");       // 42 (string to number)
+(59.971).toFixed(2); // "59.97" (number to string with 2 decimals)
+```
+
+<Warning>
+Decimal math can be slightly imprecise: `0.1 + 0.2` gives `0.30000000000000004`. For money, work in whole cents (1999 instead of 19.99) or round when displaying.
+</Warning>
+
+## Try it
+
+<TryIt html={`<p id="out"></p>`} js={`const name = "Ada";
+let lessonsDone = 3;
+const totalLessons = 8;
+
+lessonsDone = lessonsDone + 1;
+
+const percent = Math.round((lessonsDone / totalLessons) * 100);
+
+document.getElementById("out").textContent =
+  name + " has finished " + lessonsDone + " of " + totalLessons +
+  " lessons (" + percent + "%). Type: " + typeof percent;`} />
+
+Change the values and see the message update.
+
+## Summary
+
+- Declare variables with `const` (preferred) or `let`.
+- Primitive types: string, number, boolean, undefined, null, bigint, symbol.
+- Use `typeof` to check a value's type.
+- Template literals (backticks) make building strings easy.

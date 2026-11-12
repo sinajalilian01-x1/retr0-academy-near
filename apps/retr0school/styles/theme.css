@@ -1,0 +1,288 @@
+/*
+  Retr0school theme
+  Retr0 Studio palette. Dark is the default (.dark on <html>).
+  Faint text is #8480b8 instead of #6a65a0 so it clears WCAG AA on the dark surfaces.
+  -----------------
+  This is the only place for colors, fonts, radii, spacing, shadows, and syntax
+  colors. Light values live on :root. Dark values override them on .dark.
+  Components use the Tailwind utilities mapped in the @theme block below.
+  See THEMING.md before editing.
+*/
+
+/* Shared: type, space, radii, layout sizes, and aliases that follow the active set. */
+:root {
+  --w3h-font-pixel: var(--font-pixel, "Press Start 2P", ui-monospace, monospace);
+  --w3h-font-display: var(--font-inter, "Avenir Next", "Segoe UI", sans-serif);
+  --w3h-font-sans: var(--font-inter, "Avenir Next", "Segoe UI", sans-serif);
+  --w3h-font-mono: var(--font-jetbrains, ui-monospace, "Cascadia Code", Menlo, monospace);
+
+  --w3h-space-unit: 0.25rem;
+  --w3h-radius-sm: 0;
+  --w3h-radius-md: 2px;
+  --w3h-radius-lg: 4px;
+  --w3h-radius-xl: 4px;
+  --w3h-radius-full: 999px;
+
+  --w3h-text-hero: clamp(1.15rem, 3.5vw, 2.35rem);
+  --w3h-text-title: clamp(1.05rem, 2.2vw, 1.55rem);
+  --w3h-text-lead: 1.125rem;
+  --w3h-tracking-display: -0.03em;
+  --w3h-tracking-eyebrow: 0.14em;
+
+  --w3h-header-h: 4rem;
+  --w3h-page: 72rem;
+  --w3h-measure: 44rem;
+  --w3h-sidebar: 17rem;
+  --w3h-drawer: 20rem;
+  --w3h-table-min: 28rem;
+  --w3h-dialog: 36rem;
+  --w3h-dialog-top: 10vh;
+
+  --w3h-hero-glow: none;
+
+  /* Shiki and the editor read these. They point at the active syntax set. */
+  --shiki-background: var(--w3h-code-bg);
+  --shiki-foreground: var(--w3h-code-fg);
+  --shiki-token-keyword: var(--w3h-syn-keyword);
+  --shiki-token-string: var(--w3h-syn-string);
+  --shiki-token-string-expression: var(--w3h-syn-string);
+  --shiki-token-comment: var(--w3h-syn-comment);
+  --shiki-token-constant: var(--w3h-syn-constant);
+  --shiki-token-function: var(--w3h-syn-function);
+  --shiki-token-parameter: var(--w3h-syn-parameter);
+  --shiki-token-punctuation: var(--w3h-syn-punctuation);
+  --shiki-token-link: var(--w3h-syn-function);
+  --shiki-token-inserted: var(--w3h-good);
+  --shiki-token-deleted: var(--w3h-danger);
+  --shiki-token-changed: var(--w3h-warn);
+  color-scheme: light;
+}
+
+/* Light set. */
+:root {
+  --w3h-canvas: #f4f1ff;
+  --w3h-bar: #ffffff;
+  --w3h-elevated: #ffffff;
+  --w3h-sunken: #ece8ff;
+  --w3h-raised: #e4defc;
+  --w3h-ink: #1a1633;
+  --w3h-muted: #3d3768;
+  --w3h-faint: #534e78;
+  --w3h-line: #d5d0ee;
+  --w3h-line-strong: #b7b0dc;
+  --w3h-accent: #ff3fa4;
+  --w3h-accent-hover: #ff5fb7;
+  --w3h-accent-ink: #1a1633;
+  --w3h-accent-text: #c73180;
+  --w3h-accent-soft: #ffe0f1;
+  --w3h-cyan: #0a6e78;
+  --w3h-highlight: #7a5200;
+  --w3h-web3: #8a2ac9;
+  --w3h-grid-dot: #ddd6f5;
+  --w3h-good: #0d7a45;
+  --w3h-good-soft: #e5f6ec;
+  --w3h-warn: #7a5200;
+  --w3h-warn-soft: #fbf1d6;
+  --w3h-danger: #9f1d14;
+  --w3h-danger-soft: #fde8e6;
+  --w3h-info: #a1005c;
+  --w3h-info-soft: #ffe0f1;
+  --w3h-overlay: rgb(13 11 26 / 0.46);
+  --w3h-focus: #0a6e78;
+  --w3h-code-bg: #fbfaff;
+  --w3h-code-fg: #1a1633;
+  --w3h-code-gutter: #f3f0ff;
+  --w3h-code-line: #f3f0ff;
+  --w3h-syn-keyword: #a1005c;
+  --w3h-syn-string: #0a6e78;
+  --w3h-syn-comment: #534e78;
+  --w3h-syn-constant: #7a5200;
+  --w3h-syn-function: #0a6e78;
+  --w3h-syn-parameter: #8a2ac9;
+  --w3h-syn-punctuation: #3d3768;
+  --w3h-shadow-color: #000;
+  --w3h-shadow-sm: 3px 3px 0 var(--w3h-shadow-color);
+  --w3h-shadow-md: 6px 6px 0 var(--w3h-shadow-color);
+  --w3h-shadow-lg: 6px 6px 0 var(--w3h-shadow-color);
+}
+
+/* Dark set. Add class "dark" on <html>. */
+.dark {
+  color-scheme: dark;
+  --w3h-canvas: #0d0b1a;
+  --w3h-bar: #120f24;
+  --w3h-elevated: #17132b;
+  --w3h-sunken: #120f24;
+  --w3h-raised: #221d40;
+  --w3h-ink: #e8e6ff;
+  --w3h-muted: #a9a4d6;
+  --w3h-faint: #8480b8;
+  --w3h-line: #2e2858;
+  --w3h-line-strong: #3d3570;
+  --w3h-accent: #ff3fa4;
+  --w3h-accent-hover: #ff5fb7;
+  --w3h-accent-ink: #0d0b1a;
+  --w3h-accent-text: #ff3fa4;
+  --w3h-accent-soft: #3a1230;
+  --w3h-cyan: #6ff6ff;
+  --w3h-highlight: #ffd84a;
+  --w3h-web3: #8a2ac9;
+  --w3h-grid-dot: #1c1838;
+  --w3h-good: #7ddeaf;
+  --w3h-good-soft: #143228;
+  --w3h-warn: #ffd84a;
+  --w3h-warn-soft: #3a3018;
+  --w3h-danger: #ff8aa8;
+  --w3h-danger-soft: #3d1824;
+  --w3h-info: #ff5fb7;
+  --w3h-info-soft: #3a1230;
+  --w3h-overlay: rgb(0 0 0 / 0.62);
+  --w3h-focus: #6ff6ff;
+  --w3h-code-bg: #120f24;
+  --w3h-code-fg: #e8e6ff;
+  --w3h-code-gutter: #0d0b1a;
+  --w3h-code-line: #1c1838;
+  --w3h-syn-keyword: #ff5fb7;
+  --w3h-syn-string: #6ff6ff;
+  --w3h-syn-comment: #8480b8;
+  --w3h-syn-constant: #ffd84a;
+  --w3h-syn-function: #6ff6ff;
+  --w3h-syn-parameter: #c9a6ff;
+  --w3h-syn-punctuation: #a9a4d6;
+  --w3h-shadow-color: #000;
+  --w3h-shadow-sm: 3px 3px 0 var(--w3h-shadow-color);
+  --w3h-shadow-md: 6px 6px 0 var(--w3h-shadow-color);
+  --w3h-shadow-lg: 6px 6px 0 var(--w3h-shadow-color);
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --spacing: var(--w3h-space-unit);
+
+  --font-sans: var(--w3h-font-sans);
+  --font-mono: var(--w3h-font-mono);
+  --font-display: var(--w3h-font-display);
+  --font-pixel: var(--w3h-font-pixel);
+
+  --radius-sm: var(--w3h-radius-sm);
+  --radius-md: var(--w3h-radius-md);
+  --radius-lg: var(--w3h-radius-lg);
+  --radius-xl: var(--w3h-radius-xl);
+  --radius-full: var(--w3h-radius-full);
+
+  --shadow-sm: var(--w3h-shadow-sm);
+  --shadow-md: var(--w3h-shadow-md);
+  --shadow-lg: var(--w3h-shadow-lg);
+
+  --text-hero: var(--w3h-text-hero);
+  --text-hero--line-height: 1.45;
+  --text-title: var(--w3h-text-title);
+  --text-title--line-height: 1.5;
+  --text-lead: var(--w3h-text-lead);
+  --text-lead--line-height: 1.6;
+
+  --color-canvas: var(--w3h-canvas);
+  --color-elevated: var(--w3h-elevated);
+  --color-sunken: var(--w3h-sunken);
+  --color-ink: var(--w3h-ink);
+  --color-muted: var(--w3h-muted);
+  --color-faint: var(--w3h-faint);
+  --color-line: var(--w3h-line);
+  --color-line-strong: var(--w3h-line-strong);
+  --color-accent: var(--w3h-accent);
+  --color-accent-ink: var(--w3h-accent-ink);
+  --color-accent-text: var(--w3h-accent-text);
+  --color-accent-soft: var(--w3h-accent-soft);
+  --color-accent-hover: var(--w3h-accent-hover);
+  --color-cyan: var(--w3h-cyan);
+  --color-highlight: var(--w3h-highlight);
+  --color-web3: var(--w3h-web3);
+  --color-bar: var(--w3h-bar);
+  --color-raised: var(--w3h-raised);
+  --color-good: var(--w3h-good);
+  --color-good-soft: var(--w3h-good-soft);
+  --color-warn: var(--w3h-warn);
+  --color-warn-soft: var(--w3h-warn-soft);
+  --color-danger: var(--w3h-danger);
+  --color-danger-soft: var(--w3h-danger-soft);
+  --color-info: var(--w3h-info);
+  --color-info-soft: var(--w3h-info-soft);
+  --color-overlay: var(--w3h-overlay);
+  --color-focus: var(--w3h-focus);
+  --color-code: var(--w3h-code-bg);
+  --color-code-fg: var(--w3h-code-fg);
+
+  --default-border-color: var(--w3h-line);
+  --default-ring-color: var(--w3h-focus);
+}
+
+@utility tracking-display {
+  letter-spacing: var(--w3h-tracking-display);
+}
+
+@utility tracking-eyebrow {
+  letter-spacing: var(--w3h-tracking-eyebrow);
+}
+
+@utility max-w-page {
+  max-width: var(--w3h-page);
+}
+
+@utility max-w-lesson {
+  max-width: var(--w3h-measure);
+}
+
+@utility h-header {
+  height: var(--w3h-header-h);
+}
+
+@utility top-header {
+  top: var(--w3h-header-h);
+}
+
+@utility w-drawer {
+  width: min(100%, var(--w3h-drawer));
+}
+
+@utility w-dialog {
+  width: min(calc(100% - 1.5rem), var(--w3h-dialog));
+}
+
+@utility top-dialog {
+  top: var(--w3h-dialog-top);
+}
+
+@utility lesson-grid {
+  @media (width >= 64rem) {
+    display: grid;
+    grid-template-columns: var(--w3h-sidebar) minmax(0, 1fr);
+  }
+}
+
+@utility lesson-sidebar {
+  position: sticky;
+  top: var(--w3h-header-h);
+  max-height: calc(100dvh - var(--w3h-header-h));
+  overflow: auto;
+}
+
+@utility text-syn-keyword {
+  color: var(--w3h-syn-keyword);
+}
+
+@utility text-syn-string {
+  color: var(--w3h-syn-string);
+}
+
+@utility text-syn-comment {
+  color: var(--w3h-syn-comment);
+}
+
+@utility text-syn-constant {
+  color: var(--w3h-syn-constant);
+}
+
+@utility text-syn-function {
+  color: var(--w3h-syn-function);
+}

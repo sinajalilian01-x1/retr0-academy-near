@@ -1,0 +1,137 @@
+---
+title: "Lists and Tables"
+description: "Organize content with ordered, unordered, and description lists, and present data in tables."
+order: 5
+tags: ["lists", "tables"]
+---
+
+# Lists and Tables
+
+## Unordered lists
+
+Use `<ul>` when the order does not matter. Each item is an `<li>` (list item).
+
+```html
+<ul>
+  <li>Apples</li>
+  <li>Bread</li>
+  <li>Milk</li>
+</ul>
+```
+
+## Ordered lists
+
+Use `<ol>` when order matters, like steps in a recipe.
+
+```html
+<ol>
+  <li>Boil water</li>
+  <li>Add pasta</li>
+  <li>Cook for 10 minutes</li>
+</ol>
+```
+
+Useful attributes: `start="5"` begins counting at 5, `reversed` counts down, and `type="A"` uses letters.
+
+## Nested lists
+
+A list item can contain another list:
+
+```html
+<ul>
+  <li>Frontend
+    <ul>
+      <li>HTML</li>
+      <li>CSS</li>
+    </ul>
+  </li>
+  <li>Backend</li>
+</ul>
+```
+
+## Description lists
+
+For terms and their definitions, use `<dl>`, `<dt>` (term), and `<dd>` (description):
+
+```html
+<dl>
+  <dt>HTML</dt>
+  <dd>The structure of a web page.</dd>
+  <dt>CSS</dt>
+  <dd>The style of a web page.</dd>
+</dl>
+```
+
+<TryIt html={`<h3>Shopping list</h3>
+<ul>
+  <li>Apples</li>
+  <li>Bread</li>
+</ul>
+<h3>Morning routine</h3>
+<ol>
+  <li>Wake up</li>
+  <li>Drink water</li>
+  <li>Write some code</li>
+</ol>
+<h3>Glossary</h3>
+<dl>
+  <dt>Tag</dt>
+  <dd>A keyword in angle brackets, like p or h1.</dd>
+</dl>`} />
+
+## Tables
+
+Tables display **data** in rows and columns. The basic pieces:
+
+- `<table>`: the whole table
+- `<tr>`: a table row
+- `<th>`: a header cell (bold and centered by default)
+- `<td>`: a regular data cell
+- `<thead>`, `<tbody>`, `<tfoot>`: group the header, body, and footer rows
+- `<caption>`: a title for the table
+
+<TryIt html={`<table>
+  <caption>Course progress</caption>
+  <thead>
+    <tr>
+      <th scope="col">Track</th>
+      <th scope="col">Lessons</th>
+      <th scope="col">Done</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>HTML</td><td>8</td><td>5</td></tr>
+    <tr><td>CSS</td><td>8</td><td>2</td></tr>
+    <tr><td>JavaScript</td><td>8</td><td>0</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td>Total</td><td>24</td><td>7</td></tr>
+  </tfoot>
+</table>`} css={`table { border-collapse: collapse; font-family: sans-serif; }
+th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+thead { background: #f3f3f3; }
+caption { font-weight: bold; margin-bottom: 8px; }`} />
+
+### Spanning cells
+
+A cell can stretch across columns or rows with `colspan` and `rowspan`:
+
+```html
+<tr>
+  <td colspan="2">This cell spans two columns</td>
+</tr>
+```
+
+<Warning>
+Use tables only for tabular data (like a spreadsheet). Do not use them to lay out a page. That is what CSS Flexbox and Grid are for.
+</Warning>
+
+<Tip>
+Add `scope="col"` or `scope="row"` to `<th>` cells. It helps screen readers announce which header belongs to each cell.
+</Tip>
+
+## Summary
+
+- `<ul>` for unordered lists, `<ol>` for ordered lists, `<li>` for each item.
+- `<dl>`, `<dt>`, `<dd>` for terms and definitions.
+- Tables use `<table>`, `<tr>`, `<th>`, and `<td>`, grouped with `<thead>` and `<tbody>`.
