@@ -242,3 +242,49 @@ legend {
     animation: none !important;
   }
 }
+
+/* NEAR Wallet Selector modal, restyled to match the Retr0 theme. */
+#near-wallet-selector-modal .nws-modal-wrapper {
+  --wallet-selector-backdrop-bg: rgba(8, 6, 18, 0.72);
+  --wallet-selector-heading-color: var(--w3h-ink);
+  --wallet-selector-text-color: var(--w3h-ink);
+  --wallet-selector-sidebar-border-color: var(--w3h-line);
+  --wallet-selector-selected-wallet-bg: var(--w3h-accent-soft);
+  --wallet-selector-selected-wallet-bg-hover: var(--w3h-accent-soft);
+  --wallet-selector-wallet-option-border-color: var(--w3h-line);
+  --wallet-selector-content-bg: var(--w3h-sunken);
+  --wallet-selector-change-path-bg: var(--w3h-sunken);
+  --wallet-selector-home-button-bg: var(--w3h-accent);
+  --wallet-selector-confirm-button-bg: var(--w3h-accent);
+  --wallet-selector-confirm-button-bg-hover: var(--w3h-accent-hover);
+  --wallet-selector-error: var(--w3h-danger);
+  --wallet-selector-close-button-bg-color: var(--w3h-sunken);
+  --wallet-selector-close-button-fill-icon-color: var(--w3h-ink);
+  --wallet-selector-wallet-option-bg-hover: var(--w3h-sunken);
+  --wallet-selector-spinner-color: var(--w3h-accent);
+  font-family: var(--w3h-font-sans);
+}
+#near-wallet-selector-modal .nws-modal-wrapper .nws-modal-background {
+  border: 2px solid var(--w3h-ink);
+  border-radius: var(--w3h-radius-md);
+  background: var(--w3h-elevated);
+  box-shadow: 6px 6px 0 0 var(--w3h-accent);
+}
+#near-wallet-selector-modal .nws-modal-title {
+  font-family: var(--w3h-font-pixel);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+#near-wallet-selector-modal .nws-modal .modal-right,
+#near-wallet-selector-modal .nws-modal .wallet-options-wrapper .options-list .single-wallet,
+#near-wallet-selector-modal button {
+  border-radius: var(--w3h-radius-md) !important;
+}
+#near-wallet-selector-modal .nws-modal .wallet-options-wrapper .options-list .single-wallet {
+  border: 2px solid var(--w3h-line);
+}
+#near-wallet-selector-modal .nws-modal .wallet-options-wrapper .options-list .single-wallet:hover,
+#near-wallet-selector-modal .nws-modal .wallet-options-wrapper .options-list .single-wallet.selected-wallet {
+  border-color: var(--w3h-accent);
+}
