@@ -14,26 +14,55 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
   const [answers, setAnswers] = useState<(number | null)[]>(() => questions.map(() => null));
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
+  const serverGraded = track === NEAR_TRACK;
+  const [serverScore, setServerScore] = useState<number | null>(null);
+  const [grading, setGrading] = useState(false);
+  const [gradeError, setGradeError] = useState<string | null>(null);
 
   function choose(questionIndex: number, optionIndex: number) {
     setAnswers((current) => current.map((value, index) => (index === questionIndex ? optionIndex : value)));
     setError(false);
   }
 
-  function onSubmit(event: FormEvent) {
+  async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (answers.some((answer) => answer == null)) {
       setError(true);
       return;
     }
+    setError(false);
+    if (serverGraded) {
+      // The NEAR answer key is secret: the grading function scores the quiz.
+      setGrading(true);
+      setGradeError(null);
+      try {
+        const res = await fetch("/api/grade", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ track, answers }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Grading failed");
+        saveQuiz(track, data.score, data.max_score);
+        saveNearAnswers(answers as number[]);
+        setServerScore(data.score);
+        setSubmitted(true);
+      } catch (e) {
+        setGradeError(e instanceof Error ? e.message : String(e));
+      } finally {
+        setGrading(false);
+      }
+      return;
+    }
     const correct = answers.filter((answer, index) => answer === questions[index].answer).length;
     saveQuiz(track, correct, questions.length);
-    if (track === NEAR_TRACK) saveNearAnswers(answers as number[]);
     setSubmitted(true);
-    setError(false);
   }
 
-  const correctCount = answers.filter((answer, index) => answer === questions[index].answer).length;
+  const correctCount = serverGraded
+    ? (serverScore ?? 0)
+    : answers.filter((answer, index) => answer === questions[index].answer).length;
+  const showExplanations = !serverGraded || correctCount >= NEAR_PASS_SCORE;
 
   return (
     <form onSubmit={onSubmit} className="mt-8">
@@ -51,7 +80,7 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
             {question.options.map((option, optionIndex) => {
               const selected = answers[questionIndex] === optionIndex;
               const isAnswer = question.answer === optionIndex;
-              const tone = submitted
+              const tone = submitted && !serverGraded
                 ? isAnswer
                   ? "border-good bg-good-soft"
                   : selected
@@ -78,7 +107,7 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
               );
             })}
           </div>
-          {submitted ? (
+          {submitted && showExplanations ? (
             <p data-testid="quiz-explanation" className="mt-3 text-sm text-muted">
               {question.explanation}
             </p>
@@ -95,7 +124,7 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
           <div data-testid="near-diploma-cta" className="mb-6 rounded-md border-2 border-good bg-good-soft p-4">
             <p className="font-pixel text-[0.7rem] uppercase tracking-wide text-ink">Passed. Your diploma is waiting.</p>
             <p className="mt-2 text-sm text-ink">
-              Connect a NEAR testnet wallet and mint a soulbound diploma NFT. The contract re-grades your answers on chain.
+              Connect a NEAR testnet wallet and mint a soulbound diploma NFT. The grader signs your score and the contract verifies that signature on chain. Holders unlock Advanced NEAR.
             </p>
             <Link
               href="/diploma"
@@ -106,7 +135,8 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
           </div>
         ) : (
           <p data-testid="near-diploma-locked" className="mb-6 text-sm text-muted">
-            You need {NEAR_PASS_SCORE} of {questions.length} to unlock the on-chain diploma. Review the lessons and try again.
+            You need {NEAR_PASS_SCORE} of {questions.length} to unlock the on-chain diploma. The answer key stays secret on the
+            grading server, so review the lessons and try again.
           </p>
         )
       ) : null}
@@ -120,6 +150,7 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
             variant="outline"
             onClick={() => {
               setSubmitted(false);
+              setServerScore(null);
               setAnswers(questions.map(() => null));
             }}
           >
@@ -127,9 +158,16 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
           </Button>
         </div>
       ) : (
-        <Button type="submit" data-testid="quiz-submit">
-          Score my quiz
-        </Button>
+        <>
+          {gradeError ? (
+            <p role="alert" className="mb-4 text-sm text-danger">
+              {gradeError}
+            </p>
+          ) : null}
+          <Button type="submit" data-testid="quiz-submit" disabled={grading}>
+            {grading ? "Grading…" : "Score my quiz"}
+          </Button>
+        </>
       )}
     </form>
   );

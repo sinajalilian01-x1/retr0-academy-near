@@ -17,7 +17,7 @@ tags: ["nft", "nep-171", "standards", "credentials"]
 The Retr0school diploma is an NFT, but it is not a collectible. It is a **credential**, so the contract makes three choices:
 
 1. **One per account per track.** The token id is `near:your-account.testnet`, so a second mint fails.
-2. **Graded on chain.** You send your quiz answers to `mint_diploma`; the contract scores them and only mints if you pass.
+2. **Signed grades.** The answer key lives only on the grading server, which signs your score for your account. `mint_diploma` verifies that ed25519 signature on chain and only mints if you passed.
 3. **Soulbound.** `nft_transfer` always panics. A diploma you could sell would prove nothing.
 
 ```rust

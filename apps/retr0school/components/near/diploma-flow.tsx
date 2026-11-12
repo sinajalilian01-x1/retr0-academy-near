@@ -1,21 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DiplomaCard } from "@/components/near/diploma-card";
-import { useNearWallet } from "@/components/near/wallet-provider";
+import { ShareButton } from "@/components/near/share-button";
+import { useNearWallet, type Attestation } from "@/components/near/wallet-provider";
 import { useProgress } from "@/lib/progress";
-import {
-  DIPLOMA_CONTRACT,
-  NEAR_PASS_SCORE,
-  NEAR_TRACK,
-  explorerAccount,
-  explorerTx,
-  readNearAnswers,
-  verifyDiploma,
-  type Verification,
-} from "@/lib/near";
+import { DIPLOMA_CONTRACT, NEAR_PASS_SCORE, NEAR_TRACK, explorerAccount, explorerTx, readNearAnswers, verifyDiploma } from "@/lib/near";
 
 function Step({ n, title, done, children }: { n: number; title: string; done: boolean; children: React.ReactNode }) {
   return (
@@ -35,13 +27,11 @@ function Step({ n, title, done, children }: { n: number; title: string; done: bo
 }
 
 export function DiplomaFlow() {
-  const { ready, accountId, connect, mintDiploma } = useNearWallet();
+  const { ready, accountId, connect, mintDiploma, diploma, holderChecked, refreshDiploma } = useNearWallet();
   const progress = useProgress();
   const quiz = progress.quizzes[NEAR_TRACK];
   const [answers, setAnswers] = useState<number[] | null>(null);
-  const [diploma, setDiploma] = useState<Verification | null>(null);
-  const [checking, setChecking] = useState(false);
-  const [minting, setMinting] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,48 +42,36 @@ export function DiplomaFlow() {
     if (hash) setTxHash(hash.split(",").pop() ?? null);
   }, []);
 
-  const refresh = useCallback(async () => {
-    if (!accountId) {
-      setDiploma(null);
-      return;
-    }
-    setChecking(true);
-    try {
-      setDiploma(await verifyDiploma(accountId));
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setChecking(false);
-    }
-  }, [accountId]);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
-
   const passed = Boolean(quiz && quiz.correct >= NEAR_PASS_SCORE && answers);
+  const busy = status !== null;
 
   async function onMint() {
-    if (!answers) return;
-    setMinting(true);
+    if (!answers || !accountId) return;
     setError(null);
     try {
-      const result = await mintDiploma(NEAR_TRACK, answers);
+      setStatus("Grading on the server…");
+      const res = await fetch("/api/grade", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ track: NEAR_TRACK, answers, accountId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Grading failed");
+      if (!data.attestation) throw new Error(`Score ${data.score}/${data.max_score} is below the pass mark. Retake the quiz.`);
+      setStatus("Waiting for your wallet…");
+      const result = await mintDiploma(data.attestation as Attestation);
       if (result.txHash) setTxHash(result.txHash);
-      // Give the RPC a moment, then read the credential back from chain.
-      for (let i = 0; i < 5; i++) {
+      setStatus("Reading your diploma from chain…");
+      for (let i = 0; i < 6; i++) {
         await new Promise((r) => setTimeout(r, 1500));
-        const v = await verifyDiploma(accountId!);
-        if (v) {
-          setDiploma(v);
-          break;
-        }
+        if (await verifyDiploma(accountId)) break;
       }
+      await refreshDiploma();
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setError(message.includes("already holds") ? "This account already holds a NEAR diploma." : message);
     } finally {
-      setMinting(false);
+      setStatus(null);
     }
   }
 
@@ -112,8 +90,8 @@ export function DiplomaFlow() {
             </p>
           ) : (
             <p>
-              Take the <Link className="text-info underline underline-offset-4" href="/near/quiz">NEAR quiz</Link>. Your
-              answers stay in this browser until you mint.
+              Take the <Link className="text-info underline underline-offset-4" href="/near/quiz">NEAR quiz</Link>. The answer key
+              never leaves the grading server.
             </p>
           )}
         </Step>
@@ -136,21 +114,22 @@ export function DiplomaFlow() {
         </Step>
         <Step n={3} title="Mint your diploma NFT" done={Boolean(diploma)}>
           {diploma ? (
-            <p>Minted. Your diploma lives on NEAR testnet and is soulbound to your account.</p>
+            <p>Minted. Your diploma lives on NEAR testnet and is soulbound to your account. Advanced NEAR is unlocked.</p>
           ) : (
             <>
               <p>
-                Calls <code className="font-mono">mint_diploma</code> on <code className="font-mono">{DIPLOMA_CONTRACT}</code> with your
-                answers and 0.02 NEAR for storage (the unused part is refunded). The contract grades the quiz on chain.
+                The grader signs your score for <em>your</em> account (ed25519). <code className="font-mono">mint_diploma</code> on{" "}
+                <code className="font-mono">{DIPLOMA_CONTRACT}</code> checks that signature on chain, then mints. 0.02 NEAR covers
+                storage; the unused part is refunded.
               </p>
               <Button
                 type="button"
                 className="mt-3"
                 data-testid="diploma-mint"
-                disabled={!passed || !accountId || minting || checking}
+                disabled={!passed || !accountId || busy || !holderChecked}
                 onClick={onMint}
               >
-                {minting ? "Waiting for wallet…" : "Mint diploma"}
+                {status ?? "Mint diploma"}
               </Button>
             </>
           )}
@@ -165,7 +144,8 @@ export function DiplomaFlow() {
         {diploma ? (
           <>
             <DiplomaCard diploma={diploma} />
-            <div className="flex flex-wrap gap-3 text-sm">
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <ShareButton accountId={diploma.owner_id} score={diploma.score} maxScore={diploma.max_score} />
               {txHash ? (
                 <a data-testid="diploma-tx" className="font-medium text-info underline underline-offset-4" href={explorerTx(txHash)} target="_blank" rel="noopener">
                   View mint transaction ↗
@@ -174,14 +154,14 @@ export function DiplomaFlow() {
               <Link className="font-medium text-info underline underline-offset-4" href={`/verify?account=${encodeURIComponent(diploma.owner_id)}`}>
                 Public verify link
               </Link>
-              <a className="font-medium text-info underline underline-offset-4" href={explorerAccount(diploma.owner_id)} target="_blank" rel="noopener">
-                Account on explorer ↗
-              </a>
+              <Link className="font-medium text-info underline underline-offset-4" href="/advanced">
+                Open Advanced NEAR →
+              </Link>
             </div>
           </>
         ) : (
           <div className="flex min-h-64 items-center justify-center rounded-md border-2 border-dashed border-line p-8 text-center text-sm text-muted">
-            {checking ? "Checking the chain for your diploma…" : "Your diploma will appear here after you mint it."}
+            {accountId && !holderChecked ? "Checking the chain for your diploma…" : "Your diploma will appear here after you mint it."}
           </div>
         )}
       </div>

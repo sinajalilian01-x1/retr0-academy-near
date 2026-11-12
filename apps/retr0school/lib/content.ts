@@ -175,10 +175,11 @@ export function getQuiz(track: string): QuizQuestion[] {
       fail(`content/${track}/quiz.json item ${index} options must be an array of at least two strings`);
     }
     if (
-      typeof question.answer !== "number" ||
+      question.answer !== undefined &&
+      (typeof question.answer !== "number" ||
       !Number.isInteger(question.answer) ||
       question.answer < 0 ||
-      question.answer >= question.options.length
+      question.answer >= question.options.length)
     ) {
       fail(`content/${track}/quiz.json item ${index} answer must be an index into options`);
     }
@@ -188,7 +189,7 @@ export function getQuiz(track: string): QuizQuestion[] {
     return {
       question: question.question.trim(),
       options: question.options,
-      answer: question.answer,
+      ...(typeof question.answer === "number" ? { answer: question.answer } : {}),
       explanation: question.explanation.trim(),
     };
   });

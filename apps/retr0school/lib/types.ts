@@ -24,7 +24,8 @@ export type Lesson = LessonSummary & {
 export type QuizQuestion = {
   question: string;
   options: string[];
-  answer: number;
+  /** Omitted for server-graded quizzes (the NEAR track), whose key lives only in the grader's env. */
+  answer?: number;
   explanation: string;
 };
 

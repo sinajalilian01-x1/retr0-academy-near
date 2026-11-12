@@ -78,7 +78,8 @@ await wallet.signAndSendTransaction({
   actions: [
     actionCreators.functionCall(
       "mint_diploma",
-      { track: "near", answers: myQuizAnswers }, // e.g. [0, 2, 1, ...]
+      // signed by the Retr0school grader after you pass the quiz
+      { track: "near", score, max_score, expires_at_ms, signature },
       100_000_000_000_000n,        // 100 Tgas
       20_000_000_000_000_000_000n, // 0.02 NEAR storage deposit
     ),
@@ -88,6 +89,6 @@ await wallet.signAndSendTransaction({
 
 <Note>
 
-The contract grades `answers` itself, so the score inside your diploma cannot be faked by the website. This is exactly the call the [diploma page](/diploma) makes after you pass the quiz.
+The grading server keeps the answer key secret and signs your score for your account. The contract checks that ed25519 signature with `env::ed25519_verify` before minting, so nobody can mint a score they did not earn. This is exactly the call the [diploma page](/diploma) makes after you pass the quiz.
 
 </Note>

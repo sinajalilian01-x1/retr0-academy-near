@@ -1,50 +1,82 @@
 [
   {
     "question": "What is alice.near?",
-    "options": ["A hash of Alice's public key", "A human-readable named account that can own keys, tokens, and a contract", "An ENS-style name that points to a 0x address", "A fungible token ticker"],
-    "answer": 1,
+    "options": [
+      "A hash of Alice's public key",
+      "An ENS-style name that points to a 0x address",
+      "A human-readable named account that can own keys, tokens, and a contract",
+      "A fungible token ticker"
+    ],
     "explanation": "NEAR accounts are named. alice.near is the account itself, not an alias. It can hold several keys, tokens, and one contract."
   },
   {
     "question": "Which kind of access key can transfer NEAR and attach deposits?",
-    "options": ["A function-call key", "A full-access key", "A view key", "A storage key"],
-    "answer": 1,
+    "options": [
+      "A full-access key",
+      "A function-call key",
+      "A view key",
+      "A storage key"
+    ],
     "explanation": "A full-access key can do anything on the account. Function-call keys are limited to non-payable calls on one contract, which is why dApps can hold them safely."
   },
   {
     "question": "Who pays for the bytes a contract stores on NEAR?",
-    "options": ["Nobody, storage is free", "The validator that produced the block", "The account holding the data, by locking NEAR in its balance (storage staking)", "The RPC provider"],
-    "answer": 2,
+    "options": [
+      "Nobody, storage is free",
+      "The validator that produced the block",
+      "The RPC provider",
+      "The account holding the data, by locking NEAR in its balance (storage staking)"
+    ],
     "explanation": "Storage staking: every 100 KB locks about 1 NEAR on the account that owns the state. Contracts usually ask callers for a small deposit to cover it."
   },
   {
     "question": "What is the difference between a view call and a change call?",
-    "options": ["A view call reads state for free with no signature; a change call is a signed transaction that costs gas", "View calls need a wallet; change calls do not", "There is no difference", "View calls can only be made by the contract owner"],
-    "answer": 0,
+    "options": [
+      "View calls need a wallet; change calls do not",
+      "A view call reads state for free with no signature; a change call is a signed transaction that costs gas",
+      "There is no difference",
+      "View calls can only be made by the contract owner"
+    ],
     "explanation": "View methods run on an RPC node without a transaction. Anything that writes state must be signed and burns gas."
   },
   {
     "question": "What does NEAR Wallet Selector do for a dApp?",
-    "options": ["It mines blocks", "It deploys contracts", "It stores your seed phrase on the server", "It gives one API and modal to sign in and sign transactions with many wallets, like MyNearWallet and Meteor"],
-    "answer": 3,
+    "options": [
+      "It gives one API and modal to sign in and sign transactions with many wallets, like MyNearWallet and Meteor",
+      "It mines blocks",
+      "It deploys contracts",
+      "It stores your seed phrase on the server"
+    ],
     "explanation": "Wallet Selector abstracts wallets behind one interface: signIn, signAndSendTransaction, signOut, and a ready-made modal."
   },
   {
     "question": "NEP-141 is the NEAR standard for...",
-    "options": ["Non-fungible tokens", "Fungible tokens, such as stablecoins and wrapped NEAR", "Account names", "Storage deposits only"],
-    "answer": 1,
+    "options": [
+      "Non-fungible tokens",
+      "Account names",
+      "Fungible tokens, such as stablecoins and wrapped NEAR",
+      "Storage deposits only"
+    ],
     "explanation": "NEP-141 defines ft_transfer, ft_balance_of, ft_transfer_call, and friends. NEP-171 is the NFT standard."
   },
   {
     "question": "Why does the Retr0school diploma contract reject nft_transfer?",
-    "options": ["Because of a bug", "The diploma is soulbound: a credential should stay with the account that earned it", "Transfers cost too much gas", "NEP-171 forbids transfers"],
-    "answer": 1,
+    "options": [
+      "Because of a bug",
+      "Transfers cost too much gas",
+      "NEP-171 forbids transfers",
+      "The diploma is soulbound: a credential should stay with the account that earned it"
+    ],
     "explanation": "NEP-171 allows transfers, but a credential that could be sold would prove nothing. The contract overrides nft_transfer to panic."
   },
   {
     "question": "What do NEAR Chain Signatures let a NEAR account do?",
-    "options": ["Sign transactions for other chains such as Bitcoin and Ethereum through an MPC network", "Mine Bitcoin", "Skip gas fees forever", "Rename other people's accounts"],
-    "answer": 0,
+    "options": [
+      "Mine Bitcoin",
+      "Sign transactions for other chains such as Bitcoin and Ethereum through an MPC network",
+      "Skip gas fees forever",
+      "Rename other people's accounts"
+    ],
     "explanation": "Chain Signatures derive addresses on other chains from your NEAR account, and an MPC network signs for them when your account asks."
   }
 ]
