@@ -8,6 +8,7 @@ export const RPC_URLS = [
   process.env.NEXT_PUBLIC_NEAR_RPC || "https://rpc.testnet.near.org",
   "https://test.rpc.fastnear.com",
 ];
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app").replace(/\/+$/, "");
 export const CODE_E_URL = (process.env.NEXT_PUBLIC_CODE_E_URL || "https://code-e-near.vercel.app").replace(/\/+$/, "");
 export const MINT_DEPOSIT_YOCTO = BigInt("20000000000000000000000"); // 0.02 NEAR, unused part is refunded
 export const MINT_GAS = BigInt("100000000000000"); // 100 Tgas
@@ -68,6 +69,38 @@ export async function viewCall<T>(contractId: string, method: string, args: Reco
     }
   }
   throw lastError instanceof Error ? lastError : new Error("RPC unavailable");
+}
+
+export type NftToken = {
+  token_id: string;
+  owner_id: string;
+  metadata: { title?: string; media?: string; extra?: string } | null;
+};
+
+/** All diplomas, via NEP-181 enumeration (paged). */
+export async function listDiplomas(limit = 500): Promise<Verification[]> {
+  const total = Number(await viewCall<string>(DIPLOMA_CONTRACT, "nft_total_supply"));
+  const out: Verification[] = [];
+  for (let from = 0; from < Math.min(total, limit); from += 50) {
+    const page = await viewCall<NftToken[]>(DIPLOMA_CONTRACT, "nft_tokens", { from_index: String(from), limit: 50 });
+    for (const t of page) {
+      try {
+        const x = JSON.parse(t.metadata?.extra ?? "{}");
+        out.push({
+          valid: true,
+          token_id: t.token_id,
+          owner_id: t.owner_id,
+          track: x.track,
+          track_title: (t.metadata?.title ?? "").replace("Retr0school Diploma: ", ""),
+          score: x.score,
+          max_score: x.max_score,
+          issued_at_ms: x.issued_at_ms,
+          date: x.date,
+        });
+      } catch {}
+    }
+  }
+  return out;
 }
 
 export function verifyDiploma(accountId: string, track = NEAR_TRACK) {

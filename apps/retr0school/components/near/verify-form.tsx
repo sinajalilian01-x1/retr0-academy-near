@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DiplomaCard } from "@/components/near/diploma-card";
+import { ShareButton } from "@/components/near/share-button";
 import { ACCOUNT_RE, NEAR_TRACK, explorerAccount, explorerToken, verifyDiploma, type Verification } from "@/lib/near";
 
 type State =
@@ -78,7 +79,8 @@ export function VerifyForm() {
         {state.kind === "found" ? (
           <>
             <DiplomaCard diploma={state.diploma} />
-            <p className="mt-4 flex flex-wrap gap-4 text-sm">
+            <p className="mt-4 flex flex-wrap items-center gap-4 text-sm">
+              <ShareButton accountId={state.diploma.owner_id} score={state.diploma.score} maxScore={state.diploma.max_score} />
               <a className="font-medium text-info underline underline-offset-4" href={explorerToken(state.diploma.token_id)} target="_blank" rel="noopener">
                 Token on explorer ↗
               </a>
