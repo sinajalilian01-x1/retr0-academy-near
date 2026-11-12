@@ -8,3 +8,5 @@ lighthouse.json
 .DS_Store
 *.local
 .vite
+.vercel
+.env*

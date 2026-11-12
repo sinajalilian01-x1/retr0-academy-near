@@ -1019,6 +1019,10 @@ function bind(): void {
   document.querySelectorAll<HTMLButtonElement>('.top-actions [data-action="near-starter"]').forEach((button) => {
     button.addEventListener('click', () => void loadNearStarter())
   })
+  // A share link or template link opened while Code E is already loaded only changes the hash: reboot to import it.
+  window.addEventListener('hashchange', () => {
+    if (location.hash.startsWith('#code=') || location.hash === '#template=near') location.reload()
+  })
   const retr0schoolLink = document.getElementById('retr0school-link')
   if (retr0schoolLink instanceof HTMLAnchorElement) retr0schoolLink.href = `${RETR0SCHOOL_URL}/near`
   must<HTMLButtonElement>('console-peek').addEventListener('click', () => setPane('console'))

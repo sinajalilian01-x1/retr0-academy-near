@@ -16,10 +16,10 @@ export const nearStarterFiles = (): ProjectFile[] => [
   <h1>NEAR starter</h1>
   <p>Connect a testnet account, then read the chain with view calls. No keys, no gas.</p>
 
-  <form id="connect-form">
+  <div class="row">
     <input id="account" value="demo-learner.retr0school.testnet" spellcheck="false" aria-label="NEAR account id">
-    <button type="submit" id="connect">Connect</button>
-  </form>
+    <button type="button" id="connect">Connect</button>
+  </div>
   <p class="hint">Want to sign transactions? <a id="wallet-link" target="_blank" rel="noopener">Connect a real wallet in Retr0school ↗</a></p>
 
   <section>
@@ -68,7 +68,7 @@ h2 {
   font-size: 15px;
 }
 
-form {
+.row {
   display: flex;
   gap: 8px;
   margin-top: 16px;
@@ -152,8 +152,8 @@ async function view(contractId, method, args) {
   return JSON.parse(new TextDecoder().decode(new Uint8Array(result.result)));
 }
 
-document.querySelector("#connect-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
+// The preview is sandboxed (no forms), so use a click handler instead of a form submit.
+document.querySelector("#connect").addEventListener("click", async () => {
   const id = document.querySelector("#account").value.trim().toLowerCase();
   const out = document.querySelector("#account-out");
   out.textContent = "Looking up " + id + "...";
