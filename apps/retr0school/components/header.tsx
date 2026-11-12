@@ -7,14 +7,18 @@ import { Search } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { SearchField } from "@/components/search-field";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ConnectButton } from "@/components/near/connect-button";
+import { CODE_E_URL } from "@/lib/near";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/#courses", label: "Learn", match: null },
+  { href: "/near", label: "NEAR", match: "/near" },
+  { href: "/diploma", label: "Diploma", match: "/diploma" },
+  { href: "/verify", label: "Verify", match: "/verify" },
   { href: "/tryit", label: "Playground", match: "/tryit" },
-  { href: "/#about", label: "About", match: null },
 ] as const;
 
 export function Header() {
@@ -54,6 +58,9 @@ export function Header() {
               </Link>
             );
           })}
+          <a href={CODE_E_URL} className="text-sm font-medium text-cyan" data-testid="nav-code-e">
+            Code E ↗
+          </a>
         </nav>
         <div className="ml-auto flex items-center gap-2 text-cyan md:ml-0">
           <Button
@@ -67,6 +74,7 @@ export function Header() {
             <Search className="h-5 w-5" aria-hidden />
           </Button>
           <ThemeToggle />
+          <ConnectButton />
         </div>
       </div>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>

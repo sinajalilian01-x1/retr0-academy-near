@@ -24,6 +24,7 @@ The folder name is the URL slug. Current tracks:
 | `css` | `/css` |
 | `javascript` | `/javascript` |
 | `web3` | `/web3` |
+| `near` | `/near` (pass the quiz to mint a diploma at `/diploma`) |
 
 Preferred display order is `html`, `css`, `javascript`, `web3`. Any other folder that contains `_track.json` is listed after those, alphabetically.
 
@@ -108,7 +109,7 @@ You can use **bold** and [a link](/html/text-and-links) here.
 
 Always name the language. Supported languages:
 
-`html`, `css`, `js`, `javascript`, `solidity`, `bash`, `shell`, `sh`, `json`
+`html`, `css`, `js`, `javascript`, `solidity`, `rust`, `bash`, `shell`, `sh`, `json`
 
 ````md
 ```html
@@ -150,6 +151,16 @@ Use a JavaScript template literal (backticks) so quotes inside the example do no
 - `</script>` in the JavaScript is escaped for you when the preview runs.
 
 Only HTML, CSS, and JavaScript run in the preview. Solidity, bash, and JSON stay in fenced blocks.
+
+### Open in Code E
+
+Add the `codeE` flag to a `TryIt` to also show an **Open in Code E** button. It opens the same HTML, CSS, and JavaScript in Code E using Code E's `#code=` share format. The Code E base URL comes from `NEXT_PUBLIC_CODE_E_URL`.
+
+```mdx
+<TryIt codeE title="View call" html={`...`} js={`...`} />
+```
+
+`<CodeEStarter />` links to Code E's NEAR starter template (`#template=near`).
 
 ### Callouts
 

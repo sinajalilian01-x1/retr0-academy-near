@@ -3,7 +3,9 @@ import { Inter, JetBrains_Mono, Press_Start_2P } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { SiteProvider } from "@/components/site-provider";
+import { NearWalletProvider } from "@/components/near/wallet-provider";
 import { getSearchIndex, getTracks } from "@/lib/content";
+import "@near-wallet-selector/modal-ui/styles.css";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,10 +30,11 @@ const jetbrains = JetBrains_Mono({
 const themeBoot = `(function(){try{var stored=localStorage.getItem("w3h-theme");var dark=stored!=="light";var root=document.documentElement;root.classList.toggle("dark",dark);root.style.colorScheme=dark?"dark":"light";}catch(e){}})();`;
 
 const siteDescription =
-  "Practical tutorials for HTML, CSS, JavaScript, and Web3. Clean examples, a live editor, and quizzes that stay in your browser.";
+  "The W3Schools of NEAR. Learn NEAR step by step, run every example in Code E, pass the quiz, and mint a soulbound diploma NFT on NEAR testnet.";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://w3hschool.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Retr0school",
     template: "%s · Retr0school",
@@ -42,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Retr0school",
     description: siteDescription,
-    url: "https://w3hschool.vercel.app",
+    url: siteUrl,
     siteName: "Retr0school",
     type: "website",
     locale: "en_US",
@@ -82,9 +85,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           Skip to content
         </a>
         <SiteProvider entries={entries}>
-          <Header />
-          {children}
-          <Footer tracks={tracks} />
+          <NearWalletProvider>
+            <Header />
+            {children}
+            <Footer tracks={tracks} />
+          </NearWalletProvider>
         </SiteProvider>
       </body>
     </html>

@@ -30,11 +30,12 @@ export default function HomePage() {
           <h2 className="font-pixel text-title text-highlight">About Retr0school</h2>
           <div className="max-w-lesson text-muted">
             <p>
-              Retr0school is a beginner coding school for the web: short lessons in HTML, CSS, JavaScript, and Web3,
-              with examples you can edit and run in the browser.
+              Retr0school is a beginner coding school for the web: short lessons in NEAR, HTML, CSS, JavaScript, and Web3,
+              with examples you can edit and run in the browser or open in Code E. Finish the NEAR track to mint a
+              soulbound diploma NFT on NEAR testnet.
             </p>
             <p className="mt-4">
-              Designed by Sina Jalilian. Nothing is uploaded. Lesson progress and quiz scores stay on this device.
+              Designed by Sina Jalilian. Lesson progress and quiz scores stay on this device until you choose to mint a diploma on chain.
             </p>
           </div>
         </div>

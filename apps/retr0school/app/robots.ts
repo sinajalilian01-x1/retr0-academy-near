@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
 
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: "https://w3hschool.vercel.app/sitemap.xml",
-    host: "https://w3hschool.vercel.app",
+    sitemap: `${SITE}/sitemap.xml`,
+    host: SITE,
   };
 }

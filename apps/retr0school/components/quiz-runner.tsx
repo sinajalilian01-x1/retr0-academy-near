@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { NEAR_PASS_SCORE, NEAR_TRACK, saveNearAnswers } from "@/lib/near";
 import { Button } from "@/components/ui/button";
 import { saveQuiz, useProgress } from "@/lib/progress";
 import type { QuizQuestion } from "@/lib/types";
@@ -26,6 +28,7 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
     }
     const correct = answers.filter((answer, index) => answer === questions[index].answer).length;
     saveQuiz(track, correct, questions.length);
+    if (track === NEAR_TRACK) saveNearAnswers(answers as number[]);
     setSubmitted(true);
     setError(false);
   }
@@ -86,6 +89,26 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
         <p role="alert" data-testid="quiz-error" className="mb-4 text-sm text-danger">
           Choose an answer for every question.
         </p>
+      ) : null}
+      {submitted && track === NEAR_TRACK ? (
+        correctCount >= NEAR_PASS_SCORE ? (
+          <div data-testid="near-diploma-cta" className="mb-6 rounded-md border-2 border-good bg-good-soft p-4">
+            <p className="font-pixel text-[0.7rem] uppercase tracking-wide text-ink">Passed. Your diploma is waiting.</p>
+            <p className="mt-2 text-sm text-ink">
+              Connect a NEAR testnet wallet and mint a soulbound diploma NFT. The contract re-grades your answers on chain.
+            </p>
+            <Link
+              href="/diploma"
+              className="mt-3 inline-flex h-10 items-center rounded-md border-2 border-ink bg-accent px-4 text-sm font-medium text-accent-ink shadow-md hover:bg-accent-hover"
+            >
+              Mint my diploma →
+            </Link>
+          </div>
+        ) : (
+          <p data-testid="near-diploma-locked" className="mb-6 text-sm text-muted">
+            You need {NEAR_PASS_SCORE} of {questions.length} to unlock the on-chain diploma. Review the lessons and try again.
+          </p>
+        )
       ) : null}
       {submitted ? (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import rehypePrettyCode from "rehype-pretty-code";
 import { Note, Tip, Warning } from "@/components/mdx/callouts";
 import { TryIt } from "@/components/mdx/try-it";
+import { CodeEStarter } from "@/components/mdx/code-e-starter";
 import { getSharedHighlighter, shikiTheme } from "@/lib/highlight";
 
 function nodeText(node: ReactNode): string {
@@ -54,6 +55,7 @@ export function renderMdx(source: string, title?: string): ReactNode {
         Warning,
         Tip,
         TryIt,
+        CodeEStarter,
         pre: CodePre,
         table: Table,
         h1: H1,
