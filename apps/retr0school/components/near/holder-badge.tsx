@@ -15,7 +15,7 @@ export function HolderBadge() {
       className="hidden items-center gap-1.5 border-2 px-2 py-1 font-pixel text-[0.55rem] uppercase tracking-wide sm:inline-flex"
       style={{ borderColor: "#00EC97", color: "#00EC97", boxShadow: "0 0 8px rgba(0,236,151,0.55)" }}
     >
-      🎓 Holder
+      <span aria-hidden="true">★</span> Holder
     </Link>
   );
 }

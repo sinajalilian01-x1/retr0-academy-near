@@ -2,17 +2,19 @@
 
 Everything here is a draft for Sina to review. Nothing has been posted or submitted.
 
-## Demo video script (about 75 seconds)
+## Demo video script (about 80 seconds)
 
 | Time | Screen | Voice-over |
 | --- | --- | --- |
 | 0:00-0:08 | Retr0school home, hero "Learn NEAR. Earn it on-chain." | "Online course certificates prove nothing. Anyone can fake a PDF. So we made the W3Schools of NEAR, where your diploma lives on chain." |
-| 0:08-0:20 | `/near` track, open "View vs Change Calls", press **Verify** in the example | "Nine short lessons. Every example runs live against NEAR testnet. This one calls our diploma contract with a free view call." |
-| 0:20-0:30 | Click **Open in Code E**, Code E opens with the same code, press Run | "One click sends the example to Code E, our playground, so you can break it and rebuild it." |
-| 0:30-0:42 | `/near/quiz`, answer, **Score my quiz**, green "Passed" box | "Pass the quiz and the diploma unlocks. The website does not decide that: the smart contract grades your answers itself." |
-| 0:42-0:58 | `/diploma`, **Connect wallet** (MyNearWallet), **Mint diploma**, approve, diploma card appears | "Connect any NEAR wallet through Wallet Selector, mint, and you get a soulbound NEP-171 NFT: one per account, it can never be transferred or sold." |
-| 0:58-1:08 | Click **View mint transaction** → NearBlocks testnet; then the public verify link | "Here is the mint on the explorer. And anyone, an employer or another dApp, can verify it with one view call. No wallet needed." |
-| 1:08-1:15 | Verify page with the card | "Retr0school and Code E. Learn NEAR, prove it on NEAR. Built at NEAR HACKATHON." |
+| 0:08-0:18 | `/near` track, open "View vs Change Calls", press **Verify** in the example | "Nine short lessons. Every example runs live against NEAR testnet. This one calls our diploma contract with a free view call." |
+| 0:18-0:26 | Click **Open in Code E**, Code E opens with the same code, press Run | "One click sends the example to Code E, our playground, so you can break it and rebuild it." |
+| 0:26-0:36 | `/near/quiz`, answer, **Score my quiz**, green "Passed" box | "The answer key never leaves our server. It grades you and signs the result, and the smart contract only accepts a grade with a valid signature for your account." |
+| 0:36-0:50 | `/diploma`, **Connect wallet** (MyNearWallet), **Mint diploma**, approve, neon diploma art appears | "Connect any NEAR wallet, mint, and you get a soulbound NEP-171 NFT with this neon diploma as its art. One per account, it can never be sold." |
+| 0:50-0:58 | Header shows **Holder**; open `/advanced`, then a lesson | "The NFT does something: holders get a badge and unlock the Advanced NEAR track: cross-contract calls, Chain Signatures, Intents." |
+| 0:58-1:06 | Press **Share my diploma** → X compose window with the card preview | "Share it on X in one click. The link card is your diploma." |
+| 1:06-1:14 | `/leaderboard`, then **View mint transaction** → NearBlocks | "The leaderboard reads every holder straight from the contract, and every mint is on the explorer." |
+| 1:14-1:20 | Verify page with the card | "Retr0school and Code E. Learn NEAR, prove it on NEAR. Built at NEAR HACKATHON." |
 
 Recording tips: use a fresh testnet account with a short name, dark theme, 1280×800 browser, and zoom to 110%.
 
@@ -20,7 +22,7 @@ Recording tips: use a fresh testnet account with a short name, dark theme, 1280�
 
 > Online course certificates prove nothing. So I built the W3Schools of NEAR 🎓
 >
-> Learn NEAR in Retr0school → run every example in Code E → pass a quiz the smart contract grades itself → mint a soulbound NEP-171 diploma anyone can verify with one view call.
+> Learn NEAR in Retr0school → run every example in Code E → pass a quiz (server-signed grade, verified on chain) → mint a soulbound NEP-171 diploma with neon art → unlock Advanced NEAR and climb the leaderboard. Anyone can verify it with one view call.
 >
 > Built at NEAR HACKATHON @NEARProtocol #NEARHackathon
 >
@@ -48,7 +50,7 @@ Recording tips: use a fresh testnet account with a short name, dark theme, 1280�
 
 Draft `idea` (under 2000 characters):
 
-> Online course certificates are easy to fake, can't be checked without trusting the issuer, and teach nothing about the chain they claim to cover. Retr0school × Code E is "the W3Schools of NEAR": a NEAR track of 9 short lessons (named accounts, access keys, gas and storage, view vs change calls, Wallet Selector, NEP-141, NEP-171, a first Rust contract, Intents and Chain Signatures) whose live examples call NEAR testnet, with one-click "Open in Code E" into a browser playground that also ships a NEAR starter. Passing the 8-question quiz unlocks a diploma page: connect a wallet through NEAR Wallet Selector (MyNearWallet, Meteor) and call mint_diploma on our Rust contract. The contract grades the answers on chain and mints a soulbound NEP-171 NFT, one per account per track, with track, score, owner and date in the metadata. Anyone can check a credential on the public verify page or with the verify_diploma view method, no wallet needed. NEAR fits because named accounts make the credential human-readable, NEP-171 makes it a standard asset explorers already show, view calls make verification free, and storage staking lets the learner pay for their own record with a refunded deposit. Retr0school and Code E existed before the hackathon as off-chain apps; all NEAR work is new and separated by the pre-hackathon-baseline tag.
+> Online course certificates are easy to fake, can't be checked without trusting the issuer, and teach nothing about the chain they claim to cover. Retr0school × Code E is "the W3Schools of NEAR": 9 short NEAR lessons (accounts, access keys, gas and storage, view vs change calls, Wallet Selector, NEP-141, NEP-171, a first Rust contract, Intents and Chain Signatures) whose live examples call NEAR testnet, with one-click "Open in Code E" into a browser playground that also ships a NEAR starter. An 8-question quiz is graded on our server, whose answer key stays secret; it returns an ed25519-signed grade bound to the learner's account. The learner connects through NEAR Wallet Selector (MyNearWallet, Meteor) and calls mint_diploma; our Rust contract checks the signature with env::ed25519_verify, the expiry and the pass mark, then mints a soulbound NEP-171 NFT, one per account per track. Its media is a neon retro diploma rendered live from chain data. The NFT does something: holders get a badge and unlock an Advanced NEAR track (cross-contract calls, storage staking, Chain Signatures, Intents), can share their diploma on X with a card that shows the art, and appear on a public leaderboard read from the contract's NEP-181 enumeration. Anyone can verify a credential with one view call, no wallet needed. NEAR fits because named accounts make the credential human-readable, NEP-171 makes it a standard asset explorers show, view calls make verification free, and storage staking lets learners pay for their own record. Retr0school and Code E existed before the hackathon as off-chain apps; all NEAR work is new and separated by the pre-hackathon-baseline tag.
 
 ## Before submitting
 

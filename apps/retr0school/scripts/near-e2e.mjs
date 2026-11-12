@@ -5,7 +5,11 @@ import { chromium } from "@playwright/test";
 const R0 = process.env.R0_URL || "https://retr0school-near.vercel.app";
 const CE = process.env.CE_URL || "https://code-e-near.vercel.app";
 const OUT = new URL("../../../artifacts/", import.meta.url).pathname;
-const KEY = [1, 1, 2, 0, 3, 1, 1, 0];
+// The NEAR quiz key is secret (grader env var). Pass it in to test the "passed" path:
+//   NEAR_QUIZ_ANSWER_KEY=2,0,... node scripts/near-e2e.mjs
+const KEY = (process.env.NEAR_QUIZ_ANSWER_KEY || "").split(",").filter(Boolean).map(Number);
+// An account that already holds a diploma, used to show the holder views.
+const HOLDER = process.env.HOLDER_ACCOUNT || "hackathon-judge.retr0school.testnet";
 const results = [];
 const ok = (name, pass, detail = "") => {
   results.push({ name, pass, detail });
@@ -65,14 +69,21 @@ try {
   await page.getByTestId("verify-none").waitFor({ timeout: 20000 });
   ok("verify page negative case", true);
 
-  // 6. Quiz pass
+  // 6. Quiz: wrong answers fail (server-graded), right answers unlock the diploma
   await page.goto(R0 + "/near/quiz", { waitUntil: "networkidle" });
-  for (let i = 0; i < KEY.length; i++) await page.getByTestId(`quiz-${i}-${KEY[i]}`).click();
+  for (let i = 0; i < 8; i++) await page.getByTestId(`quiz-${i}-0`).click();
   await page.getByTestId("quiz-submit").click();
-  await page.getByTestId("near-diploma-cta").waitFor();
-  ok("quiz pass unlocks diploma", true);
-  await page.getByTestId("near-diploma-cta").scrollIntoViewIfNeeded();
-  await page.screenshot({ path: OUT + "07-quiz-passed.png" });
+  await page.getByTestId("quiz-score").waitFor({ timeout: 20000 });
+  ok("server-graded quiz returns a score", true, await page.getByTestId("quiz-score").innerText());
+  if (KEY.length === 8) {
+    await page.goto(R0 + "/near/quiz", { waitUntil: "networkidle" });
+    for (let i = 0; i < KEY.length; i++) await page.getByTestId(`quiz-${i}-${KEY[i]}`).click();
+    await page.getByTestId("quiz-submit").click();
+    await page.getByTestId("near-diploma-cta").waitFor({ timeout: 20000 });
+    ok("quiz pass unlocks diploma", true);
+    await page.getByTestId("near-diploma-cta").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: OUT + "07-quiz-passed.png" });
+  }
 
   // 7. Diploma page + wallet selector modal
   await page.goto(R0 + "/diploma", { waitUntil: "networkidle" });
@@ -84,6 +95,49 @@ try {
   const meteor = await page.getByText("Meteor Wallet").first().isVisible().catch(() => false);
   ok("wallet selector modal lists MyNearWallet + Meteor", meteor);
   await page.screenshot({ path: OUT + "09-wallet-selector-modal.png" });
+
+  // 8. Leaderboard
+  await page.goto(R0 + "/leaderboard", { waitUntil: "networkidle" });
+  const rows = await page.getByTestId("leaderboard-row").count();
+  ok("leaderboard lists holders", rows >= 1, `${rows} rows`);
+  await page.screenshot({ path: OUT + "10-leaderboard.png" });
+
+  // 9. Diploma art + share page with X card
+  const art = await ctx.request.get(`${R0}/api/diploma/near/${HOLDER}`);
+  ok("diploma art is a PNG", art.ok() && art.headers()["content-type"] === "image/png");
+  await page.goto(`${R0}/api/diploma/near/${HOLDER}`);
+  await page.screenshot({ path: OUT + "11-diploma-art.png" });
+  await page.goto(`${R0}/d/${HOLDER}`, { waitUntil: "networkidle" });
+  const og = await page.locator('meta[property="og:image"]').getAttribute("content");
+  const card = await page.locator('meta[name="twitter:card"]').getAttribute("content");
+  ok("share page has diploma OG image + large card", Boolean(og?.includes("/api/diploma/near/")) && card === "summary_large_image", og ?? "");
+  const share = await page.getByTestId("share-diploma").first().getAttribute("href");
+  ok("share button is an X intent with tags", Boolean(share?.startsWith("https://x.com/intent/tweet") && decodeURIComponent(share).includes("#NEARHackathon") && decodeURIComponent(share).includes("@NEARProtocol")));
+  await page.screenshot({ path: OUT + "12-share-page.png" });
+
+  // 10. Advanced NEAR: locked for visitors
+  await page.goto(R0 + "/advanced/cross-contract-calls", { waitUntil: "networkidle" });
+  await page.getByTestId("holder-locked").waitFor();
+  ok("advanced lesson locked without a diploma", true);
+  await page.screenshot({ path: OUT + "13-advanced-locked.png" });
+
+  // 11. Advanced NEAR: unlocked for a holder. Simulated read-only wallet session (no keys) for the screenshot:
+  //     MyNearWallet keeps the signed-in account in localStorage; the unlock itself is the on-chain verify_diploma check.
+  const holderCtx = await browser.newContext({ viewport: { width: 1366, height: 860 }, colorScheme: "dark" });
+  await holderCtx.addInitScript((acc) => {
+    localStorage.setItem("signedAccountId", acc);
+    localStorage.setItem("near-wallet-selector:selectedWalletId", JSON.stringify("my-near-wallet"));
+  }, HOLDER);
+  const hp = await holderCtx.newPage();
+  await hp.goto(R0 + "/advanced/cross-contract-calls", { waitUntil: "networkidle" });
+  const unlocked = await hp.getByTestId("holder-unlocked").waitFor({ timeout: 20000 }).then(() => true).catch(() => false);
+  ok("advanced lesson unlocked for a diploma holder", unlocked);
+  ok("holder badge in header", await hp.getByTestId("holder-badge").isVisible().catch(() => false));
+  await hp.screenshot({ path: OUT + "14-advanced-unlocked-holder.png" });
+  await hp.goto(R0 + "/diploma", { waitUntil: "networkidle" });
+  await hp.getByTestId("diploma-card").waitFor({ timeout: 20000 }).catch(() => {});
+  await hp.screenshot({ path: OUT + "15-diploma-holder-share.png" });
+  await holderCtx.close();
 } catch (error) {
   ok("unexpected error", false, String(error));
   for (const [i, p] of ctx.pages().entries()) await p.screenshot({ path: OUT + `error-${i}.png` }).catch(() => {});
