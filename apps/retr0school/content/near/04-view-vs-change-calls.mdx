@@ -1,0 +1,93 @@
+---
+title: "View vs Change Calls"
+description: "View methods read contract state for free over RPC. Change methods are signed transactions. Call the live diploma contract right now."
+order: 4
+tags: ["rpc", "contracts"]
+---
+# View vs Change Calls
+
+A NEAR contract exposes two kinds of methods.
+
+| | View call | Change call |
+| --- | --- | --- |
+| Changes state? | No | Yes |
+| Needs a signature? | No | Yes, a transaction |
+| Costs gas? | No | Yes |
+| How | RPC `query` with `call_function` | Wallet `signAndSendTransaction` |
+
+## A view call over plain fetch
+
+You do not need any library to read a contract. The RPC accepts JSON, and arguments are JSON encoded as base64. This example reads the **live Retr0school diploma contract** on testnet and checks whether an account holds a diploma.
+
+<TryIt
+  codeE
+  title="Verify a diploma with a view call"
+  html={`<h1>Verify a Retr0school diploma</h1>
+<input id="acc" value="demo-learner.retr0school.testnet">
+<button id="go">Verify</button>
+<pre id="out">Press Verify.</pre>`}
+  css={`body { font-family: system-ui, sans-serif; background: #0d0b1a; color: #ece8ff; padding: 20px; }
+h1 { font-size: 20px; color: #00ec97; margin-top: 0; }
+input { padding: 8px; border: 2px solid #3a3466; background: #17132b; color: inherit; width: 260px; }
+button { background: #ff3fa4; color: #1a0a14; border: 2px solid #ece8ff; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space: pre-wrap; word-break: break-all; }`}
+  js={`const RPC = "https://rpc.testnet.near.org";
+
+// Read-only call: no wallet, no gas, no signature.
+async function view(contractId, method, args) {
+  const res = await fetch(RPC, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: "r0", method: "query",
+      params: {
+        request_type: "call_function", finality: "final",
+        account_id: contractId, method_name: method,
+        args_base64: btoa(JSON.stringify(args || {}))
+      }
+    })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(JSON.stringify(json.error.cause || json.error));
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(json.result.result)));
+}
+
+const out = document.getElementById("out");
+document.getElementById("go").addEventListener("click", async () => {
+  const account_id = document.getElementById("acc").value.trim();
+  out.textContent = "Calling verify_diploma...";
+  try {
+    const v = await view("diploma.retr0school.testnet", "verify_diploma", { account_id, track: "near" });
+    out.textContent = v ? JSON.stringify(v, null, 2) : "No diploma for " + account_id + " yet.";
+  } catch (e) {
+    out.textContent = "Error: " + e.message;
+  }
+});`}
+/>
+
+## A change call needs a wallet
+
+To **write**, a wallet signs a transaction. With Wallet Selector (next lesson) it looks like this:
+
+```js
+import { actionCreators } from "@near-wallet-selector/core";
+
+const wallet = await selector.wallet();
+await wallet.signAndSendTransaction({
+  receiverId: "diploma.retr0school.testnet",
+  actions: [
+    actionCreators.functionCall(
+      "mint_diploma",
+      { track: "near", answers: myQuizAnswers }, // e.g. [0, 2, 1, ...]
+      100_000_000_000_000n,        // 100 Tgas
+      20_000_000_000_000_000_000n, // 0.02 NEAR storage deposit
+    ),
+  ],
+});
+```
+
+<Note>
+
+The contract grades `answers` itself, so the score inside your diploma cannot be faked by the website. This is exactly the call the [diploma page](/diploma) makes after you pass the quiz.
+
+</Note>

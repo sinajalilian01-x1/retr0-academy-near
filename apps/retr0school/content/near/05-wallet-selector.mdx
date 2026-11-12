@@ -1,0 +1,70 @@
+---
+title: "Wallet Selector"
+description: "Add a Connect button that works with MyNearWallet, Meteor, and more using @near-wallet-selector, the way this site does."
+order: 5
+tags: ["wallet", "frontend"]
+---
+# Wallet Selector
+
+**NEAR Wallet Selector** gives your dApp one API for many wallets: browser wallets like **MyNearWallet**, extension wallets like **Meteor**, and others. It also ships a ready-made modal.
+
+The **Connect wallet** button in this site's header is built with it. Click it now to see the modal.
+
+## Install
+
+```bash
+npm install @near-wallet-selector/core @near-wallet-selector/modal-ui \
+  @near-wallet-selector/my-near-wallet @near-wallet-selector/meteor-wallet
+```
+
+## Set it up
+
+```js
+import { setupWalletSelector } from "@near-wallet-selector/core";
+import { setupModal } from "@near-wallet-selector/modal-ui";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
+import "@near-wallet-selector/modal-ui/styles.css";
+
+const selector = await setupWalletSelector({
+  network: "testnet",
+  modules: [setupMyNearWallet(), setupMeteorWallet()],
+});
+
+const modal = setupModal(selector, { contractId: "diploma.retr0school.testnet" });
+
+document.querySelector("#connect").onclick = () => modal.show();
+
+selector.store.observable.subscribe((state) => {
+  const account = state.accounts.find((a) => a.active);
+  console.log("signed in as", account ? account.accountId : "nobody");
+});
+```
+
+## Practice in Code E
+
+Code E has a NEAR starter template: connect a testnet account and call the diploma contract's `verify_diploma` view method. Open it, change the account, and press Run.
+
+<CodeEStarter />
+
+## The calls you will use
+
+| Call | Does |
+| --- | --- |
+| `modal.show()` | Opens the wallet picker. |
+| `selector.isSignedIn()` | True when an account is connected. |
+| `selector.store.getState().accounts` | The connected accounts. |
+| `(await selector.wallet()).signAndSendTransaction(...)` | Signs and sends a change call. |
+| `(await selector.wallet()).signOut()` | Disconnects. |
+
+<Tip>
+
+Need a testnet account? Open [MyNearWallet testnet](https://testnet.mynearwallet.com) and create one for free. It comes with test NEAR.
+
+</Tip>
+
+<Warning>
+
+Code E and the Try it editor run your code in a sandboxed frame, so wallets cannot open there. Use the header button on this site, or run the snippet above in a normal Vite or Next.js app.
+
+</Warning>

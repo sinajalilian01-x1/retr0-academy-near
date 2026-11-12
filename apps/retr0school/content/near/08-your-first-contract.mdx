@@ -1,0 +1,80 @@
+---
+title: "Your First Contract"
+description: "Write, test, build, and deploy a tiny Rust contract with near-sdk and cargo-near, then call it from the CLI."
+order: 8
+tags: ["rust", "contracts", "cli", "project"]
+---
+# Your First Contract
+
+NEAR contracts compile to **WebAssembly**. The most common language is **Rust** with `near-sdk`; JavaScript (`near-sdk-js`) works too. Here is a complete guestbook-sized contract: a greeting anyone can read and anyone can change.
+
+```rust
+use near_sdk::near;
+
+#[near(contract_state)]
+pub struct Contract {
+    greeting: String,
+}
+
+impl Default for Contract {
+    fn default() -> Self {
+        Self { greeting: "gm from Retr0school".to_string() }
+    }
+}
+
+#[near]
+impl Contract {
+    // view: free, no signature
+    pub fn get_greeting(&self) -> String {
+        self.greeting.clone()
+    }
+
+    // change: a signed transaction
+    pub fn set_greeting(&mut self, greeting: String) {
+        near_sdk::log!("Saving greeting {}", greeting);
+        self.greeting = greeting;
+    }
+}
+```
+
+`#[near(contract_state)]` makes the struct the contract's storage. Methods that take `&self` become **view** methods; `&mut self` makes them **change** methods.
+
+## Unit test it
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn set_then_get() {
+        let mut c = Contract::default();
+        c.set_greeting("hello".into());
+        assert_eq!(c.get_greeting(), "hello");
+    }
+}
+```
+
+## Build and deploy
+
+```bash
+cargo install cargo-near near-cli-rs
+cargo near new hello && cd hello
+cargo test
+cargo near build non-reproducible-wasm
+
+# a free testnet account funded by the faucet
+near account create-account sponsor-by-faucet-service hello-yourname.testnet \
+  autogenerate-new-keypair save-to-keychain network-config testnet create
+
+near contract deploy hello-yourname.testnet use-file target/near/hello.wasm \
+  without-init-call network-config testnet sign-with-keychain send
+
+near contract call-function as-read-only hello-yourname.testnet get_greeting \
+  json-args '{}' network-config testnet now
+```
+
+<Tip>
+
+The Retr0school diploma contract is built exactly this way. Its source, with 11 unit tests, is in `contracts/diploma` of this project's repository.
+
+</Tip>

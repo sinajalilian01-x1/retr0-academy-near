@@ -6,7 +6,7 @@ import matter from "gray-matter";
 import type { Lesson, LessonSummary, NavItem, QuizQuestion, SearchEntry, Track } from "@/lib/types";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
-const PREFERRED_ORDER = ["html", "css", "javascript", "web3"];
+const PREFERRED_ORDER = ["near", "html", "css", "javascript", "web3"];
 const LESSON_FILE = /^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)\.mdx$/;
 const RESERVED_SLUGS = new Set(["quiz"]);
 

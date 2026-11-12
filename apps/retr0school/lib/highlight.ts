@@ -5,7 +5,7 @@ import { createCssVariablesTheme } from "@shikijs/core";
 
 export const shikiTheme = createCssVariablesTheme({ name: "w3h" });
 
-const LANGS = ["html", "css", "javascript", "json", "bash", "shellscript", "solidity"] as const;
+const LANGS = ["html", "css", "javascript", "json", "bash", "shellscript", "solidity", "rust"] as const;
 
 const highlighterPromise: Promise<Highlighter> = createHighlighter({
   themes: [shikiTheme],

@@ -1,0 +1,65 @@
+---
+title: "Access Keys"
+description: "Full-access keys and function-call keys: how NEAR lets dApps sign small actions for you without ever holding your money."
+order: 2
+tags: ["keys", "security"]
+---
+# Access Keys
+
+A NEAR account holds a list of public keys. Each key has a **permission**:
+
+- **Full access**: can do everything: transfer NEAR, deploy code, add or delete keys, delete the account.
+- **Function call**: can only call **non-payable** methods on **one contract**, optionally a short list of method names, and spend gas from a small **allowance**.
+
+## Why function-call keys matter
+
+When you sign in to a dApp, your wallet can add a function-call key for that dApp's contract. The dApp keeps the private half in your browser and signs routine actions (like "post a message") without a pop-up. It still cannot move your NEAR, because that key is not allowed to attach a deposit.
+
+```bash
+# list the keys on an account with near-cli-rs
+near account list-keys retr0school.testnet network-config testnet now
+```
+
+<Warning>
+
+A full-access key is your money. Never paste it into a website. A wallet such as MyNearWallet or Meteor keeps it for you and only shows you what you are about to sign.
+
+</Warning>
+
+## Keys are rotatable
+
+Lost a laptop? Use another full-access key to delete the old one. Because your identity is the account **name**, rotating keys does not change your address, your tokens, or your diplomas.
+
+## Try it: read an account's keys
+
+<TryIt
+  codeE
+  title="List access keys"
+  html={`<h1>Access keys</h1>
+<input id="acc" value="retr0school.testnet">
+<button id="go">List keys</button>
+<pre id="out">Press List keys.</pre>`}
+  css={`body { font-family: system-ui, sans-serif; background: #0d0b1a; color: #ece8ff; padding: 20px; }
+h1 { font-size: 20px; color: #00ec97; margin-top: 0; }
+input { padding: 8px; border: 2px solid #3a3466; background: #17132b; color: inherit; width: 260px; }
+button { background: #ff3fa4; color: #1a0a14; border: 2px solid #ece8ff; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space: pre-wrap; word-break: break-all; }`}
+  js={`const out = document.getElementById("out");
+
+document.getElementById("go").addEventListener("click", async () => {
+  const id = document.getElementById("acc").value.trim();
+  const res = await fetch("https://rpc.testnet.near.org", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: "r0", method: "query",
+      params: { request_type: "view_access_key_list", finality: "final", account_id: id } })
+  });
+  const json = await res.json();
+  if (json.error) { out.textContent = "Error: " + json.error.message; return; }
+  out.textContent = json.result.keys.map((k) => {
+    const p = k.access_key.permission;
+    const kind = p === "FullAccess" ? "full access" : "function call -> " + p.FunctionCall.receiver_id;
+    return k.public_key.slice(0, 20) + "...  " + kind;
+  }).join("\\n") || "No keys.";
+});`}
+/>
