@@ -1,0 +1,102 @@
+---
+title: "DOM Events and UI Patterns"
+description: "Capture and bubble, event delegation, custom events, debounce and throttle, and rendering lists safely."
+order: 3
+tags: ["dom", "events", "delegation", "debounce", "custom-events", "xss"]
+---
+
+# DOM Events and UI Patterns
+
+## How an event travels
+
+<Anim name="dom-events" caption="Capture from the document down, the target, then bubbling back up." />
+
+A click on a button inside a list fires in three phases: **capture** (from `window` down to the target), **target**, and **bubble** (back up). `addEventListener(type, fn)` listens in the bubble phase by default; pass `{ capture: true }` for the capture phase.
+
+| Method / option | Effect |
+| --- | --- |
+| `event.stopPropagation()` | Stops the event travelling further |
+| `event.preventDefault()` | Cancels the default action (form submit, link navigation) |
+| `{ once: true }` | Removes the listener after the first call |
+| `{ passive: true }` | Promises not to call `preventDefault`, so scrolling stays smooth |
+| `event.target` vs `event.currentTarget` | Element that was clicked vs element the listener is on |
+
+## Event delegation
+
+Instead of one listener per item, put **one** listener on the parent and inspect `event.target.closest(...)`. It works for items added later, too.
+
+<TryIt title="Delegated todo list with custom events and safe rendering" html={`<form id="add"><input id="txt" placeholder="New task (try <img src=x onerror=alert(1)>)" required><button>Add</button></form>
+<ul id="list"></ul>
+<p id="status"></p>`} css={`body { font-family: system-ui; background: #0d0b1a; color: #e8e6ff; }
+input { padding: 6px; width: 70%; background: #17132b; color: inherit; border: 2px solid #2e2858; }
+li { display: flex; gap: 8px; align-items: center; padding: 4px 0; }
+li.done span { text-decoration: line-through; color: #8480b8; }
+button { background: #ff3fa4; border: 0; padding: 4px 10px; }`} js={`const list = document.getElementById("list");
+const tasks = [];
+
+function render() {
+  list.replaceChildren(...tasks.map((t, i) => {
+    const li = document.createElement("li");
+    li.dataset.index = i;
+    li.className = t.done ? "done" : "";
+    const span = document.createElement("span");
+    span.textContent = t.text;            // textContent, never innerHTML, for user input
+    const toggle = document.createElement("button");
+    toggle.dataset.action = "toggle"; toggle.textContent = t.done ? "Undo" : "Done";
+    const del = document.createElement("button");
+    del.dataset.action = "delete"; del.textContent = "Delete";
+    li.append(toggle, del, span);
+    return li;
+  }));
+  list.dispatchEvent(new CustomEvent("tasks:changed", { bubbles: true, detail: { count: tasks.length } }));
+}
+
+// ONE listener handles every button, including future ones
+list.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-action]");
+  if (!btn) return;
+  const i = Number(btn.closest("li").dataset.index);
+  if (btn.dataset.action === "toggle") tasks[i].done = !tasks[i].done;
+  if (btn.dataset.action === "delete") tasks.splice(i, 1);
+  render();
+});
+
+document.addEventListener("tasks:changed", (e) => {
+  document.getElementById("status").textContent = e.detail.count + " task(s)";
+});
+
+document.getElementById("add").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const input = document.getElementById("txt");
+  tasks.push({ text: input.value, done: false });
+  input.value = "";
+  render();
+});`} />
+
+<Warning>
+Writing user input with `innerHTML` is a cross-site scripting (XSS) hole. Try the placeholder text in the example: because we use `textContent`, it shows as plain text instead of running. In a dApp, XSS can trick users into signing malicious transactions.
+</Warning>
+
+## Debounce and throttle
+
+Search boxes and resize handlers fire many times per second.
+
+```js
+function debounce(fn, ms) {
+  let id;
+  return (...args) => {
+    clearTimeout(id);
+    id = setTimeout(() => fn(...args), ms);
+  };
+}
+searchInput.addEventListener("input", debounce((e) => search(e.target.value), 250));
+```
+
+- **Debounce**: run once the events *stop* for `ms` (search-as-you-type).
+- **Throttle**: run at most once every `ms` (scroll position, drag).
+
+Notice that `debounce` only works because of a **closure** over `id`. That is the next lesson.
+
+## Summary
+
+Know the three phases, delegate from a parent with `closest()`, communicate between components with `CustomEvent`, debounce noisy inputs, and render user data with `textContent`.

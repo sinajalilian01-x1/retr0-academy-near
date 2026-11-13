@@ -15,6 +15,8 @@ A NEAR contract exposes two kinds of methods.
 | Costs gas? | No | Yes |
 | How | RPC `query` with `call_function` | Wallet `signAndSendTransaction` |
 
+<Anim name="view-vs-change" caption="View calls are free reads; change calls are signed transactions." />
+
 ## A view call over plain fetch
 
 You do not need any library to read a contract. The RPC accepts JSON, and arguments are JSON encoded as base64. This example reads the **live Retr0 Academy diploma contract** on testnet and checks whether an account holds a diploma.

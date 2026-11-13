@@ -1,0 +1,93 @@
+---
+title: "Testing NEAR Contracts"
+description: "Unit tests with a mocked VM context, sandbox integration tests with near-workspaces, and what to test before every deploy."
+locked: true
+order: 5
+tags: ["advanced", "testing", "rust", "sandbox", "near-workspaces"]
+---
+
+# Testing NEAR Contracts
+
+A deployed contract holds real value and cannot be patched by a hotfix to your laptop. Testing is how you sleep at night.
+
+<Anim name="contract-testing" caption="Many fast unit tests, some sandbox tests, a final testnet smoke test." />
+
+## 1. Unit tests: fast, in-process
+
+`near-sdk` ships a mocked blockchain. You set the caller, deposit and block time with `VMContextBuilder`, then call methods directly.
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use near_sdk::test_utils::{accounts, VMContextBuilder};
+    use near_sdk::{testing_env, NearToken};
+
+    fn ctx(who: AccountId, deposit: NearToken) {
+        testing_env!(VMContextBuilder::new()
+            .predecessor_account_id(who)
+            .attached_deposit(deposit)
+            .block_timestamp(1_763_000_000_000_000_000)
+            .build());
+    }
+
+    #[test]
+    #[should_panic(expected = "soulbound")]
+    fn diplomas_cannot_move() {
+        ctx(accounts(0), NearToken::from_yoctonear(0));
+        let mut c = Contract::new(accounts(0), None);
+        ctx(accounts(1), NearToken::from_yoctonear(1));
+        c.nft_transfer(accounts(2), "near:bob".into(), None, None);
+    }
+}
+```
+
+The Retr0 Academy diploma contract has 26 unit tests like this: forged scores, expired attestations, the wrong signer, one diploma per account, owner-only admin, and migration. Run them with `cargo test`.
+
+## 2. Sandbox integration tests
+
+Unit tests cannot exercise **cross-contract calls, gas, or real storage costs**. `near-workspaces` spins up a local NEAR sandbox node, deploys your compiled wasm and lets you send real transactions:
+
+```rust
+#[tokio::test]
+async fn mint_end_to_end() -> anyhow::Result<()> {
+    let sandbox = near_workspaces::sandbox().await?;
+    let wasm = near_workspaces::compile_project(".").await?;
+    let contract = sandbox.dev_deploy(&wasm).await?;
+    contract.call("new").args_json(json!({ "owner_id": contract.id() })).transact().await?.into_result()?;
+
+    let alice = sandbox.dev_create_account().await?;
+    let outcome = alice.call(contract.id(), "mint_diploma")
+        .args_json(json!({ /* signed attestation */ }))
+        .deposit(NearToken::from_millinear(20))
+        .max_gas()
+        .transact().await?;
+    assert!(outcome.is_success(), "{:#?}", outcome.into_result());
+    println!("gas burnt: {}", outcome.total_gas_burnt);
+    Ok(())
+}
+```
+
+Measure `total_gas_burnt` here and set your frontend's gas with a safety margin.
+
+## 3. What to test, every time
+
+| Category | Examples |
+| --- | --- |
+| Access control | Only the owner can call admin methods; `#[private]` callbacks reject outsiders |
+| Money | Deposits are required, refunds are exact, storage is paid by the user |
+| Failure paths | A failed cross-contract call does not leave state half-updated |
+| Upgrades | Old state deserializes after a code upgrade (`migrate` tests) |
+| Invariants | Total supply equals the number of tokens; no duplicates |
+
+## 4. Testnet smoke test
+
+Finally deploy to a fresh testnet sub-account and run one real flow with `near-cli-rs`. This site's `scripts/near-e2e.mjs` does exactly that: grade, sign, mint, verify.
+
+<Warning>
+Contracts are upgradable only while a full-access key remains on the account. Before a mainnet launch, decide on your upgrade policy (owner key, DAO, or locked) and test the `migrate` path.
+</Warning>
+
+## Summary
+
+Unit-test logic with `VMContextBuilder`, sandbox-test anything involving promises, gas or storage, and smoke-test on testnet before mainnet.

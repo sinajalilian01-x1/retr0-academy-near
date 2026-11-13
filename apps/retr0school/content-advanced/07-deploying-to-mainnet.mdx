@@ -1,0 +1,71 @@
+---
+title: "Deploying from Testnet to Mainnet"
+description: "Reproducible builds, deploy plus init in one transaction, upgrades with state migration, key hygiene, and a launch checklist."
+locked: true
+order: 7
+tags: ["advanced", "deploy", "mainnet", "upgrade", "migration", "cargo-near"]
+---
+
+# Deploying from Testnet to Mainnet
+
+## Reproducible builds
+
+```bash
+cargo near build reproducible-wasm
+```
+
+This builds inside a pinned Docker image and records the source and commit in the contract metadata, so anyone can verify the deployed wasm matches the public repo. Judges and users trust what they can verify.
+
+## Deploy and initialize atomically
+
+```bash
+near contract deploy diploma.example.near \
+  use-file target/near/diploma.wasm \
+  with-init-call new json-args '{"owner_id":"example.near"}' \
+  prepaid-gas '100 Tgas' attached-deposit '0 NEAR' \
+  network-config mainnet sign-with-keychain send
+```
+
+Deploy and `new` run in **one** transaction. If they were separate, anyone could call `new` first and become the owner.
+
+## Upgrading without losing state
+
+Redeploying replaces code but keeps storage. If the struct layout changes, old bytes no longer deserialize, so you ship a `migrate` method:
+
+```rust
+#[private]
+#[init(ignore_state)]
+pub fn migrate() -> Self {
+    let old: ContractV1 = env::state_read().expect("no v1 state");
+    Self { owner_id: old.owner_id, tokens: old.tokens, /* new fields */ grade_cutoffs: default_cutoffs() }
+}
+```
+
+```bash
+near contract deploy diploma.example.near use-file new.wasm \
+  with-init-call migrate json-args {} ... send
+```
+
+If the layout did **not** change, deploy `without-init-call` and use an owner method for data fixes. Retr0 Academy did exactly that to rename the collection: a new `rebrand` method rewrote every existing diploma's title in one call, with token ids and scores preserved.
+
+## Key hygiene
+
+| Key | Where it lives |
+| --- | --- |
+| Contract full-access key | Hardware wallet or multisig; remove it to make the contract immutable |
+| Backend signer (e.g. a grader) | Server env var only, never in git, rotatable on chain (`set_attestor`) |
+| Users' keys | Their wallets, never your servers |
+
+## Launch checklist
+
+1. All unit and sandbox tests pass; gas measured with margin.
+2. Reproducible build; source linked in metadata.
+3. Storage costs paid by users (deposits) so the contract cannot be drained.
+4. Admin methods are owner-only and logged with events.
+5. Upgrade path tested on testnet with real state.
+6. Monitoring: watch events and failed receipts with an indexer.
+7. Frontend env points at mainnet ids and RPC; a fallback RPC is configured.
+
+## Summary
+
+Build reproducibly, deploy and init in one transaction, migrate state deliberately, protect keys by role, and walk the checklist. Then announce it.

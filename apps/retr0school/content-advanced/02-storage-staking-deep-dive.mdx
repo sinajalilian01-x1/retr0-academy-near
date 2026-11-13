@@ -10,6 +10,8 @@ tags: ["advanced", "storage"]
 
 Every byte of contract state locks **10^19 yoctoNEAR** (1 NEAR per 100 KB) on the contract account. If the balance cannot cover storage, the transaction fails. Well-behaved contracts make the *caller* pay for the bytes they add.
 
+<Anim name="storage-staking" caption="Storage staking: bytes stored vs NEAR locked." />
+
 ## Measure, charge, refund
 
 ```rust

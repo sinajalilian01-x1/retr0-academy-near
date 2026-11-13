@@ -1,0 +1,90 @@
+---
+title: "Custom Properties and Theming"
+description: "CSS variables, inheritance and the cascade, design tokens, dark mode, and changing variables from JavaScript."
+order: 2
+tags: ["custom-properties", "variables", "theming", "dark-mode", "design-tokens"]
+---
+
+# Custom Properties and Theming
+
+Custom properties (CSS variables) are properties you invent, prefixed with `--`. Unlike preprocessor variables, they are **live**: they inherit through the DOM, react to media queries and can be changed at runtime by JavaScript. This site's whole retro theme is a set of them.
+
+```css
+:root {
+  --color-bg: #fff7e6;
+  --color-ink: #1a1530;
+  --color-accent: #ff3fa4;
+  --space: 8px;
+}
+.button {
+  background: var(--color-accent);
+  padding: calc(var(--space) * 1.5) calc(var(--space) * 3);
+}
+```
+
+## Fallbacks and scope
+
+```css
+color: var(--brand, hotpink);   /* fallback if --brand is not defined */
+.card { --pad: 24px; }          /* scoped: only .card and its children see this value */
+.card.compact { --pad: 12px; }  /* override per variant */
+```
+
+## Design tokens: two layers
+
+1. **Primitive tokens** describe raw values: `--pink-500: #ff3fa4`.
+2. **Semantic tokens** describe purpose: `--accent: var(--pink-500)`.
+
+Components only use semantic tokens. A theme is then just a different mapping.
+
+<TryIt title="Light, dark and system theme with tokens" html={`<div class="controls">
+  <button data-theme="light">Light</button>
+  <button data-theme="dark">Dark</button>
+  <button data-theme="system">System</button>
+  <label>Accent hue <input id="hue" type="range" min="0" max="360" value="328"></label>
+</div>
+<article class="card">
+  <h2>NEAR Smart Contracts</h2>
+  <p>6 lessons · Rust · Intermediate</p>
+  <button class="primary">Start course</button>
+</article>`} css={`:root {
+  --hue: 328;
+  --accent: hsl(var(--hue) 100% 62%);
+  --bg: #fff7e6; --surface: #ffffff; --ink: #1a1530; --line: #d9d2c0;
+}
+:root[data-theme="dark"] { --bg: #0d0b1a; --surface: #17132b; --ink: #e8e6ff; --line: #2e2858; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0d0b1a; --surface: #17132b; --ink: #e8e6ff; --line: #2e2858; }
+}
+body { background: var(--bg); color: var(--ink); font-family: system-ui; transition: background .3s, color .3s; }
+.card { background: var(--surface); border: 2px solid var(--line); padding: 20px; max-width: 320px; box-shadow: 4px 4px 0 var(--accent); }
+.primary { background: var(--accent); border: 0; padding: 10px 16px; font-weight: 700; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; align-items: center; }`} js={`const root = document.documentElement;
+document.querySelectorAll("[data-theme]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const t = btn.dataset.theme;
+    if (t === "system") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", t);
+  });
+});
+document.getElementById("hue").addEventListener("input", (e) => {
+  root.style.setProperty("--hue", e.target.value);
+});`} />
+
+Moving the slider changes **one** variable; every component that uses `--accent` updates instantly.
+
+## Reading and writing from JavaScript
+
+```js
+const root = document.documentElement;
+getComputedStyle(root).getPropertyValue("--hue"); // " 328"
+root.style.setProperty("--hue", "190");
+```
+
+<Tip>
+Typed custom properties with `@property --angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }` can even be animated, because the browser knows how to interpolate them.
+</Tip>
+
+## Summary
+
+Define primitive and semantic tokens on `:root`, override them per theme or per component, honour `prefers-color-scheme`, and update variables from JavaScript for live theming.

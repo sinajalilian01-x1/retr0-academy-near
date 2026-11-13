@@ -1,0 +1,101 @@
+---
+title: "Async/Await and Fetch in Depth"
+description: "Promises, async/await, error handling with fetch, running requests in parallel, timeouts and cancellation."
+order: 1
+tags: ["async", "await", "promise", "fetch", "abortcontroller", "promise.all"]
+---
+
+# Async/Await and Fetch in Depth
+
+Network calls, wallet signatures and timers all take time. JavaScript handles them with **promises**: objects that will settle later as either *fulfilled* (with a value) or *rejected* (with an error). `async`/`await` is syntax that lets you write promise code top to bottom.
+
+<Anim name="async-await" caption="await pauses only the async function. The page keeps running." />
+
+## fetch has two failure modes
+
+```js
+async function getJson(url) {
+  const res = await fetch(url);          // rejects only on network failure / CORS
+  if (!res.ok) {                          // 404 and 500 still FULFILL the promise
+    throw new Error("HTTP " + res.status);
+  }
+  return res.json();                      // also returns a promise
+}
+```
+
+<Warning>
+Forgetting `res.ok` is the most common fetch bug. A 500 error page resolves normally, and then `res.json()` throws a confusing parse error.
+</Warning>
+
+## Sequential vs parallel
+
+```js
+// Sequential: total time = a + b
+const a = await getJson("/a");
+const b = await getJson("/b");
+
+// Parallel: total time = max(a, b)
+const [a2, b2] = await Promise.all([getJson("/a"), getJson("/b")]);
+```
+
+| Combinator | Settles when | Rejects when |
+| --- | --- | --- |
+| `Promise.all` | all fulfil | any one rejects (fail fast) |
+| `Promise.allSettled` | all settle | never; you inspect each result |
+| `Promise.race` | the first settles | the first settles with an error |
+| `Promise.any` | the first fulfils | all reject (`AggregateError`) |
+
+## Timeouts and cancellation
+
+`AbortController` cancels a fetch. `AbortSignal.timeout(ms)` creates a signal that aborts on its own.
+
+<TryIt title="Query NEAR RPC with a timeout, in parallel" html={`<button id="go">Fetch from 2 RPC endpoints</button>
+<pre id="out">Click the button.</pre>`} css={`body { font-family: ui-monospace, monospace; background: #0d0b1a; color: #e8e6ff; }
+button { font: inherit; padding: 8px 14px; background: #ff3fa4; border: 0; }
+pre { white-space: pre-wrap; background: #17132b; padding: 12px; border: 2px solid #2e2858; }`} js={`const out = document.getElementById("out");
+const log = (s) => (out.textContent += s + "\\n");
+
+async function rpc(url, method, params, ms) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: "1", method: method, params: params }),
+    signal: AbortSignal.timeout(ms),
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || "RPC error");
+  return data.result;
+}
+
+document.getElementById("go").addEventListener("click", async () => {
+  out.textContent = "";
+  const t0 = performance.now();
+  const endpoints = ["https://rpc.testnet.near.org", "https://test.rpc.fastnear.com"];
+  const results = await Promise.allSettled(
+    endpoints.map((u) => rpc(u, "status", [], 5000))
+  );
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled") log(endpoints[i] + " -> block " + r.value.sync_info.latest_block_height);
+    else log(endpoints[i] + " failed: " + r.reason.message);
+  });
+  log("took " + Math.round(performance.now() - t0) + " ms (parallel)");
+});`} />
+
+## Retrying with backoff
+
+```js
+async function withRetry(fn, attempts = 3) {
+  for (let i = 0; i < attempts; i++) {
+    try { return await fn(); }
+    catch (e) {
+      if (i === attempts - 1) throw e;
+      await new Promise((r) => setTimeout(r, 2 ** i * 300)); // 300, 600, 1200 ms
+    }
+  }
+}
+```
+
+## Summary
+
+Check `res.ok`, wrap awaits in `try/catch`, run independent requests with `Promise.all` or `allSettled`, and always bound network calls with a timeout. This is how a dApp stays responsive when an RPC node is slow.

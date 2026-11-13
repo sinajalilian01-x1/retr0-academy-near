@@ -4,7 +4,7 @@ import { DIPLOMA_CONTRACT, explorerAccount, explorerToken, listDiplomas, type Ve
 
 export const metadata: Metadata = {
   title: "Leaderboard",
-  description: "Every Retr0 Academy diploma holder, read live from the NEAR contract.",
+  description: "Every NEAR Developer Certificate holder, read live from the NEAR contract.",
 };
 
 export const dynamic = "force-dynamic";
@@ -71,7 +71,7 @@ export default async function LeaderboardPage() {
               {rows.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-6 text-center text-muted">
-                    No diplomas yet. <Link className="text-info underline" href="/near">Be the first.</Link>
+                    No certificates yet. <Link className="text-info underline" href="/near">Be the first.</Link>
                   </td>
                 </tr>
               ) : null}

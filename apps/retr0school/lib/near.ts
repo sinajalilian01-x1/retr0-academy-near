@@ -3,7 +3,7 @@ export const NEAR_NETWORK = "testnet" as const;
 export const DIPLOMA_CONTRACT = process.env.NEXT_PUBLIC_DIPLOMA_CONTRACT || "diploma.retr0school.testnet";
 export const NEAR_TRACK = "near";
 /** Must match the pass_score set on chain with set_track. */
-export const NEAR_PASS_SCORE = 6;
+export const NEAR_PASS_SCORE = 32;
 export const RPC_URLS = [
   process.env.NEXT_PUBLIC_NEAR_RPC || "https://rpc.testnet.near.org",
   "https://test.rpc.fastnear.com",
@@ -28,6 +28,8 @@ export type Verification = {
   max_score: number;
   issued_at_ms: number;
   date: string;
+  /** Letter grade from the final exam; null for diplomas minted before the exam existed. */
+  grade?: string | null;
 };
 
 function toBase64(text: string) {

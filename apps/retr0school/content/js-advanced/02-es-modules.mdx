@@ -1,0 +1,93 @@
+---
+title: "ES Modules"
+description: "import and export, named vs default exports, live bindings, dynamic import() for code splitting, and module scope."
+order: 2
+tags: ["modules", "import", "export", "dynamic-import", "esm"]
+---
+
+# ES Modules
+
+A module is a file with its own scope. Nothing leaks to the global scope unless you export it, and nothing comes in unless you import it. Every modern dApp front end, including this one, is built from modules.
+
+## Named and default exports
+
+```js
+// near.js
+export const NETWORK = "testnet";
+export function explorerUrl(account) {
+  return "https://testnet.nearblocks.io/address/" + account;
+}
+export default function formatNear(yocto) { /* ... */ }
+
+// app.js
+import formatNear, { NETWORK, explorerUrl as link } from "./near.js";
+import * as near from "./near.js"; // namespace object: near.NETWORK
+```
+
+Prefer **named exports**: they are easier to search for, rename consistently, and tree-shake.
+
+## Modules behave differently from scripts
+
+| | Classic `<script>` | `<script type="module">` |
+| --- | --- | --- |
+| Scope | Global | Module scope |
+| Strict mode | Opt-in | Always on |
+| Loading | Blocks parsing unless `defer` | Deferred by default |
+| Top-level `await` | No | Yes |
+| Runs | Every time included | Once per URL, then cached |
+
+## Live bindings
+
+Imports are **live views** of the exporter's variables, not copies:
+
+```js
+// counter.js
+export let count = 0;
+export function inc() { count++; }
+
+// main.js
+import { count, inc } from "./counter.js";
+inc();
+console.log(count); // 1, the binding updated
+count = 5;          // TypeError: imports are read-only
+```
+
+## Dynamic import()
+
+`import()` returns a promise and loads code on demand. That is how this site loads the wallet selector only when you need it:
+
+```js
+button.addEventListener("click", async () => {
+  const { setupWalletSelector } = await import("@near-wallet-selector/core");
+  // ...the wallet code is downloaded only now
+});
+```
+
+## Try it: modules in the browser
+
+Inline module scripts can import from URLs. Here, a module is created from a string with a Blob URL so the example is self-contained.
+
+<TryIt title="Import a module, use its exports, load one dynamically" html={`<pre id="out"></pre>`} css={`body { background: #0d0b1a; color: #e8e6ff; font-family: ui-monospace, monospace; }
+pre { background: #17132b; padding: 12px; border: 2px solid #2e2858; }`} js={`const source = [
+  "export const NETWORK = 'testnet';",
+  "export let count = 0;",
+  "export function inc() { count++; }",
+  "export default function yoctoToNear(y) {",
+  "  const s = BigInt(y).toString().padStart(25, '0');",
+  "  return s.slice(0, -24) + '.' + s.slice(-24, -19);",
+  "}",
+].join("\\n");
+const url = URL.createObjectURL(new Blob([source], { type: "text/javascript" }));
+const out = document.getElementById("out");
+
+import(url).then((mod) => {
+  out.textContent += "NETWORK = " + mod.NETWORK + "\\n";
+  mod.inc(); mod.inc();
+  out.textContent += "live binding count = " + mod.count + "\\n";
+  out.textContent += "default export: 1.5 NEAR = " + mod.default("1500000000000000000000000") + "\\n";
+  try { mod.count = 9; } catch (e) { out.textContent += "write blocked: " + e.constructor.name + "\\n"; }
+});`} />
+
+## Summary
+
+Modules give every file private scope, explicit dependencies and strict mode. Use named exports, remember imports are live and read-only, and reach for `import()` to split heavy code like wallet SDKs out of your first load.

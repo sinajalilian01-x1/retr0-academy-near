@@ -1,0 +1,92 @@
+---
+title: "Meta Tags, SEO and Social Cards"
+description: "The document head: charset, viewport, titles, descriptions, canonical URLs, Open Graph, X cards and structured data."
+order: 4
+tags: ["seo", "meta", "open-graph", "head", "json-ld"]
+---
+
+# Meta Tags, SEO and Social Cards
+
+Nobody sees the `<head>`, yet it decides how your dApp renders on phones, what Google shows in results, and what card appears when someone shares your link on X.
+
+## The essential head
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verify a NEAR diploma | Retr0 Academy</title>
+  <meta name="description" content="Check any NEAR testnet account for a soulbound Retr0 Academy diploma.">
+  <link rel="canonical" href="https://example.com/verify">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0d0b1a">
+</head>
+```
+
+| Tag | Why |
+| --- | --- |
+| `lang` on `<html>` | Correct pronunciation by screen readers, translation prompts |
+| `charset` | Must be in the first 1024 bytes |
+| `viewport` | Without it, phones render a zoomed-out desktop page |
+| `<title>` | The search result headline and browser tab, about 60 characters |
+| `description` | Often used as the result snippet, about 155 characters |
+| `canonical` | Tells search engines the one true URL for duplicate pages |
+
+## Open Graph and X cards
+
+```html
+<meta property="og:type" content="website">
+<meta property="og:title" content="I earned a NEAR Developer Certificate">
+<meta property="og:description" content="Soulbound, verifiable on NEAR testnet.">
+<meta property="og:image" content="https://example.com/og/alice.png">
+<meta property="og:url" content="https://example.com/d/alice.testnet">
+<meta name="twitter:card" content="summary_large_image">
+```
+
+Use a 1200×630 image. Crawlers do not run JavaScript, so these tags must be in the server-rendered HTML. Frameworks like Next.js generate them from a `metadata` export, and this site renders a personal card for every diploma holder at `/d/<account>`.
+
+## Structured data (JSON-LD)
+
+Structured data describes the page in a vocabulary search engines understand. A course page could include:
+
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "NEAR Smart Contracts",
+  "description": "Write, test and deploy Rust contracts on NEAR.",
+  "provider": { "@type": "Organization", "name": "Retr0 Academy" }
+}
+</script>
+```
+
+## Try it: build a share preview
+
+<TryIt title="Preview how a link card will look" html={`<label>Title <input id="t" value="I earned a NEAR Developer Certificate"></label>
+<label>Description <input id="d" value="Soulbound, verifiable on NEAR testnet."></label>
+<div class="card">
+  <div class="img">1200 x 630</div>
+  <div class="body"><small>example.com</small><b id="pt"></b><span id="pd"></span></div>
+</div>
+<p id="warn"></p>`} css={`body { font-family: system-ui; background: #0d0b1a; color: #e8e6ff; display: grid; gap: .5rem; max-width: 420px; }
+input { width: 100%; padding: .4rem; background: #17132b; color: inherit; border: 2px solid #2e2858; }
+.card { border: 1px solid #2e2858; border-radius: 12px; overflow: hidden; }
+.img { aspect-ratio: 1200/630; background: linear-gradient(135deg,#ff3fa4,#6ff6ff); display: grid; place-items: center; color: #0d0b1a; font-weight: 700; }
+.body { padding: .6rem; display: grid; gap: .2rem; }
+small { color: #8480b8; } #warn { color: #ffd84a; }`} js={`const t = document.getElementById("t"), d = document.getElementById("d");
+function render() {
+  document.getElementById("pt").textContent = t.value;
+  document.getElementById("pd").textContent = d.value;
+  const w = [];
+  if (t.value.length > 60) w.push("Title over 60 chars may be truncated.");
+  if (d.value.length > 155) w.push("Description over 155 chars may be truncated.");
+  document.getElementById("warn").textContent = w.join(" ");
+}
+t.addEventListener("input", render); d.addEventListener("input", render); render();`} />
+
+## Summary
+
+Always set `lang`, `charset`, `viewport`, a unique `title` and `description`, and a `canonical` URL. Add Open Graph and X card tags so shared links look great, and JSON-LD to describe what the page is.

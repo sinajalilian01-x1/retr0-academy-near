@@ -11,6 +11,8 @@ A NEAR account holds a list of public keys. Each key has a **permission**:
 - **Full access**: can do everything: transfer NEAR, deploy code, add or delete keys, delete the account.
 - **Function call**: can only call **non-payable** methods on **one contract**, optionally a short list of method names, and spend gas from a small **allowance**.
 
+<Anim name="access-keys" caption="Full-access vs function-call keys." />
+
 ## Why function-call keys matter
 
 When you sign in to a dApp, your wallet can add a function-call key for that dApp's contract. The dApp keeps the private half in your browser and signs routine actions (like "post a message") without a pop-up. It still cannot move your NEAR, because that key is not allowed to attach a deposit.

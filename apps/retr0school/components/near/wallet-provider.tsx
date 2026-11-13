@@ -34,7 +34,51 @@ type WalletContextValue = {
   diploma: Verification | null;
   holderChecked: boolean;
   refreshDiploma: () => Promise<Verification | null>;
+  /** NEP-413: sign an off-chain message so the server can verify account ownership, then set the holder cookie. */
+  unlockAdvanced: () => Promise<string | null>;
 };
+
+const NEP413_MESSAGE = "Unlock Advanced NEAR on Retr0 Academy";
+const NEP413_RECIPIENT = "retr0-academy";
+const PENDING_NONCE = "r0-nep413-nonce";
+
+function toB64(bytes: Uint8Array) {
+  let bin = "";
+  bytes.forEach((b) => (bin += String.fromCharCode(b)));
+  return btoa(bin);
+}
+
+/** 32-byte nonce whose first 8 bytes are the current time (ms, big-endian), so the server can reject stale signatures. */
+function makeNonce() {
+  const nonce = crypto.getRandomValues(new Uint8Array(32));
+  new DataView(nonce.buffer).setBigUint64(0, BigInt(Date.now()));
+  return nonce;
+}
+
+async function postHolder(body: Record<string, unknown>) {
+  const res = await fetch("/api/holder", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Unlock failed");
+  return data.holder as string;
+}
+
+/** Browser-redirect wallets (MyNearWallet) come back with the signature in the URL hash. */
+export async function completeRedirectUnlock(): Promise<string | null> {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const signature = params.get("signature");
+  const pending = sessionStorage.getItem(PENDING_NONCE);
+  if (!signature || !pending) return null;
+  sessionStorage.removeItem(PENDING_NONCE);
+  history.replaceState(null, "", window.location.pathname + window.location.search);
+  return postHolder({
+    accountId: params.get("accountId"),
+    publicKey: params.get("publicKey"),
+    signature,
+    nonce: pending,
+    callbackUrl: window.location.origin + window.location.pathname,
+  });
+}
 
 const WalletContext = createContext<WalletContextValue | null>(null);
 
@@ -63,7 +107,7 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       const m = setupModal(s, {
         contractId: DIPLOMA_CONTRACT,
         theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
-        description: "Connect a NEAR testnet wallet to mint and show your Retr0 Academy diploma.",
+        description: "Connect a NEAR testnet wallet to mint and show your NEAR Developer Certificate.",
       });
       const sync = () => setAccountId(s.store.getState().accounts.find((a) => a.active)?.accountId ?? null);
       sync();
@@ -143,6 +187,31 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
     [selector],
   );
 
+  const unlockAdvanced = useCallback(async () => {
+    if (!selector) throw new Error("Wallet is still loading.");
+    const wallet = await selector.wallet();
+    if (!("signMessage" in wallet) || typeof wallet.signMessage !== "function") {
+      throw new Error("This wallet cannot sign messages (NEP-413). Try MyNearWallet or Meteor.");
+    }
+    const nonce = makeNonce();
+    const callbackUrl = window.location.origin + window.location.pathname;
+    sessionStorage.setItem(PENDING_NONCE, toB64(nonce));
+    const signed = await wallet.signMessage({
+      message: NEP413_MESSAGE,
+      recipient: NEP413_RECIPIENT,
+      nonce: nonce as unknown as Buffer,
+      callbackUrl,
+    });
+    if (!signed) return null; // redirect wallet: completeRedirectUnlock() finishes after the round trip
+    sessionStorage.removeItem(PENDING_NONCE);
+    return postHolder({
+      accountId: signed.accountId,
+      publicKey: signed.publicKey,
+      signature: signed.signature,
+      nonce: toB64(nonce),
+    });
+  }, [selector]);
+
   const value = useMemo(
     () => ({
       ready: Boolean(selector && modal),
@@ -153,8 +222,9 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       diploma,
       holderChecked,
       refreshDiploma,
+      unlockAdvanced,
     }),
-    [selector, modal, accountId, connect, disconnect, mintDiploma, diploma, holderChecked, refreshDiploma],
+    [selector, modal, accountId, connect, disconnect, mintDiploma, diploma, holderChecked, refreshDiploma, unlockAdvanced],
   );
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;

@@ -1,0 +1,99 @@
+---
+title: "Forms and Native Validation"
+description: "Input types, constraint attributes, the Constraint Validation API, custom messages, and accessible errors."
+order: 2
+tags: ["forms", "validation", "constraint-validation", "input"]
+---
+
+# Forms and Native Validation
+
+Browsers ship a complete validation engine. Use the right `type` and a few attributes and you get mobile keyboards, error bubbles and `:invalid` styles without a single library.
+
+<Anim name="form-validation" caption="Typed inputs validate themselves: invalid until the value matches." />
+
+## Constraint attributes
+
+| Attribute | Example | Failing state (`validity.*`) |
+| --- | --- | --- |
+| `required` | `<input required>` | `valueMissing` |
+| `type` | `type="email"`, `type="url"` | `typeMismatch` |
+| `pattern` | `pattern="[a-z0-9_-]+\.testnet"` | `patternMismatch` |
+| `minlength` / `maxlength` | `minlength="2"` | `tooShort` / `tooLong` |
+| `min` / `max` / `step` | `type="number" min="0" step="0.01"` | `rangeUnderflow`, `stepMismatch` |
+
+## The Constraint Validation API
+
+Every form control has `validity`, `checkValidity()`, `reportValidity()` and `setCustomValidity(message)`. A non-empty custom message makes the field invalid until you clear it with `""`.
+
+<TryIt title="Validated NEAR signup form" html={`<form id="f" novalidate>
+  <label for="acct">Testnet account</label>
+  <input id="acct" name="acct" required pattern="[a-z0-9_-]{2,48}\\.testnet"
+         aria-describedby="acct-err" placeholder="alice.testnet">
+  <p id="acct-err" class="err" aria-live="polite"></p>
+
+  <label for="email">Email</label>
+  <input id="email" type="email" required aria-describedby="email-err">
+  <p id="email-err" class="err" aria-live="polite"></p>
+
+  <label for="pw">Password</label>
+  <input id="pw" type="password" required minlength="10">
+  <label for="pw2">Repeat password</label>
+  <input id="pw2" type="password" required aria-describedby="pw2-err">
+  <p id="pw2-err" class="err" aria-live="polite"></p>
+
+  <button>Create account</button>
+  <p id="ok"></p>
+</form>`} css={`body { font-family: system-ui; background: #0d0b1a; color: #e8e6ff; }
+form { display: grid; gap: .35rem; max-width: 320px; }
+input { padding: .5rem; border: 2px solid #2e2858; background: #17132b; color: inherit; }
+input:user-invalid { border-color: #ff8aa8; }
+input:user-valid { border-color: #7ddeaf; }
+.err { color: #ff8aa8; min-height: 1em; margin: 0; font-size: .85rem; }
+button { margin-top: .5rem; padding: .6rem; background: #ff3fa4; border: 0; font-weight: 700; }`} js={`const form = document.getElementById("f");
+const pw = document.getElementById("pw"), pw2 = document.getElementById("pw2");
+
+function message(input) {
+  const v = input.validity;
+  if (v.valueMissing) return "This field is required.";
+  if (v.typeMismatch) return "Enter a valid email address.";
+  if (v.patternMismatch) return "Use lowercase letters, digits, - or _, ending in .testnet";
+  if (v.customError) return input.validationMessage;
+  return "";
+}
+
+pw2.addEventListener("input", () => {
+  pw2.setCustomValidity(pw2.value === pw.value ? "" : "Passwords do not match.");
+});
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  let firstBad = null;
+  for (const input of form.querySelectorAll("input")) {
+    const out = document.getElementById(input.id + "-err");
+    const msg = message(input);
+    if (out) out.textContent = msg;
+    input.setAttribute("aria-invalid", msg ? "true" : "false");
+    if (msg && !firstBad) firstBad = input;
+  }
+  if (firstBad) { firstBad.focus(); return; }
+  document.getElementById("ok").textContent = "Valid! (Now validate again on the server.)";
+});`} />
+
+Things to notice:
+
+- `novalidate` turns off the default bubbles so **we** render messages, but the validity state still works.
+- `:user-invalid` only styles a field after the user interacted with it, so the form does not start out red.
+- Errors are linked with `aria-describedby` and announced through `aria-live`.
+- On failure, focus moves to the first bad field.
+
+<Warning>
+Client-side validation is for user experience only. Anyone can send a request with curl. Every rule must be checked again on the server, exactly like Retr0 Academy's exam grader re-checks every answer.
+</Warning>
+
+## Autocomplete and input modes
+
+`autocomplete="email"`, `autocomplete="new-password"` and `inputmode="decimal"` help password managers and mobile keyboards. They are free usability wins.
+
+## Summary
+
+Pick precise input types, declare constraints as attributes, read `validity` for messages, use `setCustomValidity` for cross-field rules, and always validate again on the server.

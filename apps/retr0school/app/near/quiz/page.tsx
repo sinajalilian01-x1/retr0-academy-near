@@ -1,37 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { QuizRunner } from "@/components/quiz-runner";
-import { getQuiz } from "@/lib/content";
-import { NEAR_TRACK } from "@/lib/near";
+import { FinalExam } from "@/components/exam/final-exam";
 
 export const metadata: Metadata = {
-  title: "NEAR diploma quiz",
-  description: "Pass the NEAR diploma quiz, then mint a soulbound diploma NFT on testnet.",
+  title: "NEAR Developer final exam",
+  description:
+    "A timed, server-graded final exam: 25 questions from a 60+ question bank plus 3 auto-graded coding tasks. Pass with 80% to mint a soulbound NEAR Developer Certificate.",
 };
 
-export default function NearQuizPage() {
-  const questions = getQuiz(NEAR_TRACK);
+export default function NearExamPage() {
   return (
-    <main id="content" className="mx-auto w-full max-w-lesson px-5 py-8 md:px-8 md:py-12">
+    <main id="content" className="mx-auto w-full max-w-page px-5 py-8 md:px-8 md:py-12">
       <p className="text-sm text-muted">
         <Link href="/near" className="text-info underline underline-offset-4">
-          NEAR diploma
+          NEAR Developer path
         </Link>{" "}
-        · {questions.length} questions
+        · Final exam
       </p>
-      <h1 className="mt-2 font-pixel text-title">NEAR diploma quiz</h1>
-      <p className="mt-3 text-lead text-muted">
-        Answer every question, then score the quiz. A passing score lets you mint the soulbound diploma NFT. The answer
-        key never leaves the grading server.
+      <h1 className="mt-2 font-pixel text-title">NEAR Developer final exam</h1>
+      <p className="mt-3 max-w-lesson text-lead text-muted">
+        The certificate is earned, not given. This exam covers everything in the NEAR Developer path, at the level of real code
+        review. Pass it to mint your soulbound NEAR Developer Certificate on testnet.
       </p>
-      <QuizRunner track={NEAR_TRACK} questions={questions} />
-      <p className="mt-10 text-sm text-muted">
-        After you pass, go to the{" "}
-        <Link href="/diploma" className="font-medium text-info underline underline-offset-4">
-          diploma page
-        </Link>{" "}
-        to mint.
-      </p>
+      <FinalExam />
     </main>
   );
 }

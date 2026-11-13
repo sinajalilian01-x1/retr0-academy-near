@@ -1,0 +1,12 @@
+{
+  "title": "Advanced HTML",
+  "description": "Production-grade markup: semantics and accessibility, forms with native validation, media, canvas and SVG, and the meta tags that make pages shareable and searchable.",
+  "icon": "\ud83e\uddf1",
+  "color": "#E34F26",
+  "group": "foundations",
+  "listed": true,
+  "level": "Advanced",
+  "prerequisites": ["The HTML foundations course, or comfort writing basic pages with headings, links, images, and forms."],
+  "youWillBuild": "An accessible, validated signup form, an animated canvas scene, an inline SVG icon set, and a fully tagged page head ready for search and social cards.",
+  "overview": "Go beyond tags that merely render. Learn how assistive technology reads your page, how browsers validate forms for free, how to draw with canvas and SVG, and how metadata decides what Google and X show for your dApp."
+}

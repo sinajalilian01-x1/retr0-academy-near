@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { DiplomaCard } from "@/components/near/diploma-card";
 import { ShareButton } from "@/components/near/share-button";
 import { useNearWallet, type Attestation } from "@/components/near/wallet-provider";
-import { useProgress } from "@/lib/progress";
-import { DIPLOMA_CONTRACT, NEAR_PASS_SCORE, NEAR_TRACK, explorerAccount, explorerTx, readNearAnswers, verifyDiploma } from "@/lib/near";
+import { examStore, type StoredPass } from "@/lib/exam/client";
+import { EXAM } from "@/lib/exam/config";
+import { DIPLOMA_CONTRACT, explorerAccount, explorerTx, verifyDiploma } from "@/lib/near";
 
 function Step({ n, title, done, children }: { n: number; title: string; done: boolean; children: React.ReactNode }) {
   return (
@@ -28,36 +29,34 @@ function Step({ n, title, done, children }: { n: number; title: string; done: bo
 
 export function DiplomaFlow() {
   const { ready, accountId, connect, mintDiploma, diploma, holderChecked, refreshDiploma } = useNearWallet();
-  const progress = useProgress();
-  const quiz = progress.quizzes[NEAR_TRACK];
-  const [answers, setAnswers] = useState<number[] | null>(null);
+  const [pass, setPass] = useState<StoredPass | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setAnswers(readNearAnswers());
+    setPass(examStore.pass());
     // Browser wallets may redirect back with ?transactionHashes=...
     const hash = new URLSearchParams(window.location.search).get("transactionHashes");
     if (hash) setTxHash(hash.split(",").pop() ?? null);
   }, []);
 
-  const passed = Boolean(quiz && quiz.correct >= NEAR_PASS_SCORE && answers);
+  const passed = Boolean(pass && pass.max === EXAM.maxScore && pass.score >= EXAM.passScore);
   const busy = status !== null;
 
   async function onMint() {
-    if (!answers || !accountId) return;
+    if (!pass || !accountId) return;
     setError(null);
     try {
       setStatus("Grading on the server…");
       const res = await fetch("/api/grade", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ track: NEAR_TRACK, answers, accountId }),
+        body: JSON.stringify({ track: "near", passToken: pass.passToken, accountId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Grading failed");
-      if (!data.attestation) throw new Error(`Score ${data.score}/${data.max_score} is below the pass mark. Retake the quiz.`);
+      if (!data.attestation) throw new Error("No attestation returned. Take the final exam again.");
       setStatus("Waiting for your wallet…");
       const result = await mintDiploma(data.attestation as Attestation);
       if (result.txHash) setTxHash(result.txHash);
@@ -69,7 +68,7 @@ export function DiplomaFlow() {
       await refreshDiploma();
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      setError(message.includes("already holds") ? "This account already holds a NEAR diploma." : message);
+      setError(message.includes("already holds") ? "This account already holds a NEAR Developer Certificate." : message);
     } finally {
       setStatus(null);
     }
@@ -78,20 +77,15 @@ export function DiplomaFlow() {
   return (
     <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_1fr]">
       <ol className="flex flex-col gap-4">
-        <Step n={1} title="Pass the NEAR quiz" done={passed}>
-          {quiz ? (
+        <Step n={1} title="Pass the final exam" done={passed}>
+          {pass ? (
             <p>
-              Your score: <strong className="text-ink">{quiz.correct}/{quiz.total}</strong>. You need {NEAR_PASS_SCORE}.{" "}
-              {!passed ? (
-                <Link className="text-info underline underline-offset-4" href="/near/quiz">
-                  Try the quiz again
-                </Link>
-              ) : null}
+              You passed: <strong className="text-ink">{pass.score}/{pass.max}</strong>, grade {pass.grade}. The signed pass is valid for 7 days.
             </p>
           ) : (
             <p>
-              Take the <Link className="text-info underline underline-offset-4" href="/near/quiz">NEAR quiz</Link>. The answer key
-              never leaves the grading server.
+              Take the <Link className="text-info underline underline-offset-4" href="/near/quiz">final exam</Link>: 25 randomized
+              questions and 3 coding tasks, graded on the server. You need {EXAM.passScore}/{EXAM.maxScore} ({EXAM.passPercent}%).
             </p>
           )}
         </Step>
@@ -112,13 +106,13 @@ export function DiplomaFlow() {
             </>
           )}
         </Step>
-        <Step n={3} title="Mint your diploma NFT" done={Boolean(diploma)}>
+        <Step n={3} title="Mint your certificate NFT" done={Boolean(diploma)}>
           {diploma ? (
-            <p>Minted. Your diploma lives on NEAR testnet and is soulbound to your account. Advanced NEAR is unlocked.</p>
+            <p>Minted. Your NEAR Developer Certificate lives on NEAR testnet and is soulbound to your account. Advanced NEAR is unlocked.</p>
           ) : (
             <>
               <p>
-                The grader signs your score for <em>your</em> account (ed25519). <code className="font-mono">mint_diploma</code> on{" "}
+                The grader signs your exam score for <em>your</em> account (ed25519). <code className="font-mono">mint_diploma</code> on{" "}
                 <code className="font-mono">{DIPLOMA_CONTRACT}</code> checks that signature on chain, then mints. 0.02 NEAR covers
                 storage; the unused part is refunded.
               </p>
@@ -129,7 +123,7 @@ export function DiplomaFlow() {
                 disabled={!passed || !accountId || busy || !holderChecked}
                 onClick={onMint}
               >
-                {status ?? "Mint diploma"}
+                {status ?? "Mint certificate"}
               </Button>
             </>
           )}
@@ -161,7 +155,7 @@ export function DiplomaFlow() {
           </>
         ) : (
           <div className="flex min-h-64 items-center justify-center rounded-md border-2 border-dashed border-line p-8 text-center text-sm text-muted">
-            {accountId && !holderChecked ? "Checking the chain for your diploma…" : "Your diploma will appear here after you mint it."}
+            {accountId && !holderChecked ? "Checking the chain for your certificate…" : "Your certificate will appear here after you mint it."}
           </div>
         )}
       </div>

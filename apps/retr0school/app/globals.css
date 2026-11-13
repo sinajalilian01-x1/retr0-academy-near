@@ -288,3 +288,22 @@ legend {
 #near-wallet-selector-modal .nws-modal .wallet-options-wrapper .options-list .single-wallet.selected-wallet {
   border-color: var(--w3h-accent);
 }
+
+/* Animated lesson diagrams */
+.anim-figure {
+  margin: 1.75rem 0;
+  border: 2px solid var(--w3h-line);
+  background: #0d0b1a;
+  box-shadow: 4px 4px 0 var(--w3h-line);
+}
+.anim-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.anim-figure figcaption {
+  border-top: 2px solid var(--w3h-line);
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--w3h-muted, #8480b8);
+}

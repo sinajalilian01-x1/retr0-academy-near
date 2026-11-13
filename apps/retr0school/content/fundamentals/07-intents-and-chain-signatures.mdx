@@ -8,6 +8,9 @@ tags: ["intents", "chain-signatures", "chain-abstraction"]
 
 NEAR's big idea is **chain abstraction**: users should not have to care which chain they are on. Two building blocks make that real.
 
+<Anim name="intents" caption="Intents: say what you want, let solvers compete." />
+<Anim name="chain-signatures" caption="Chain Signatures: a NEAR account signs for other chains." />
+
 ## Chain Signatures
 
 A NEAR account (or contract) can **sign transactions for other chains**. You ask the MPC signer contract (`v1.signer-prod.testnet` on testnet) to sign a payload with a **derivation path**. A network of nodes holds the key in shares (multi-party computation) and returns a signature. No single node ever has the full key.

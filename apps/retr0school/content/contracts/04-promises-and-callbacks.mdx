@@ -8,6 +8,8 @@ tags: ["promises", "callbacks"]
 
 A contract cannot call another contract synchronously. Accounts can live on different shards, so NEAR turns the call into a **receipt**. You create a [`Promise`](https://docs.near.org/smart-contracts/anatomy/crosscontract), the runtime runs the other contract later, and if you need the result you chain a **callback** with `.then(...)`.
 
+<Anim name="cross-contract" caption="A promise runs in a later block; the callback sees the result." />
+
 ## The pattern
 
 1. Build a promise to the other contract (`ext_contract` in Rust, or `Promise` in JS).

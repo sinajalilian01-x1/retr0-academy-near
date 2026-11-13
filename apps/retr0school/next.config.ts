@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
     "/d/[account]": ["./assets/fonts/PressStart2P-Regular.ttf"],
   },
   serverExternalPackages: [
+    "quickjs-emscripten",
+    "@jitl/quickjs-wasmfile-release-sync",
     "shiki",
     "@shikijs/core",
     "@shikijs/engine-javascript",

@@ -1,0 +1,144 @@
+---
+title: "Mini App: NEAR Account Explorer"
+description: "Build a small app that reads live NEAR testnet data over JSON-RPC: state, validation, loading and error UI, caching, and race-condition handling."
+order: 5
+tags: ["project", "near", "rpc", "fetch", "state", "mini-app"]
+---
+
+# Mini App: NEAR Account Explorer
+
+Time to combine everything: modules-style organisation, async fetch with timeouts, closures for caching, delegated events and safe rendering. The app looks up any testnet account and shows its balance, storage, and whether it holds a Retr0 Academy diploma, all over raw JSON-RPC, which is what `near-api-js` does under the hood.
+
+<Anim name="view-vs-change" caption="Every call in this app is a free view call: no wallet, no gas." />
+
+## The plan
+
+1. **Validate** the account id before hitting the network.
+2. **`view_account`**: balance (in yoctoNEAR) and storage usage.
+3. **`call_function` → `verify_diploma`**: arguments are base64 JSON, the result is an array of bytes holding JSON.
+4. **Cache** results in a closure-backed `Map`.
+5. Ignore **stale responses** if the user searches again before the first finishes.
+
+<TryIt title="NEAR account explorer (live testnet)" html={`<form id="f">
+  <input id="acct" value="hackathon-judge.retr0school.testnet" aria-label="Testnet account" spellcheck="false">
+  <button>Look up</button>
+</form>
+<div class="chips">
+  <button data-acct="demo-learner.retr0school.testnet">demo-learner</button>
+  <button data-acct="diploma.retr0school.testnet">diploma contract</button>
+  <button data-acct="nobody-here-xyz.testnet">missing account</button>
+</div>
+<section id="out" aria-live="polite"></section>`} css={`body { font-family: ui-monospace, monospace; background: #0d0b1a; color: #e8e6ff; padding: 12px; }
+form { display: flex; gap: 8px; }
+input { flex: 1; min-width: 0; padding: 8px; background: #17132b; color: inherit; border: 2px solid #2e2858; }
+button { font: inherit; background: #ff3fa4; border: 0; padding: 6px 12px; cursor: pointer; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.chips button { background: #17132b; color: #6ff6ff; border: 2px solid #2e2858; }
+.card { border: 2px solid #2e2858; background: #17132b; padding: 12px; display: grid; gap: 6px; }
+.ok { color: #7ddeaf; } .bad { color: #ff8aa8; } .muted { color: #8480b8; }
+.loading::after { content: "..."; animation: dots 1s steps(4) infinite; display: inline-block; width: 0; overflow: hidden; vertical-align: bottom; }
+@keyframes dots { to { width: 1.5em; } }`} js={`const RPC = "https://rpc.testnet.near.org";
+const DIPLOMA = "diploma.retr0school.testnet";
+const ACCOUNT_RE = /^(?=.{2,64}$)(([a-z\\d]+[-_])*[a-z\\d]+\\.)*([a-z\\d]+[-_])*[a-z\\d]+$/;
+const out = document.getElementById("out");
+
+async function rpc(params) {
+  const res = await fetch(RPC, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: "x", method: "query", params: params }),
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.cause ? data.error.cause.name : data.error.message);
+  return data.result;
+}
+
+function yoctoToNear(yocto, decimals = 4) {
+  const s = BigInt(yocto).toString().padStart(25, "0");
+  return s.slice(0, -24) + "." + s.slice(-24, -24 + decimals);
+}
+
+// Closure-backed cache: private Map, survives between lookups
+const cached = (() => {
+  const cache = new Map();
+  return async (key, fn) => {
+    if (!cache.has(key)) cache.set(key, fn().catch((e) => { cache.delete(key); throw e; }));
+    return cache.get(key);
+  };
+})();
+
+async function lookup(account) {
+  const [acct, diploma] = await Promise.all([
+    rpc({ request_type: "view_account", finality: "final", account_id: account }),
+    rpc({
+      request_type: "call_function", finality: "final", account_id: DIPLOMA,
+      method_name: "verify_diploma",
+      args_base64: btoa(JSON.stringify({ account_id: account, track: "near" })),
+    }).then((r) => JSON.parse(new TextDecoder().decode(new Uint8Array(r.result)))),
+  ]);
+  return { acct, diploma };
+}
+
+function row(label, value, cls) {
+  const p = document.createElement("div");
+  const b = document.createElement("span"); b.className = "muted"; b.textContent = label + ": ";
+  const v = document.createElement("span"); v.textContent = value; if (cls) v.className = cls;
+  p.append(b, v); return p;
+}
+
+let latest = 0; // guards against out-of-order responses
+async function show(account) {
+  account = account.trim().toLowerCase();
+  if (!ACCOUNT_RE.test(account)) { out.replaceChildren(row("Error", "Not a valid NEAR account id", "bad")); return; }
+  const ticket = ++latest;
+  const loading = document.createElement("p"); loading.className = "loading"; loading.textContent = "Querying " + account;
+  out.replaceChildren(loading);
+  try {
+    const { acct, diploma } = await cached(account, () => lookup(account));
+    if (ticket !== latest) return; // a newer search started, drop this result
+    const card = document.createElement("div"); card.className = "card";
+    card.append(
+      row("Account", account),
+      row("Balance", yoctoToNear(acct.amount) + " NEAR"),
+      row("Storage", acct.storage_usage + " bytes"),
+      row("Contract deployed", acct.code_hash !== "11111111111111111111111111111111" ? "yes" : "no"),
+      diploma
+        ? row("Diploma", diploma.track_title + " " + diploma.score + "/" + diploma.max_score + " on " + diploma.date, "ok")
+        : row("Diploma", "none", "muted")
+    );
+    out.replaceChildren(card);
+  } catch (e) {
+    if (ticket !== latest) return;
+    out.replaceChildren(row("Error", e.message === "UNKNOWN_ACCOUNT" ? "Account does not exist" : e.message, "bad"));
+  }
+}
+
+document.getElementById("f").addEventListener("submit", (e) => { e.preventDefault(); show(document.getElementById("acct").value); });
+document.querySelector(".chips").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-acct]");
+  if (b) { document.getElementById("acct").value = b.dataset.acct; show(b.dataset.acct); }
+});
+show(document.getElementById("acct").value);`} />
+
+## What each technique does here
+
+| Technique | Where |
+| --- | --- |
+| Validation before network | `ACCOUNT_RE.test(account)` |
+| Parallel requests | `Promise.all([view_account, verify_diploma])` |
+| Timeout | `AbortSignal.timeout(8000)` |
+| BigInt for money | `yoctoToNear`: 1 NEAR = 10^24 yocto, beyond `Number` precision |
+| Closure cache that forgets failures | `cached` |
+| Race-condition guard | the `latest` ticket |
+| Event delegation | one listener on `.chips` |
+| XSS-safe rendering | `textContent` in `row()` |
+
+<Tip>
+Open this in Code E from the Playground and extend it: list the account's NFTs with `nft_tokens_for_owner`, or poll `status` every few seconds to show the latest block.
+</Tip>
+
+## Summary
+
+You built a real client for a public blockchain API with nothing but the platform. Every NEAR front end, from wallets to explorers, is these same pieces with more polish.

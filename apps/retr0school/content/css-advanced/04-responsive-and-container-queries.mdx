@@ -1,0 +1,72 @@
+---
+title: "Responsive Design and Container Queries"
+description: "Mobile-first media queries, fluid type with clamp(), container queries, and modern viewport units."
+order: 4
+tags: ["responsive", "container-queries", "clamp", "media-queries", "mobile-first"]
+---
+
+# Responsive Design and Container Queries
+
+Responsive design used to mean one thing: media queries on the **viewport**. Modern CSS adds fluid values and **container queries**, so components adapt to the space they are actually given.
+
+## Mobile-first media queries
+
+Write the single-column mobile layout as the default, then add complexity as space grows:
+
+```css
+.grid { display: grid; gap: 1rem; }
+@media (min-width: 48rem) { .grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 72rem) { .grid { grid-template-columns: repeat(3, 1fr); } }
+```
+
+Other useful media features: `(hover: hover)` for devices with a real pointer, `(prefers-color-scheme: dark)`, and `(prefers-reduced-motion: reduce)`.
+
+## Fluid values with clamp()
+
+`clamp(min, preferred, max)` scales smoothly between limits:
+
+```css
+h1 { font-size: clamp(1.5rem, 1rem + 3vw, 3.5rem); }
+.section { padding-block: clamp(2rem, 6vw, 6rem); }
+```
+
+The hero title on this site's home page uses exactly this technique.
+
+## Container queries
+
+<Anim name="container-queries" caption="The card switches layout based on its container width, not the screen." />
+
+A card in a narrow sidebar and the same card in a wide main column need different layouts at the **same** viewport width. Media queries cannot tell them apart; container queries can.
+
+<TryIt title="One card component, two containers" html={`<div class="layout">
+  <aside class="slot"><div class="card"><div class="img"></div><div><h3>Tokens and NFTs</h3><p>NEP-141 and NEP-171 on NEAR.</p></div></div></aside>
+  <main class="slot"><div class="card"><div class="img"></div><div><h3>Tokens and NFTs</h3><p>NEP-141 and NEP-171 on NEAR.</p></div></div></main>
+</div>
+<p>Drag the slider to resize the main slot:</p>
+<input id="w" type="range" min="200" max="700" value="520">`} css={`body { font-family: system-ui; background: #0d0b1a; color: #e8e6ff; }
+.layout { display: flex; gap: 12px; align-items: flex-start; }
+aside.slot { width: 200px; } main.slot { width: 520px; }
+.slot { container-type: inline-size; container-name: slot; border: 2px dashed #2e2858; padding: 8px; }
+.card { display: grid; gap: 10px; background: #17132b; padding: 10px; }
+.img { aspect-ratio: 16/9; background: linear-gradient(135deg, #ff3fa4, #6ff6ff); }
+h3 { margin: 0; font-size: 1rem; } p { margin: .25rem 0 0; color: #a9a4d6; }
+@container slot (min-width: 400px) {
+  .card { grid-template-columns: 160px 1fr; align-items: center; }
+  h3 { font-size: 1.25rem; }
+}`} js={`const w = document.getElementById("w");
+const main = document.querySelector("main.slot");
+w.addEventListener("input", () => { main.style.width = w.value + "px"; });`} />
+
+Key points:
+
+- `container-type: inline-size` makes an element a query container for its width.
+- `@container slot (min-width: 400px)` styles descendants based on that container.
+- Container query units like `cqi` (1% of the container's inline size) enable fluid sizing within components.
+
+## Modern viewport units
+
+On mobile, `100vh` includes the area under the browser's toolbars. Use `100dvh` (dynamic), `100svh` (smallest) or `100lvh` (largest) instead.
+
+## Summary
+
+Start mobile-first, make values fluid with `clamp()`, use media queries for page-level layout and user preferences, and container queries for reusable components that must fit any slot.

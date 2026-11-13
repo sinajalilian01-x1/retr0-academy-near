@@ -2,7 +2,7 @@ import { HomeHero } from "@/components/home-hero";
 import { TrackGrid, type TrackCardData } from "@/components/track-grid";
 import { getFoundationTracks, getCourseTracks, getLessons } from "@/lib/content";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Award, Lock } from "lucide-react";
 
 function toCard(track: { slug: string; title: string; description: string; icon: string; color: string }): TrackCardData {
   const lessons = getLessons(track.slug);
@@ -26,14 +26,25 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-page items-start gap-12 px-5 py-12 md:px-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.8fr)] lg:gap-16 lg:py-20">
         <HomeHero />
         <div id="courses">
-          <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">Web3 courses</p>
-          <TrackGrid tracks={featured} />
+          <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">NEAR Developer path</p>
+          <TrackGrid tracks={featured} numbered />
+          <Link
+            href="/near/quiz"
+            data-testid="track-card-exam"
+            className="mt-3 flex items-center gap-3 border-2 border-accent bg-accent-soft px-4 py-3.5 text-ink shadow-sm hover:border-highlight"
+          >
+            <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center border-2 border-highlight font-pixel text-[0.55rem] text-highlight" aria-hidden>
+              {featured.length + 1}
+            </span>
+            <span className="flex-1 font-semibold">Final exam → NEAR Developer Certificate</span>
+            <Award className="h-4 w-4 text-highlight" aria-hidden />
+          </Link>
           <Link
             href="/advanced"
             data-testid="track-card-advanced"
             className="mt-3 flex items-center gap-3 border-2 border-line bg-elevated px-4 py-3.5 text-ink shadow-sm hover:border-accent"
           >
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent" aria-hidden />
+            <Lock className="h-4 w-4 shrink-0 text-accent-text" aria-hidden />
             <span className="flex-1 font-semibold">Advanced NEAR</span>
             <span className="text-sm font-medium text-highlight">Holders</span>
             <ArrowRight className="h-4 w-4 text-accent-text" aria-hidden />
@@ -47,9 +58,11 @@ export default function HomePage() {
           <h2 className="font-pixel text-title text-highlight">About Retr0 Academy</h2>
           <div className="max-w-lesson text-muted">
             <p>
-              Retr0 Academy is a Web3 development school on NEAR. Work through courses on fundamentals, smart contracts,
-              tokens, and frontends, with examples you can edit in the Playground and a soulbound diploma NFT on NEAR
-              testnet. HTML, CSS, and JavaScript stay available as optional foundations.
+              Retr0 Academy is a Web3 development school on NEAR. Follow the NEAR Developer path through fundamentals,
+              smart contracts, tokens, and dApp frontends, with animated diagrams and examples you can edit in the
+              Playground. Pass the server-graded final exam to mint a soulbound NEAR Developer Certificate on NEAR
+              testnet, which unlocks the Advanced NEAR deep dives. HTML, CSS, and JavaScript, basic and advanced, are
+              there as supporting courses.
             </p>
             <p className="mt-4">
               Designed by Sina Jalilian. Lesson progress and quiz scores stay on this device until you choose to mint a diploma on chain.

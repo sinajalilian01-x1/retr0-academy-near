@@ -1,0 +1,95 @@
+---
+title: "Media, Canvas and SVG"
+description: "Responsive images, video with captions, drawing and animating with canvas, and inline SVG."
+order: 3
+tags: ["canvas", "svg", "picture", "srcset", "video", "media"]
+---
+
+# Media, Canvas and SVG
+
+The web has three ways to show graphics, each with a job:
+
+| Tool | Model | Best for |
+| --- | --- | --- |
+| `<img>` / `<picture>` | A file the browser decodes | Photos, screenshots |
+| `<svg>` | Vector shapes in the DOM | Icons, logos, diagrams (like the animated diagrams in these lessons) |
+| `<canvas>` | A pixel buffer you paint with JavaScript | Games, charts with thousands of points, effects |
+
+## Responsive images
+
+```html
+<picture>
+  <source type="image/avif" srcset="hero.avif">
+  <source type="image/webp" srcset="hero.webp">
+  <img src="hero.jpg" alt="Retro computer lab"
+       srcset="hero-640.jpg 640w, hero-1280.jpg 1280w"
+       sizes="(min-width: 800px) 50vw, 100vw"
+       width="1280" height="720" loading="lazy" decoding="async">
+</picture>
+```
+
+- `srcset` + `sizes` let the browser pick the smallest file that looks sharp.
+- `width` and `height` reserve space, so the layout does not jump (good for Core Web Vitals).
+- `loading="lazy"` defers off-screen images.
+
+## Video with captions
+
+```html
+<video controls preload="metadata" poster="poster.jpg" width="640">
+  <source src="demo.webm" type="video/webm">
+  <track kind="captions" src="demo.en.vtt" srclang="en" label="English" default>
+</video>
+```
+
+Captions (`<track>`) make video usable for deaf viewers and for people watching with sound off.
+
+## Canvas: an animation loop
+
+Canvas is immediate mode: you clear and redraw every frame. `requestAnimationFrame` syncs with the display and pauses in background tabs.
+
+<TryIt title="Bouncing pixel blocks on canvas" html={`<canvas id="c" width="320" height="180" aria-label="Bouncing blocks animation"></canvas>`} css={`body { background: #0d0b1a; margin: 0; display: grid; place-items: center; height: 100vh; }
+canvas { border: 2px solid #2e2858; image-rendering: pixelated; width: 100%; max-width: 640px; }`} js={`const c = document.getElementById("c");
+const ctx = c.getContext("2d");
+const colors = ["#ff3fa4", "#6ff6ff", "#ffd84a", "#7ddeaf"];
+const blocks = colors.map((color, i) => ({
+  x: 20 + i * 60, y: 20 + i * 25, vx: 1.2 + i * 0.4, vy: 1 + i * 0.3, color
+}));
+
+function frame() {
+  ctx.fillStyle = "rgba(13, 11, 26, 0.35)"; // translucent clear leaves a trail
+  ctx.fillRect(0, 0, c.width, c.height);
+  for (const b of blocks) {
+    b.x += b.vx; b.y += b.vy;
+    if (b.x < 0 || b.x > c.width - 16) b.vx *= -1;
+    if (b.y < 0 || b.y > c.height - 16) b.vy *= -1;
+    ctx.fillStyle = b.color;
+    ctx.fillRect(Math.round(b.x), Math.round(b.y), 16, 16);
+  }
+  requestAnimationFrame(frame);
+}
+frame();`} />
+
+<Tip>
+Canvas content is invisible to screen readers. Give the element an `aria-label`, or provide the same information as text next to it.
+</Tip>
+
+## Inline SVG
+
+SVG lives in the DOM, so CSS and JavaScript can style it, and it stays sharp at any size.
+
+<TryIt title="Inline SVG icon styled with CSS" html={`<svg viewBox="0 0 24 24" width="96" height="96" role="img" aria-labelledby="t">
+  <title id="t">NEAR diploma badge</title>
+  <circle cx="12" cy="12" r="10" class="ring"/>
+  <path d="M7 12l3 3 7-7" class="check"/>
+</svg>`} css={`body { background: #0d0b1a; display: grid; place-items: center; height: 100vh; margin: 0; }
+.ring { fill: none; stroke: #ff3fa4; stroke-width: 2; }
+.check { fill: none; stroke: #7ddeaf; stroke-width: 2.5; stroke-linecap: square;
+  stroke-dasharray: 20; stroke-dashoffset: 20; animation: draw 1.5s ease-out infinite alternate; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .check { animation: none; stroke-dashoffset: 0; } }`} />
+
+`viewBox` defines the coordinate system; `width`/`height` define the rendered size. The `stroke-dasharray` trick "draws" the checkmark.
+
+## Summary
+
+Use `<picture>` and `srcset` for photos, `<track>` for captions, SVG for crisp UI graphics, and canvas plus `requestAnimationFrame` when you need to paint pixels fast.

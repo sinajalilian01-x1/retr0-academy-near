@@ -1,0 +1,91 @@
+---
+title: "Closures and the Event Loop"
+description: "Lexical scope and closures, private state, the classic loop bug, and how the call stack, microtasks and macrotasks decide execution order."
+order: 4
+tags: ["closures", "scope", "event-loop", "microtasks", "promises", "settimeout"]
+---
+
+# Closures and the Event Loop
+
+Two ideas explain most "why does JavaScript do that?" moments.
+
+## Closures
+
+<Anim name="closure" caption="The returned function keeps a reference to count after makeCounter returns." />
+
+A **closure** is a function together with the variables in scope where it was *created*. Those variables stay alive as long as the function does:
+
+```js
+function makeCounter() {
+  let count = 0;                 // private: nothing outside can touch it
+  return {
+    inc: () => ++count,
+    get: () => count,
+  };
+}
+const a = makeCounter(), b = makeCounter();
+a.inc(); a.inc(); b.inc();
+a.get(); // 2
+b.get(); // 1 (each call creates a new scope)
+```
+
+### The classic loop bug
+
+```js
+for (var i = 0; i < 3; i++) setTimeout(() => console.log(i));   // 3 3 3
+for (let j = 0; j < 3; j++) setTimeout(() => console.log(j));   // 0 1 2
+```
+
+`var` is function-scoped, so all three callbacks close over the **same** `i`, which is 3 when they run. `let` creates a fresh binding per iteration.
+
+## The event loop
+
+<Anim name="event-loop" caption="Run the stack, drain ALL microtasks, then take ONE macrotask." />
+
+JavaScript runs one thing at a time on a single **call stack**. Slow work (timers, network) is handed to the browser. When it finishes, a callback is queued:
+
+1. Run the current script until the stack is empty.
+2. Run **every** microtask: promise reactions (`.then`, code after `await`) and `queueMicrotask`.
+3. Render if needed.
+4. Take **one** macrotask (a `setTimeout` callback, an event, a message) and go back to 1.
+
+## Predict the output
+
+<TryIt title="Event loop ordering: predict, then run" html={`<p>Predict the order, then press Run.</p>
+<button id="run">Run</button>
+<ol id="out"></ol>`} css={`body { font-family: ui-monospace, monospace; background: #0d0b1a; color: #e8e6ff; }
+button { font: inherit; background: #ff3fa4; border: 0; padding: 6px 12px; }
+li { padding: 2px 0; }`} js={`const out = document.getElementById("out");
+const log = (s) => { const li = document.createElement("li"); li.textContent = s; out.append(li); };
+
+document.getElementById("run").addEventListener("click", () => {
+  out.replaceChildren();
+  log("1 script start");
+  setTimeout(() => log("6 setTimeout (macrotask)"), 0);
+  Promise.resolve()
+    .then(() => log("4 promise .then (microtask)"))
+    .then(() => log("5 chained .then (microtask)"));
+  queueMicrotask(() => log("4b queueMicrotask"));
+  (async () => {
+    log("2 async fn runs synchronously until await");
+    await null;
+    log("4c after await (microtask)");
+  })();
+  log("3 script end");
+});`} />
+
+Even with a 0 ms delay, `setTimeout` runs **after** all promise callbacks, because microtasks always drain first.
+
+<Tip>
+A microtask that keeps queueing microtasks blocks rendering forever, freezing the page. Heavy CPU work belongs in a Web Worker.
+</Tip>
+
+## Why it matters for dApps
+
+- `await wallet.signAndSendTransaction(...)` frees the thread while the user decides; the UI keeps animating.
+- React state updates, promise chains and RPC polling all follow these ordering rules.
+- Closures power hooks, event handlers, debounce and memoization.
+
+## Summary
+
+A closure remembers its birth scope; use it for private state. The event loop runs the stack, then all microtasks, then one macrotask. With those two models you can predict any async ordering puzzle, including the ones in the final exam.

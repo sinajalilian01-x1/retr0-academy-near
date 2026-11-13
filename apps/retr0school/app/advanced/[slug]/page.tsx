@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { HOLDER_COOKIE, readHolder } from "@/lib/holder";
 import { HolderGate } from "@/components/near/holder-gate";
 import { getAdvancedLessons } from "@/lib/advanced";
 import { renderMdx } from "@/lib/mdx";
@@ -8,11 +10,8 @@ import { playgroundHrefForLesson } from "@/lib/code-e";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getAdvancedLessons().map((l) => ({ slug: l.slug }));
-}
-
-export const dynamicParams = false;
+// Rendered per request: locked lesson bodies are only sent after a server-side holder check.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -27,6 +26,8 @@ export default async function AdvancedLessonPage({ params }: Props) {
   if (i < 0) notFound();
   const l = lessons[i];
   const next = lessons[i + 1];
+  const holder = l.locked ? readHolder((await cookies()).get(HOLDER_COOKIE)?.value) : null;
+  const unlocked = !l.locked || Boolean(holder);
   return (
     <main id="content">
       <article className="mx-auto max-w-lesson px-5 py-8 md:px-8 md:py-12">
@@ -38,9 +39,10 @@ export default async function AdvancedLessonPage({ params }: Props) {
         </p>
         <h1 className="mt-2 font-pixel text-title">{l.title}</h1>
         <p className="mt-3 text-lead text-muted">{l.description}</p>
-        <p className="mt-2 text-sm text-muted">
-          {l.locked ? "Diploma holders only." : "Open tutorial — no diploma required."}
+        <p className="mt-2 text-sm text-muted" data-testid="advanced-access">
+          {!l.locked ? "Open tutorial, no certificate required." : holder ? `Unlocked for ${holder} (verified on the server).` : "Certificate holders only."}
         </p>
+        {unlocked ? (
         <p className="mt-4">
           <a
             href={playgroundHrefForLesson("advanced", l.body)}
@@ -50,7 +52,10 @@ export default async function AdvancedLessonPage({ params }: Props) {
             Open in Playground
           </a>
         </p>
-        {l.locked ? (
+        ) : null}
+        {l.locked && !unlocked ? (
+          <HolderGate title={l.title} />
+        ) : l.locked ? (
           <HolderGate title={l.title}>
             <div className="lesson-prose mt-8">{renderMdx(l.body, l.title)}</div>
             {next ? (

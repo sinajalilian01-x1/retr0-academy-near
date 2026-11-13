@@ -1,0 +1,12 @@
+{
+  "title": "Advanced CSS",
+  "description": "Modern layout and design systems: Grid and Flexbox together, custom properties and theming, animations and transitions, responsive design with container queries.",
+  "icon": "\ud83c\udf08",
+  "color": "#663399",
+  "group": "foundations",
+  "listed": true,
+  "level": "Advanced",
+  "prerequisites": ["The CSS foundations course: selectors, the box model, basic Flexbox and Grid."],
+  "youWillBuild": "A dashboard layout, a themeable component library with dark mode, motion-safe animations, and cards that adapt to whatever slot they are placed in.",
+  "overview": "Learn the CSS that powers real dApp interfaces: two-dimensional layouts, design tokens with custom properties, performant motion, and components that respond to their container instead of the viewport."
+}

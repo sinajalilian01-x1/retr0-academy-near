@@ -1,0 +1,12 @@
+{
+  "title": "Advanced JavaScript",
+  "description": "The JavaScript behind every dApp front end: async/await and fetch, ES modules, DOM event patterns, closures and the event loop, and a mini app that reads live NEAR data.",
+  "icon": "\u2699\ufe0f",
+  "color": "#F7DF1E",
+  "group": "foundations",
+  "listed": true,
+  "level": "Advanced",
+  "prerequisites": ["The JavaScript foundations course: variables, functions, arrays, objects, and basic DOM."],
+  "youWillBuild": "A NEAR account explorer that fetches live testnet data over JSON-RPC, with loading states, error handling, cancellation, and a cache.",
+  "overview": "Understand how JavaScript really runs: promises and the event loop, closures, modules and event delegation. Then use all of it to build a small app that talks to NEAR RPC, the same way near-api-js does under the hood."
+}

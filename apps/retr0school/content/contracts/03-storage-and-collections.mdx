@@ -8,6 +8,8 @@ tags: ["storage", "collections"]
 
 Contract state is a key/value trie. If you put a big `HashMap` on the contract struct, NEAR loads the **entire** map on every call. Persistent collections in [`near_sdk::store`](https://docs.near.org/smart-contracts/anatomy/collections) split data across many storage keys and load only what you touch.
 
+<Anim name="storage-staking" caption="Every byte you store locks NEAR until you delete it." />
+
 ## Native vs SDK
 
 Use a native `Vec` or `HashMap` when the collection stays small (roughly under 100 entries) and you need all of it at once. Use an SDK collection when the set can grow.

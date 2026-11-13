@@ -1,0 +1,83 @@
+---
+title: "near-api-js and Wallet Selector in Production"
+description: "Wire a real dApp: wallet selector setup, function-call access keys, signing transactions, signing messages (NEP-413), and reading results."
+locked: true
+order: 6
+tags: ["advanced", "near-api-js", "wallet-selector", "nep-413", "frontend"]
+---
+
+# near-api-js and Wallet Selector in Production
+
+This site is itself the example: everything below is how Retr0 Academy connects wallets, mints diplomas and proves account ownership to its server.
+
+<Anim name="wallet-selector" caption="Your dApp never holds the user's key: the wallet signs." />
+
+## Setting up the selector
+
+```ts
+import { setupWalletSelector } from "@near-wallet-selector/core";
+import { setupModal } from "@near-wallet-selector/modal-ui";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
+
+const selector = await setupWalletSelector({
+  network: "testnet",
+  modules: [setupMyNearWallet(), setupMeteorWallet()],
+});
+const modal = setupModal(selector, { contractId: "diploma.retr0school.testnet" });
+```
+
+Passing `contractId` asks the wallet to create a **function-call access key** limited to that contract, so cheap calls that attach no deposit can be signed without a popup every time.
+
+## Sending a transaction
+
+```ts
+const wallet = await selector.wallet();
+const outcome = await wallet.signAndSendTransaction({
+  receiverId: "diploma.retr0school.testnet",
+  actions: [actionCreators.functionCall(
+    "mint_diploma",
+    { track: "near", score, max_score, expires_at_ms, signature },
+    BigInt("100000000000000"),            // 100 Tgas
+    BigInt("20000000000000000000000"),    // 0.02 NEAR for storage, refunded if unused
+  )],
+});
+```
+
+Calls that attach a deposit always need explicit wallet approval, even with a function-call key. That is a security feature.
+
+## Proving account ownership to a server (NEP-413)
+
+A wallet connection lives only in the browser. To unlock server-side content, the server needs **proof**. NEP-413 `signMessage` signs an off-chain message without a transaction:
+
+```ts
+const nonce = crypto.getRandomValues(new Uint8Array(32));
+const signed = await wallet.signMessage({
+  message: "Unlock Advanced NEAR on Retr0 Academy",
+  recipient: "retr0-academy",
+  nonce,
+});
+// -> { accountId, publicKey, signature }
+await fetch("/api/holder", { method: "POST", body: JSON.stringify({ ...signed, nonce: base64(nonce) }) });
+```
+
+The server then:
+
+1. Rebuilds the NEP-413 payload (`2^31 + 413` tag, then borsh `{message, nonce, recipient, callbackUrl}`), hashes it with SHA-256 and verifies the ed25519 signature.
+2. Calls RPC `view_access_key` to confirm the public key really belongs to `accountId` as a **full-access** key.
+3. Calls `verify_diploma` on chain.
+4. Sets a short-lived signed, HttpOnly cookie. Advanced lessons are only rendered on the server when that cookie is valid. That is exactly how this lesson reached you.
+
+## Reading results and failures
+
+```ts
+const failure = outcome.status?.Failure;
+if (failure) throw new Error(JSON.stringify(failure));
+const value = JSON.parse(atob(outcome.status.SuccessValue)); // the method's return value
+```
+
+Browser-redirect wallets return to your page with `?transactionHashes=...`. Handle both shapes.
+
+## Summary
+
+Let the selector manage wallets, request function-call keys for frictionless calls, always expect approval for deposits, and use NEP-413 signatures when your backend needs to know who the user really is.

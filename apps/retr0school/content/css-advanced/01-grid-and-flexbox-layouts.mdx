@@ -1,0 +1,86 @@
+---
+title: "Grid and Flexbox Layouts"
+description: "When to use Grid vs Flexbox, named areas, auto-fit with minmax, alignment, and combining both."
+order: 1
+tags: ["grid", "flexbox", "layout", "minmax", "grid-template-areas"]
+---
+
+# Grid and Flexbox Layouts
+
+**Flexbox** is one-dimensional: it distributes items along a single axis and lets content decide sizes. **Grid** is two-dimensional: you define rows and columns first, then place items into them. Real layouts use both: Grid for the page skeleton, Flexbox inside components.
+
+<Anim name="css-grid" caption="Grid tracks, spans and auto-placement." />
+
+## Named grid areas
+
+`grid-template-areas` lets you draw the layout in ASCII and rearrange it per breakpoint without touching the HTML:
+
+<TryIt title="Dashboard with named areas" html={`<div class="app">
+  <header>Header</header>
+  <nav>Nav</nav>
+  <main>
+    <div class="cards">
+      <article>Lessons 12</article><article>Quiz 92%</article>
+      <article>Diploma</article><article>Streak 5</article>
+    </div>
+  </main>
+  <aside>Leaderboard</aside>
+  <footer>Footer</footer>
+</div>`} css={`body { margin: 0; font-family: system-ui; background: #0d0b1a; color: #e8e6ff; }
+.app {
+  display: grid; gap: 8px; padding: 8px; min-height: 100vh;
+  grid-template-columns: 180px 1fr 220px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header header"
+    "nav    main   aside"
+    "footer footer footer";
+}
+header { grid-area: header; } nav { grid-area: nav; } main { grid-area: main; }
+aside { grid-area: aside; } footer { grid-area: footer; }
+.app > * { background: #17132b; border: 2px solid #2e2858; padding: 12px; }
+.cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.cards article { background: #ff3fa422; border: 2px solid #ff3fa4; padding: 16px; }
+@media (max-width: 640px) {
+  .app { grid-template-columns: 1fr; grid-template-areas: "header" "main" "nav" "aside" "footer"; }
+}`} />
+
+## auto-fit + minmax: responsive without media queries
+
+`repeat(auto-fit, minmax(140px, 1fr))` means: fit as many columns as possible, each at least 140px, then stretch them equally. Resize the preview and the cards reflow on their own.
+
+| Keyword | Empty tracks |
+| --- | --- |
+| `auto-fill` | Kept, so items stay at their minimum width |
+| `auto-fit` | Collapsed, so items stretch to fill the row |
+
+## Flexbox inside components
+
+<Anim name="flexbox" caption="justify-content distributes free space on the main axis." />
+
+<TryIt title="Toolbar: push items apart with margin-left: auto" html={`<div class="bar">
+  <strong>Retr0</strong>
+  <a href="#">Learn</a><a href="#">Playground</a>
+  <button class="push">Connect</button>
+</div>
+<div class="media">
+  <div class="avatar"></div>
+  <p>Flex items shrink and wrap. <code>min-width: 0</code> lets long text truncate instead of overflowing.</p>
+</div>`} css={`body { font-family: system-ui; background: #0d0b1a; color: #e8e6ff; }
+.bar { display: flex; align-items: center; gap: 16px; padding: 12px; border: 2px solid #2e2858; }
+.bar a { color: #6ff6ff; }
+.push { margin-left: auto; background: #ff3fa4; border: 0; padding: 8px 14px; }
+.media { display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; }
+.avatar { flex: 0 0 48px; height: 48px; background: #ffd84a; }
+.media p { flex: 1; min-width: 0; margin: 0; }`} />
+
+## Decision guide
+
+- Laying out the **page** or a 2D gallery? Grid.
+- Aligning items in a **row** (nav, toolbar, button group)? Flexbox.
+- Need items in different rows to line up in columns? Grid (or `subgrid`).
+- Centering one thing? Either: `display: grid; place-items: center`.
+
+## Summary
+
+Grid defines tracks and places items in two dimensions; named areas make responsive rearrangement trivial. Flexbox shares space along one axis. Combine them: Grid for structure, Flexbox for components.

@@ -15,7 +15,7 @@ export function DiplomaCard({ diploma }: { diploma: Verification }) {
         style={{ borderColor: "#00EC97" }}
       />
       <p className="font-pixel text-[0.6rem] uppercase tracking-eyebrow text-muted">Retr0 Academy · NEAR testnet</p>
-      <h2 className="mt-4 font-pixel text-title leading-snug text-ink">Diploma</h2>
+      <h2 className="mt-4 font-pixel text-title leading-snug text-ink">Certificate</h2>
       <p className="mt-4 text-sm text-muted">This certifies that</p>
       <p data-testid="diploma-owner" className="mt-1 break-all font-mono text-lg font-semibold text-ink">
         {diploma.owner_id}
@@ -26,7 +26,7 @@ export function DiplomaCard({ diploma }: { diploma: Verification }) {
         <div>
           <dt className="text-muted">Score</dt>
           <dd data-testid="diploma-score" className="text-ink">
-            {diploma.score}/{diploma.max_score}
+            {diploma.score}/{diploma.max_score}{diploma.grade ? ` · Grade ${diploma.grade}` : ""}
           </dd>
         </div>
         <div>

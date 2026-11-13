@@ -5,19 +5,19 @@ import { getAdvancedLessons } from "@/lib/advanced";
 
 export const metadata: Metadata = {
   title: "Advanced NEAR",
-  description: "Holder-only deep dives: cross-contract calls, storage staking, Chain Signatures, and NEAR Intents.",
+  description: "Holder-only deep dives: cross-contract calls, storage staking, Chain Signatures, Intents, testing, near-api-js and mainnet deploys.",
 };
 
 export default function AdvancedPage() {
   const lessons = getAdvancedLessons().filter((l) => l.locked);
   return (
     <main id="content" className="mx-auto w-full max-w-page px-5 py-10 md:px-8 md:py-14">
-      <p className="font-pixel text-[0.65rem] uppercase tracking-eyebrow text-muted">Bonus track · diploma holders</p>
+      <p className="font-pixel text-[0.65rem] uppercase tracking-eyebrow text-muted">Bonus track · certificate holders</p>
       <h1 className="mt-3 font-pixel text-title">Advanced NEAR</h1>
       <p className="mt-3 max-w-lesson text-lead text-muted">
-        These four deep dives unlock when your connected wallet holds a Retr0 Academy diploma, checked on chain with{" "}
-        <code className="font-mono">verify_diploma</code>. For writing contracts, tokens, and frontends, start with the
-        open courses under Learn.
+        These {lessons.length} deep dives unlock with the NEAR Developer Certificate. The server renders a lesson only after
+        your wallet signs a free NEP-413 message, the key is confirmed on chain as yours, and{" "}
+        <code className="font-mono">verify_diploma</code> returns your certificate.
       </p>
       <ul className="mt-8 grid gap-4 md:grid-cols-2">
         {lessons.map((l) => (

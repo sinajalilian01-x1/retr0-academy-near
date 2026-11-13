@@ -1,0 +1,167 @@
+{
+ "version": 1,
+ "sample": true,
+ "questions": [
+  {
+   "id": "s001",
+   "topic": "fundamentals",
+   "question": "(Sample) How many yoctoNEAR are in 1 NEAR?",
+   "code": null,
+   "lang": null,
+   "options": [
+    "10^18",
+    "10^24",
+    "10^9",
+    "10^12"
+   ],
+   "answer": 1,
+   "explanation": "1 NEAR = 10^24 yoctoNEAR."
+  },
+  {
+   "id": "s002",
+   "topic": "contracts",
+   "question": "(Sample) What does #[payable] allow?",
+   "code": null,
+   "lang": null,
+   "options": [
+    "Attaching a deposit to the call",
+    "View calls",
+    "Cross-contract calls",
+    "Skipping gas"
+   ],
+   "answer": 0,
+   "explanation": "Non-payable methods reject deposits."
+  },
+  {
+   "id": "s003",
+   "topic": "tokens",
+   "question": "(Sample) Which NEP defines the NFT core standard?",
+   "code": null,
+   "lang": null,
+   "options": [
+    "NEP-141",
+    "NEP-171",
+    "NEP-145",
+    "NEP-413"
+   ],
+   "answer": 1,
+   "explanation": "NEP-171."
+  },
+  {
+   "id": "s004",
+   "topic": "dapp",
+   "question": "(Sample) What is printed?",
+   "code": "console.log(1);\nPromise.resolve().then(() => console.log(2));\nconsole.log(3);",
+   "lang": "javascript",
+   "options": [
+    "1 2 3",
+    "1 3 2",
+    "3 1 2",
+    "2 1 3"
+   ],
+   "answer": 1,
+   "explanation": "Microtasks run after synchronous code."
+  },
+  {
+   "id": "s005",
+   "topic": "advanced",
+   "question": "(Sample) Why make callbacks #[private]?",
+   "code": null,
+   "lang": null,
+   "options": [
+    "Gas",
+    "So only the contract itself can call them",
+    "ABI size",
+    "They cannot be public"
+   ],
+   "answer": 1,
+   "explanation": "Prevents forged callback results."
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "title": "yoctoNEAR to NEAR",
+   "fn": "yoctoToNear",
+   "points": 5,
+   "prompt": "Write yoctoToNear(yocto, decimals = 2) that converts a yoctoNEAR amount (a decimal string, 1 NEAR = 10^24 yocto) to a NEAR string with exactly `decimals` digits after the point, truncating (never rounding). With decimals = 0 return just the integer part. Use BigInt: Number loses precision.",
+   "starter": "function yoctoToNear(yocto, decimals = 2) {\n  // your code\n}\n",
+   "tests": [
+    {
+     "name": "1 NEAR",
+     "args": [
+      "1000000000000000000000000"
+     ],
+     "expected": "1.00",
+     "hidden": false
+    },
+    {
+     "name": "3 decimals",
+     "args": [
+      "1500000000000000000000000",
+      3
+     ],
+     "expected": "1.500",
+     "hidden": false
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "title": "Validate a NEAR account id",
+   "fn": "isValidAccountId",
+   "points": 5,
+   "prompt": "Write isValidAccountId(id) returning true only for valid NEAR account ids: length 2 to 64; either a 64-character lowercase hex implicit account, or parts separated by '.', where each part is lowercase letters/digits, optionally joined by single '-' or '_' characters. No leading, trailing, or consecutive separators. Non-strings return false.",
+   "starter": "function isValidAccountId(id) {\n  // your code\n}\n",
+   "tests": [
+    {
+     "name": "alice.near",
+     "args": [
+      "alice.near"
+     ],
+     "expected": true,
+     "hidden": false
+    },
+    {
+     "name": "uppercase",
+     "args": [
+      "Alice.near"
+     ],
+     "expected": false,
+     "hidden": false
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "title": "NFT supply from NEP-297 logs",
+   "fn": "nftSupplyFromLogs",
+   "points": 5,
+   "prompt": "Write nftSupplyFromLogs(logs) that takes an array of log strings from receipts and returns the net NFT supply change: for each log starting with 'EVENT_JSON:' whose JSON has standard 'nep171', add the number of token_ids in every data entry for event 'nft_mint' and subtract them for 'nft_burn'. Ignore other logs, other standards and events, and malformed JSON (never throw).",
+   "starter": "function nftSupplyFromLogs(logs) {\n  // your code\n}\n",
+   "tests": [
+    {
+     "name": "one mint",
+     "args": [
+      [
+       "EVENT_JSON:{\"standard\":\"nep171\",\"version\":\"1.0.0\",\"event\":\"nft_mint\",\"data\":[{\"owner_id\":\"a.near\",\"token_ids\":[\"1\",\"2\"]}]}"
+      ]
+     ],
+     "expected": 2,
+     "hidden": false
+    },
+    {
+     "name": "ignores plain logs",
+     "args": [
+      [
+       "hello",
+       "EVENT_JSON:{\"standard\":\"nep171\",\"version\":\"1.0.0\",\"event\":\"nft_mint\",\"data\":[{\"owner_id\":\"a.near\",\"token_ids\":[\"1\"]}]}"
+      ]
+     ],
+     "expected": 1,
+     "hidden": false
+    }
+   ]
+  }
+ ]
+}

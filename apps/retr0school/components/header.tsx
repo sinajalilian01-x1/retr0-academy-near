@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-const LEARN_HREFS = ["/fundamentals", "/contracts", "/tokens", "/dapp", "/html", "/css", "/javascript", "/advanced", "/near"];
+const LEARN_HREFS = ["/fundamentals", "/contracts", "/tokens", "/dapp", "/html", "/css", "/javascript", "/html-advanced", "/css-advanced", "/js-advanced", "/advanced", "/near", "/exam"];
 
 export function Header() {
   const pathname = usePathname();
@@ -23,20 +23,26 @@ export function Header() {
   const mobileId = useId();
 
   const learnItems = [
-    { href: "/fundamentals", label: "Web3 Fundamentals", testId: "learn-fundamentals" },
-    { href: "/contracts", label: "NEAR Smart Contracts", testId: "learn-contracts" },
-    { href: "/tokens", label: "Tokens & NFTs on NEAR", testId: "learn-tokens" },
-    { href: "/dapp", label: "Build a NEAR dApp", testId: "learn-dapp" },
-    { href: "/advanced", label: "Advanced NEAR", testId: "learn-advanced" },
+    { heading: true, label: "NEAR Developer path" },
+    { href: "/fundamentals", label: "1. Web3 Fundamentals", testId: "learn-fundamentals" },
+    { href: "/contracts", label: "2. NEAR Smart Contracts", testId: "learn-contracts" },
+    { href: "/tokens", label: "3. Tokens & NFTs on NEAR", testId: "learn-tokens" },
+    { href: "/dapp", label: "4. Build a NEAR dApp", testId: "learn-dapp" },
+    { href: "/near/quiz", label: "5. Final exam → Certificate", testId: "learn-exam" },
+    { href: "/advanced", label: "Advanced NEAR (holders)", testId: "learn-advanced" },
     { heading: true, label: "Foundations" },
     { href: "/html", label: "HTML", testId: "learn-html" },
     { href: "/css", label: "CSS", testId: "learn-css" },
     { href: "/javascript", label: "JavaScript", testId: "learn-javascript" },
+    { href: "/html-advanced", label: "Advanced HTML", testId: "learn-html-advanced" },
+    { href: "/css-advanced", label: "Advanced CSS", testId: "learn-css-advanced" },
+    { href: "/js-advanced", label: "Advanced JavaScript", testId: "learn-js-advanced" },
   ];
   const diplomaItems = [
-    { href: "/diploma", label: "Mint diploma", testId: "diploma-mint-link" },
-    { href: "/diploma#verify", label: "Verify a diploma", testId: "diploma-verify-link" },
-    { href: "/diploma#share", label: "Share diploma", testId: "diploma-share-link" },
+    { href: "/near/quiz", label: "Final exam", testId: "diploma-exam-link" },
+    { href: "/diploma", label: "Mint certificate", testId: "diploma-mint-link" },
+    { href: "/diploma#verify", label: "Verify a certificate", testId: "diploma-verify-link" },
+    { href: "/diploma#share", label: "Share certificate", testId: "diploma-share-link" },
   ];
 
   const learnActive = LEARN_HREFS.some((href) => pathname === href || pathname.startsWith(`${href}/`));
@@ -74,7 +80,7 @@ export function Header() {
       >
         Playground
       </Link>
-      <NavDropdown label="Diploma" testId="nav-diploma" items={diplomaItems} active={diplomaActive} />
+      <NavDropdown label="Certificate" testId="nav-diploma" items={diplomaItems} active={diplomaActive} />
       <Link
         href="/leaderboard"
         data-testid="nav-leaderboard"
