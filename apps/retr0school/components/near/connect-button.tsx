@@ -32,12 +32,12 @@ export function ConnectButton({ className }: { className?: string }) {
       type="button"
       size="sm"
       data-testid="near-connect"
-      disabled={!ready}
       onClick={connect}
+      aria-busy={!ready || undefined}
       className={cn("font-pixel text-[0.6rem] uppercase tracking-wide", className)}
     >
       <Wallet className="h-4 w-4" aria-hidden />
-      {ready ? "Connect" : "Loading"}
+      Connect
     </Button>
   );
 }

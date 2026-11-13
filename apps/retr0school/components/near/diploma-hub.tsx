@@ -38,7 +38,7 @@ function SharePanel() {
       {diploma ? (
         <div className="flex flex-col gap-4">
           <p className="text-muted">
-            Your diploma is live on NEAR testnet. Share the public page, or post it on X with the on-chain art card.
+            Your diploma is live on NEAR mainnet. Share the public page, or post it on X with the on-chain art card.
           </p>
           <p className="text-sm">
             Public page:{" "}
@@ -68,7 +68,7 @@ function SharePanel() {
         <Input
           id="share-account"
           data-testid="share-input"
-          placeholder="learner.testnet"
+          placeholder="learner.near"
           value={lookup}
           onChange={(event) => setLookup(event.target.value)}
           autoComplete="off"

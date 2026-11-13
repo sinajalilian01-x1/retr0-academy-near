@@ -6,7 +6,8 @@ import matter from "gray-matter";
 import type { Lesson, LessonSummary, NavItem, QuizQuestion, SearchEntry, Track } from "@/lib/types";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
-const PREFERRED_ORDER = ["fundamentals", "contracts", "tokens", "dapp", "html", "css", "javascript", "html-advanced", "css-advanced", "js-advanced", "near"];
+// Learning path: web foundations (beginner, then advanced), then the NEAR Developer path.
+const PREFERRED_ORDER = ["html", "css", "javascript", "html-advanced", "css-advanced", "js-advanced", "fundamentals", "contracts", "tokens", "dapp", "near"];
 const LESSON_FILE = /^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)\.mdx$/;
 const RESERVED_SLUGS = new Set(["quiz"]);
 

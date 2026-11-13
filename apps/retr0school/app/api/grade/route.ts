@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
  *     -> full ExamResult (+ attestation when passed and accountId is given)
  *   POST { track: "near", passToken, accountId }
  *     -> { attestation } for a previously passed exam (lets the learner connect a wallet later)
- * The attestation is an ed25519 signature that diploma.retr0school.testnet verifies before minting.
+ * The attestation is an ed25519 signature that the diploma contract (diploma.hlpok1lad.tg on mainnet) verifies before minting.
  */
 export async function POST(request: Request) {
   const res = await handle(request);

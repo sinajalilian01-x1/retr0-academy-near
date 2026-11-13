@@ -1,8 +1,9 @@
 import type { Verification } from "@/lib/near";
-import { DIPLOMA_CONTRACT } from "@/lib/near";
+import { NEAR_NETWORK, NETWORKS } from "@/lib/near";
 
 /** Retro certificate rendering of an on-chain diploma. */
 export function DiplomaCard({ diploma }: { diploma: Verification }) {
+  const net = diploma.network ?? NEAR_NETWORK;
   return (
     <figure
       data-testid="diploma-card"
@@ -14,7 +15,7 @@ export function DiplomaCard({ diploma }: { diploma: Verification }) {
         className="pointer-events-none absolute inset-2 border-2 border-dashed"
         style={{ borderColor: "#00EC97" }}
       />
-      <p className="font-pixel text-[0.6rem] uppercase tracking-eyebrow text-muted">Retr0 Academy · NEAR testnet</p>
+      <p className="font-pixel text-[0.6rem] uppercase tracking-eyebrow text-muted">Retr0 Academy · NEAR {NETWORKS[net].label}</p>
       <h2 className="mt-4 font-pixel text-title leading-snug text-ink">Certificate</h2>
       <p className="mt-4 text-sm text-muted">This certifies that</p>
       <p data-testid="diploma-owner" className="mt-1 break-all font-mono text-lg font-semibold text-ink">
@@ -39,7 +40,7 @@ export function DiplomaCard({ diploma }: { diploma: Verification }) {
         </div>
       </dl>
       <figcaption className="mt-6 break-all border-t border-line pt-3 font-mono text-xs text-muted">
-        token {diploma.token_id} · contract {DIPLOMA_CONTRACT}
+        token {diploma.token_id} · contract {NETWORKS[net].diploma}
       </figcaption>
     </figure>
   );

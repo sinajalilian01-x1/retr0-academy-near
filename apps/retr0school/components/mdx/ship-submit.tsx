@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNearWallet } from "@/components/near/wallet-provider";
 
-type Ship = { student: string; contract: string; code_hash: string; greeting: string | null; verified_at: string };
+type Ship = { student: string; contract: string; code_hash: string; greeting: string | null; verified_at: string; network?: "mainnet" | "testnet" };
 
 /** Final-project submission: the server checks the contract on chain and links it to the student's verify page. */
 export function ShipSubmit() {
@@ -41,10 +41,10 @@ export function ShipSubmit() {
       </p>
       <form onSubmit={onSubmit} className="mt-4 grid gap-3">
         <label className="grid gap-1 text-sm text-muted">
-          Your testnet account
+          Your NEAR account (mainnet, or .testnet for practice)
           <Input
             data-testid="ship-student"
-            placeholder="you.testnet"
+            placeholder="you.near or you.testnet"
             value={me}
             onChange={(e) => setStudent(e.target.value)}
             autoComplete="off"
@@ -52,10 +52,10 @@ export function ShipSubmit() {
           />
         </label>
         <label className="grid gap-1 text-sm text-muted">
-          Contract account (your account or a sub-account like hello.you.testnet)
+          Contract account (your account or a sub-account like hello.you.near)
           <Input
             data-testid="ship-contract"
-            placeholder={me ? `hello.${me}` : "hello.you.testnet"}
+            placeholder={me ? `hello.${me}` : "hello.you.near"}
             value={contract}
             onChange={(e) => setContract(e.target.value)}
             autoComplete="off"
@@ -78,7 +78,7 @@ export function ShipSubmit() {
         {state.kind === "ok" ? (
           <div data-testid="ship-ok" className="mt-4 border-2 border-good bg-good-soft p-3 text-sm text-ink">
             <p className="font-semibold">
-              Shipped! <span className="font-mono">{state.ship.contract}</span> has code on testnet.
+              Shipped! <span className="font-mono">{state.ship.contract}</span> has code on {state.ship.network === "testnet" ? "testnet (practice)" : "NEAR mainnet"}.
             </p>
             {state.ship.greeting ? <p className="mt-1 font-mono text-xs">get_greeting() → “{state.ship.greeting}”</p> : null}
             <p className="mt-2">

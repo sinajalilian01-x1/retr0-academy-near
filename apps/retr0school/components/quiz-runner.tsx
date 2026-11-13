@@ -124,7 +124,7 @@ export function QuizRunner({ track, questions }: { track: string; questions: Qui
           <div data-testid="near-diploma-cta" className="mb-6 rounded-md border-2 border-good bg-good-soft p-4">
             <p className="font-pixel text-[0.7rem] uppercase tracking-wide text-ink">Passed. Your diploma is waiting.</p>
             <p className="mt-2 text-sm text-ink">
-              Connect a NEAR testnet wallet and mint a soulbound diploma NFT. The grader signs your score and the contract verifies that signature on chain. Holders unlock Advanced NEAR.
+              Connect a NEAR wallet and mint a soulbound diploma NFT. The grader signs your score and the contract verifies that signature on chain. Holders unlock Advanced NEAR.
             </p>
             <Link
               href="/diploma"

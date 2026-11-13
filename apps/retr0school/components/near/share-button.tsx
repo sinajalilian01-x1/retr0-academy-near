@@ -6,7 +6,7 @@ export function shareUrlFor(accountId: string) {
 
 /** Opens an X post intent with the diploma share page (its card shows the diploma art). */
 export function ShareButton({ accountId, score, maxScore }: { accountId: string; score: number; maxScore: number }) {
-  const text = `I just earned my on-chain NEAR diploma on Retr0 Academy 🎓 ${score}/${maxScore}, soulbound NEP-171 on NEAR testnet. Built at NEAR HACKATHON @NEARProtocol #NEARHackathon`;
+  const text = `I just earned my on-chain NEAR diploma on Retr0 Academy 🎓 ${score}/${maxScore}, soulbound NEP-171 on NEAR mainnet. Built at NEAR HACKATHON @NEARProtocol #NEARHackathon`;
   const href = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrlFor(accountId))}`;
   return (
     <a

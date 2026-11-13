@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DiplomaCard } from "@/components/near/diploma-card";
 import { ShareButton } from "@/components/near/share-button";
-import { ACCOUNT_RE, NEAR_TRACK, explorerAccount, explorerToken, verifyDiploma, type Verification } from "@/lib/near";
+import { ACCOUNT_RE, NEAR_TRACK, explorerAccount, explorerToken, networkOf, verifyDiploma, type Verification } from "@/lib/near";
 
 type State =
   | { kind: "idle" }
@@ -29,7 +29,7 @@ export function VerifyForm() {
     url.searchParams.set("account", clean);
     window.history.replaceState(null, "", url);
     try {
-      const diploma = await verifyDiploma(clean, NEAR_TRACK);
+      const diploma = await verifyDiploma(clean, NEAR_TRACK, networkOf(clean));
       setState(diploma ? { kind: "found", diploma } : { kind: "none", account: clean });
     } catch (e) {
       setState({ kind: "error", message: e instanceof Error ? e.message : String(e) });
@@ -58,7 +58,7 @@ export function VerifyForm() {
         <Input
           id="verify-account"
           data-testid="verify-input"
-          placeholder="learner.testnet"
+          placeholder="learner.near"
           value={account}
           onChange={(e) => setAccount(e.target.value)}
           autoComplete="off"
@@ -69,7 +69,7 @@ export function VerifyForm() {
         </Button>
       </form>
       <div className="mt-8" aria-live="polite">
-        {state.kind === "loading" ? <p className="text-muted">Reading verify_diploma from NEAR testnet…</p> : null}
+        {state.kind === "loading" ? <p className="text-muted">Reading verify_diploma from NEAR…</p> : null}
         {state.kind === "error" ? <p role="alert" className="text-danger">{state.message}</p> : null}
         {state.kind === "none" ? (
           <p data-testid="verify-none" className="rounded-md border-2 border-line bg-elevated p-4 text-ink">
@@ -84,7 +84,7 @@ export function VerifyForm() {
               <a className="font-medium text-info underline underline-offset-4" href={`/verify/${encodeURIComponent(state.diploma.owner_id)}`} data-testid="verify-profile-link">
                 Verify page (shareable) →
               </a>
-              <a className="font-medium text-info underline underline-offset-4" href={explorerToken(state.diploma.token_id)} target="_blank" rel="noopener">
+              <a className="font-medium text-info underline underline-offset-4" href={explorerToken(state.diploma.token_id, state.diploma.network)} target="_blank" rel="noopener">
                 Token on explorer ↗
               </a>
               <a className="font-medium text-info underline underline-offset-4" href={explorerAccount(state.diploma.owner_id)} target="_blank" rel="noopener">

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const noStore = { "cache-control": "no-store" };
 
-/** GET /api/ship?account=alice.testnet -> { ship: ShipRecord | null } */
+/** GET /api/ship?account=alice.near -> { ship: ShipRecord | null } */
 export async function GET(request: Request) {
   const account = new URL(request.url).searchParams.get("account") ?? "";
   return NextResponse.json({ ship: await loadShip(account) }, { headers: noStore });
@@ -30,6 +30,6 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof ShipError) return NextResponse.json({ error: error.message }, { status: error.status, headers: noStore });
     console.error("ship", error);
-    return NextResponse.json({ error: "Couldn't reach NEAR testnet right now. Try again in a moment." }, { status: 502, headers: noStore });
+    return NextResponse.json({ error: "Couldn't reach NEAR RPC right now. Try again in a moment." }, { status: 502, headers: noStore });
   }
 }

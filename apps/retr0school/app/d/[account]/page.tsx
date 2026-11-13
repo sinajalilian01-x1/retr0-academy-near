@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DiplomaCard } from "@/components/near/diploma-card";
 import { ShareButton } from "@/components/near/share-button";
-import { ACCOUNT_RE, NEAR_TRACK, SITE_URL, explorerToken, verifyDiploma } from "@/lib/near";
+import { ACCOUNT_RE, NEAR_TRACK, SITE_URL, explorerToken, networkOf, verifyDiploma } from "@/lib/near";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ async function load(params: Props["params"]) {
   const { account: raw } = await params;
   const account = decodeURIComponent(raw).toLowerCase();
   if (!ACCOUNT_RE.test(account)) notFound();
-  const diploma = await verifyDiploma(account, NEAR_TRACK).catch(() => null);
+  const diploma = await verifyDiploma(account, NEAR_TRACK, networkOf(account)).catch(() => null);
   return { account, diploma };
 }
 
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { account, diploma } = await load(params);
   const title = diploma ? `${account} earned the NEAR Developer Certificate` : `${account} on Retr0 Academy`;
   const description = diploma
-    ? `${diploma.track_title}: ${diploma.score}/${diploma.max_score} on ${diploma.date}. Soulbound NEP-171 credential on NEAR testnet, verifiable by anyone.`
+    ? `${diploma.track_title}: ${diploma.score}/${diploma.max_score} on ${diploma.date}. Soulbound NEP-171 credential on NEAR, verifiable by anyone.`
     : "Learn NEAR, pass the final exam and mint a soulbound NEAR Developer Certificate.";
   const image = { url: `${SITE_URL}/api/diploma/${NEAR_TRACK}/${encodeURIComponent(account)}`, width: 1200, height: 630, alt: title };
   return {
@@ -48,7 +48,7 @@ export default async function SharedDiplomaPage({ params }: Props) {
               <Link className="font-medium text-info underline underline-offset-4" href={`/verify/${encodeURIComponent(account)}`} data-testid="verify-link">
                 Verify on chain →
               </Link>
-              <a className="font-medium text-info underline underline-offset-4" href={explorerToken(diploma.token_id)} target="_blank" rel="noopener">
+              <a className="font-medium text-info underline underline-offset-4" href={explorerToken(diploma.token_id, diploma.network)} target="_blank" rel="noopener">
                 Token on explorer ↗
               </a>
             </div>

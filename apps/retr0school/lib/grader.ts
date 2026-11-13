@@ -1,12 +1,13 @@
 import "server-only";
 
 import crypto from "node:crypto";
-import { ACCOUNT_RE, DIPLOMA_CONTRACT } from "@/lib/near";
+import { ACCOUNT_RE, DIPLOMA_CONTRACT, NEAR_NETWORK } from "@/lib/near";
 
 /**
  * Off-chain attestation signer for the final exam (graded in lib/exam). The ed25519 seed lives only
  * in a server env var:
- *   NEAR_ATTESTOR_SEED    32-byte ed25519 seed, hex
+ *   NEAR_ATTESTOR_SEED_MAINNET   32-byte ed25519 seed, hex (mainnet contract)
+ *   NEAR_ATTESTOR_SEED           32-byte ed25519 seed, hex (testnet beta contract; also the HMAC root in server-secret)
  * The contract stores only the matching public key and verifies the signature before minting.
  */
 const PKCS8_ED25519_PREFIX = Buffer.from("302e020100300506032b657004220420", "hex");
@@ -22,7 +23,7 @@ export class GraderError extends Error {
 }
 
 function signingKey() {
-  const seedHex = process.env.NEAR_ATTESTOR_SEED;
+  const seedHex = NEAR_NETWORK === "mainnet" ? process.env.NEAR_ATTESTOR_SEED_MAINNET : process.env.NEAR_ATTESTOR_SEED;
   if (!seedHex || !/^[0-9a-f]{64}$/i.test(seedHex)) throw new GraderError("Grader is not configured", 503);
   return crypto.createPrivateKey({
     key: Buffer.concat([PKCS8_ED25519_PREFIX, Buffer.from(seedHex, "hex")]),
@@ -49,6 +50,7 @@ export type Attestation = {
 export function attest(accountIdRaw: unknown, score: number, maxScore: number): Attestation {
   const accountId = String(accountIdRaw ?? "").toLowerCase();
   if (!ACCOUNT_RE.test(accountId)) throw new GraderError("Invalid NEAR account id");
+  if (NEAR_NETWORK === "mainnet" && accountId.endsWith(".testnet")) throw new GraderError("Certificates are minted on NEAR mainnet now. Connect a mainnet account (for example you.near).");
   const expiresAtMs = Date.now() + ATTESTATION_TTL_MS;
   const message = attestationMessage(accountId, "near", score, maxScore, expiresAtMs);
   const signature = crypto.sign(null, Buffer.from(message, "utf8"), signingKey()).toString("base64");

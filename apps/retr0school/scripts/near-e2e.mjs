@@ -8,7 +8,10 @@ import { chromium, devices } from "playwright";
 const R0 = (process.env.R0_URL || "https://retr0school-near.vercel.app").replace(/\/+$/, "");
 const CE = (process.env.CE_URL || "https://code-e-near.vercel.app").replace(/\/+$/, "");
 const OUT = process.env.OUT || new URL("../../../artifacts/e2e/", import.meta.url).pathname;
-const HOLDER = process.env.HOLDER_ACCOUNT || "exam-tester.retr0school.testnet";
+// Mainnet certificate (minted via the real exam path) and a testnet beta certificate.
+const HOLDER = process.env.HOLDER_ACCOUNT || "hlpok1lad.tg";
+const BETA_HOLDER = "exam-tester.retr0school.testnet";
+const MAINNET_CONTRACT = "diploma.hlpok1lad.tg";
 fs.mkdirSync(OUT, { recursive: true });
 
 const results = [];
@@ -33,7 +36,7 @@ page.on("pageerror", (e) => consoleErrors.push(e.message));
 await step("home", async () => {
   await page.goto(R0, { waitUntil: "networkidle" });
   ok("home: hero title", await page.getByRole("heading", { name: "Learn Web3 with Retr0 Academy" }).isVisible());
-  ok("home: NEAR Developer path listed first", await page.getByText("NEAR Developer path", { exact: false }).first().isVisible());
+  ok("home: NEAR Developer path listed", await page.getByText("NEAR Developer path", { exact: false }).first().isVisible());
   ok("home: final exam card", await page.getByTestId("track-card-exam").isVisible());
   await page.screenshot({ path: OUT + "home.png" });
 });
@@ -102,7 +105,13 @@ await step("verify", async () => {
   await page.goto(R0 + `/verify?account=${HOLDER}`, { waitUntil: "networkidle" });
   await page.getByTestId("diploma-card").waitFor({ timeout: 20000 });
   ok("verify: certificate found", true, (await page.getByTestId("diploma-score").innerText()).trim());
-  await page.getByTestId("verify-input").fill("nobody-here-123.testnet");
+  ok("verify: mainnet badge", (await page.getByTestId("verify-mainnet").count()) >= 1);
+  const onChain = await fetch("https://rpc.mainnet.fastnear.com", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "query", params: { request_type: "call_function", finality: "final", account_id: MAINNET_CONTRACT, method_name: "verify_diploma", args_base64: Buffer.from(JSON.stringify({ account_id: HOLDER, track: "near" })).toString("base64") } }) }).then((r) => r.json());
+  const v = JSON.parse(Buffer.from(onChain.result.result).toString());
+  ok("mainnet contract: verify_diploma valid", v?.valid === true, `${v?.token_id} ${v?.score}/${v?.max_score} ${v?.grade}`);
+  await page.goto(R0 + `/verify/${BETA_HOLDER}`, { waitUntil: "networkidle" });
+  ok("verify: testnet certificate labelled beta", (await page.getByTestId("verify-beta").count()) >= 1);
+  await page.getByTestId("verify-input").fill("nobody-here-123.near");
   await page.getByTestId("verify-submit").click();
   await page.getByTestId("verify-none").waitFor({ timeout: 20000 });
   ok("verify: negative case", true);
@@ -123,6 +132,29 @@ await step("verify a developer + ship", async () => {
 await step("AI tutor + subject bar", async () => {
   await page.goto(R0 + "/contracts/access-keys", { waitUntil: "networkidle" });
   ok("subject bar: active subject", (await page.getByTestId("subject-contracts").getAttribute("aria-current")) === "page");
+  const bar = page.getByTestId("subject-bar").locator("nav > div").first();
+  const order = await page.getByTestId("subject-bar").locator("nav a").allInnerTexts();
+  ok("subject bar: beginner before advanced", order.indexOf("HTML") < order.indexOf("Advanced HTML") && order.indexOf("Advanced JavaScript") < order.indexOf("Web3 Fundamentals"), order.slice(0, 7).join(" · "));
+  await bar.evaluate((el) => el.scrollTo({ left: 0 }));
+  await page.waitForTimeout(200);
+  if (await page.getByTestId("subject-next").isVisible()) {
+    const box = await bar.boundingBox();
+    const url = page.url();
+    await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.3, box.y + box.height / 2, { steps: 8 });
+    await page.mouse.up();
+    await page.waitForTimeout(1500);
+    const dragged = await bar.evaluate((el) => el.scrollLeft);
+    ok("subject bar: drag pans without opening a link", dragged > 50 && page.url() === url, `scrollLeft ${Math.round(dragged)}`);
+    await bar.evaluate((el) => el.scrollTo({ left: 0 }));
+    await page.waitForTimeout(200);
+    await page.getByTestId("subject-next").click();
+    await page.waitForTimeout(700);
+    ok("subject bar: right arrow scrolls", (await bar.evaluate((el) => el.scrollLeft)) > 50 && (await page.getByTestId("subject-prev").isVisible()));
+  } else {
+    ok("subject bar: fits without arrows", true);
+  }
   await page.getByTestId("tutor-open").click();
   await page.getByTestId("tutor-input").fill("In one sentence: what is a function-call key?");
   await page.getByTestId("tutor-send").click();

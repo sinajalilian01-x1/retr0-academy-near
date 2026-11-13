@@ -33,7 +33,7 @@ export function VerifySearch({ initial = "" }: { initial?: string }) {
       <Input
         id="verify-account"
         data-testid="verify-input"
-        placeholder="learner.testnet"
+        placeholder="learner.near"
         value={account}
         onChange={(e) => {
           setAccount(e.target.value);

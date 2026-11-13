@@ -1,13 +1,13 @@
-import { RPC_URLS } from "@/lib/near";
+import { type NearNetwork, rpcUrls } from "@/lib/near";
 
 export const EMPTY_CODE_HASH = "11111111111111111111111111111111";
 
 export type AccountView = { amount: string; code_hash: string; storage_usage: number };
 
 /** view_account over JSON-RPC. Returns null when the account does not exist. */
-export async function viewAccount(accountId: string): Promise<AccountView | null> {
+export async function viewAccount(accountId: string, net?: NearNetwork): Promise<AccountView | null> {
   let lastError: unknown = null;
-  for (const url of RPC_URLS) {
+  for (const url of rpcUrls(net)) {
     try {
       const res = await fetch(url, {
         method: "POST",

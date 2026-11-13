@@ -196,12 +196,12 @@ export function FinalExam() {
         ) : (
           <>
             <p className="mt-3 text-sm text-muted">
-              Your pass ({pass?.score}/{pass?.max}, grade {pass?.grade}) is signed by the grader for 7 days. Connect a testnet wallet and
+              Your pass ({pass?.score}/{pass?.max}, grade {pass?.grade}) is signed by the grader for 7 days. Connect a NEAR wallet and
               mint a soulbound NFT. The contract verifies the ed25519 attestation and records your score and grade on chain.
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
               {!wallet.accountId ? (
-                <Button type="button" onClick={wallet.connect} disabled={!wallet.ready}>Connect wallet</Button>
+                <Button type="button" onClick={wallet.connect}>Connect wallet</Button>
               ) : (
                 <Button type="button" onClick={mint} disabled={Boolean(busy) || !wallet.holderChecked} data-testid="exam-mint">
                   {busy ?? `Mint to ${wallet.accountId}`}

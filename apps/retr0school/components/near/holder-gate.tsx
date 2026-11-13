@@ -14,7 +14,7 @@ import { completeRedirectUnlock, useNearWallet } from "@/components/near/wallet-
  */
 export function HolderGate({ title, children }: { title: string; children?: ReactNode }) {
   const router = useRouter();
-  const { ready, accountId, connect, diploma, holderChecked, unlockAdvanced } = useNearWallet();
+  const { accountId, connect, diploma, holderChecked, unlockAdvanced } = useNearWallet();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,11 +60,11 @@ export function HolderGate({ title, children }: { title: string; children?: Reac
               ? diploma
                 ? `${accountId} holds a certificate. Sign a free message (no transaction, no gas) to unlock.`
                 : `${accountId} does not hold a NEAR Developer Certificate yet.`
-              : "Connect a NEAR testnet wallet that holds a certificate to unlock."}
+              : "Connect the NEAR wallet that holds your certificate to unlock."}
         </p>
         <div className="flex flex-wrap gap-3">
           {!accountId ? (
-            <Button type="button" onClick={connect} disabled={!ready} data-testid="gate-connect">
+            <Button type="button" onClick={connect} data-testid="gate-connect">
               Connect wallet
             </Button>
           ) : diploma ? (

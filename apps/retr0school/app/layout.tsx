@@ -31,7 +31,7 @@ const jetbrains = JetBrains_Mono({
 const themeBoot = `(function(){try{var stored=localStorage.getItem("w3h-theme");var dark=stored!=="light";var root=document.documentElement;root.classList.toggle("dark",dark);root.style.colorScheme=dark?"dark":"light";}catch(e){}})();`;
 
 const siteDescription =
-  "Retr0 Academy is a Web3 developer school on NEAR: a NEAR Developer path from fundamentals to smart contracts, tokens and dApps, with animated diagrams and runnable examples. Pass the server-graded final exam to mint a soulbound NEAR Developer Certificate on NEAR testnet.";
+  "Retr0 Academy is a Web3 developer school on NEAR: a NEAR Developer path from fundamentals to smart contracts, tokens and dApps, with animated diagrams and runnable examples. Pass the server-graded final exam to mint a soulbound NEAR Developer Certificate on NEAR mainnet.";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
 
 export const metadata: Metadata = {

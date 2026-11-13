@@ -86,7 +86,7 @@ export async function diplomaArt(diploma: Verification | null, accountId: string
           }}
         >
           <div style={{ display: "flex", fontSize: 18, color: CYAN, letterSpacing: 4, textShadow: glow(CYAN) }}>
-            RETR0 ACADEMY · NEAR TESTNET
+            RETR0 ACADEMY · NEAR {diploma?.network === "testnet" ? "TESTNET (BETA)" : "MAINNET"}
           </div>
           <div style={{ display: "flex", fontSize: 64, color: MAGENTA, textShadow: glow(MAGENTA) }}>DIPLOMA</div>
           <div style={{ display: "flex", fontSize: 16, color: MUTED }}>{diploma ? "THIS CERTIFIES THAT" : "NO DIPLOMA FOUND FOR"}</div>

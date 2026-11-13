@@ -17,7 +17,7 @@ export default function NearExamPage() {
       <h1 className="mt-2 font-pixel text-title">NEAR Developer final exam</h1>
       <p className="mt-3 max-w-lesson text-lead text-muted">
         The certificate is earned, not given. This exam covers everything in the NEAR Developer path, at the level of real code
-        review. Pass it to mint your soulbound NEAR Developer Certificate on testnet.
+        review. Pass it to mint your soulbound NEAR Developer Certificate on NEAR mainnet.
       </p>
       <FinalExam />
     </main>

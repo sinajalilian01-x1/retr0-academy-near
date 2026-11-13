@@ -1,5 +1,5 @@
 import { diplomaArt } from "@/lib/diploma-art";
-import { ACCOUNT_RE, verifyDiploma } from "@/lib/near";
+import { ACCOUNT_RE, networkOf, verifyDiploma } from "@/lib/near";
 
 export const runtime = "nodejs";
 
@@ -12,6 +12,6 @@ export async function GET(_request: Request, { params }: Ctx) {
   if (!ACCOUNT_RE.test(account) || !/^[a-z0-9-]{1,32}$/.test(track)) {
     return new Response("Bad request", { status: 400 });
   }
-  const diploma = await verifyDiploma(account, track).catch(() => null);
+  const diploma = await verifyDiploma(account, track, networkOf(account)).catch(() => null);
   return diplomaArt(diploma, account);
 }

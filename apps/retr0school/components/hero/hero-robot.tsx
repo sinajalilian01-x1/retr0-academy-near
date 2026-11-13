@@ -5,7 +5,7 @@ import { openTutor } from "@/components/tutor/tutor-launcher";
 
 /**
  * Hero mascot. The static PNG paints immediately (no layout shift); the interactive three.js head
- * loads after the page is idle, only when WebGL works and the visitor hasn't asked for reduced motion.
+ * loads after the first user interaction and an idle moment, only when WebGL works and the visitor hasn't asked for reduced motion.
  * Clicking the head opens Retr0 Tutor.
  */
 export function HeroRobot({ className = "" }: { className?: string }) {
@@ -27,11 +27,22 @@ export function HeroRobot({ className = "" }: { className?: string }) {
         /* keep the poster */
       }
     };
-    const idle = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
-    const id = idle ? idle(() => void start(), { timeout: 2500 }) : window.setTimeout(() => void start(), 1200);
+    // Load three.js only after the visitor shows intent (mouse move, touch, key, scroll), then wait for an
+    // idle moment. Until then the poster PNG is the hero. This keeps the main thread free while the page loads.
+    const events = ["pointermove", "pointerdown", "touchstart", "keydown", "wheel", "scroll"] as const;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    let triggered = false;
+    const trigger = () => {
+      if (triggered) return;
+      triggered = true;
+      events.forEach((e) => window.removeEventListener(e, trigger));
+      if (w.requestIdleCallback) w.requestIdleCallback(() => void start(), { timeout: 1500 });
+      else window.setTimeout(() => void start(), 200);
+    };
+    events.forEach((e) => window.addEventListener(e, trigger, { passive: true }));
     return () => {
       cancelled = true;
-      if (!idle) window.clearTimeout(id);
+      events.forEach((e) => window.removeEventListener(e, trigger));
       dispose?.();
     };
   }, []);
@@ -47,7 +58,8 @@ export function HeroRobot({ className = "" }: { className?: string }) {
         width={256}
         height={256}
         fetchPriority="low"
-        className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ${live ? "opacity-0" : "opacity-100"}`}
+        onClick={() => openTutor({})}
+        className={`absolute inset-0 h-full w-full cursor-pointer object-contain transition-opacity duration-500 ${live ? "pointer-events-none opacity-0" : "opacity-100"}`}
       />
       <canvas
         ref={canvas}

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { WalletSelector } from "@near-wallet-selector/core";
 import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
 import {
@@ -88,6 +88,8 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
   const [accountId, setAccountId] = useState<string | null>(null);
   const [diploma, setDiploma] = useState<Verification | null>(null);
   const [holderChecked, setHolderChecked] = useState(false);
+  const startRef = useRef<(() => void) | null>(null);
+  const pendingShow = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,7 +109,7 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       const m = setupModal(s, {
         contractId: DIPLOMA_CONTRACT,
         theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
-        description: "Connect a NEAR testnet wallet to mint and show your NEAR Developer Certificate.",
+        description: "Connect a NEAR mainnet wallet to mint and show your NEAR Developer Certificate.",
       });
       const sync = () => setAccountId(s.store.getState().accounts.find((a) => a.active)?.accountId ?? null);
       sync();
@@ -115,16 +117,44 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       unsubscribe = () => sub.unsubscribe();
       setSelector(s);
       setModal(m);
+      if (pendingShow.current) {
+        pendingShow.current = false;
+        m.show();
+      }
     };
-    // Load the wallet code after first paint so it does not compete with the page itself.
-    const run = () => void init().catch((error) => console.error("Wallet Selector failed to start", error));
+    // The wallet code is big (about 600 KB). Load it at idle only for returning visitors with a saved wallet
+    // session or a wallet redirect; everyone else gets it on their first tap, click or key press.
+    let started = false;
+    const run = () => {
+      if (started) return;
+      started = true;
+      events.forEach((e) => window.removeEventListener(e, onIntent));
+      void init().catch((error) => console.error("Wallet Selector failed to start", error));
+    };
+    const events = ["pointerdown", "keydown", "touchstart"] as const;
+    const onIntent = () => run();
+    startRef.current = run;
+    let hasSession = false;
+    try {
+      hasSession = Object.keys(localStorage).some((k) => k.startsWith("near-wallet-selector") || k.startsWith("near_app_wallet_auth_key"));
+    } catch {
+      /* storage blocked */
+    }
+    const fromRedirect = /account_id=|all_keys=|signature=|transactionHashes=/.test(window.location.search + window.location.hash);
     const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
-    const idle = w.requestIdleCallback ? w.requestIdleCallback(run, { timeout: 1500 }) : null;
-    const timer = idle === null ? window.setTimeout(run, 300) : null;
+    let idle: number | null = null;
+    let timer: number | null = null;
+    if (hasSession || fromRedirect) {
+      idle = w.requestIdleCallback ? w.requestIdleCallback(run, { timeout: 1500 }) : null;
+      timer = idle === null ? window.setTimeout(run, 300) : null;
+    } else {
+      events.forEach((e) => window.addEventListener(e, onIntent, { passive: true, capture: true }));
+    }
     return () => {
       cancelled = true;
       if (idle !== null) w.cancelIdleCallback?.(idle);
       if (timer !== null) window.clearTimeout(timer);
+      events.forEach((e) => window.removeEventListener(e, onIntent, { capture: true }));
       unsubscribe?.();
     };
   }, []);
@@ -152,7 +182,12 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
     void refreshDiploma();
   }, [refreshDiploma]);
 
-  const connect = useCallback(() => modal?.show(), [modal]);
+  const connect = useCallback(() => {
+    if (modal) return modal.show();
+    // Wallet code not loaded yet: load it now and open the picker as soon as it is ready.
+    pendingShow.current = true;
+    startRef.current?.();
+  }, [modal]);
 
   const disconnect = useCallback(async () => {
     if (!selector) return;

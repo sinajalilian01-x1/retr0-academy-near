@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCourseTracks } from "@/lib/content";
 
-export const metadata: Metadata = pageMeta("/near", "NEAR Developer path", "Four NEAR courses, a hard server-graded final exam, and a soulbound NEAR Developer Certificate on testnet.");
+export const metadata: Metadata = pageMeta("/near", "NEAR Developer path", "Four NEAR courses, a hard server-graded final exam, and a soulbound NEAR Developer Certificate on NEAR mainnet.");
 
 export default function NearDiplomaPage() {
   const courses = getCourseTracks();

@@ -28,7 +28,7 @@ function Step({ n, title, done, children }: { n: number; title: string; done: bo
 }
 
 export function DiplomaFlow() {
-  const { ready, accountId, connect, mintDiploma, diploma, holderChecked, refreshDiploma } = useNearWallet();
+  const { accountId, connect, mintDiploma, diploma, holderChecked, refreshDiploma } = useNearWallet();
   const [pass, setPass] = useState<StoredPass | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -89,7 +89,7 @@ export function DiplomaFlow() {
             </p>
           )}
         </Step>
-        <Step n={2} title="Connect a testnet wallet" done={Boolean(accountId)}>
+        <Step n={2} title="Connect a NEAR wallet" done={Boolean(accountId)}>
           {accountId ? (
             <p>
               Connected as{" "}
@@ -99,8 +99,8 @@ export function DiplomaFlow() {
             </p>
           ) : (
             <>
-              <p>MyNearWallet or Meteor on testnet. No account yet? Create one free at testnet.mynearwallet.com.</p>
-              <Button type="button" className="mt-3" disabled={!ready} onClick={connect} data-testid="diploma-connect">
+              <p>MyNearWallet or Meteor on NEAR mainnet. Minting costs a tiny storage deposit (0.02 NEAR, unused part refunded) plus gas.</p>
+              <Button type="button" className="mt-3" onClick={connect} data-testid="diploma-connect">
                 Connect wallet
               </Button>
             </>
@@ -108,7 +108,7 @@ export function DiplomaFlow() {
         </Step>
         <Step n={3} title="Mint your certificate NFT" done={Boolean(diploma)}>
           {diploma ? (
-            <p>Minted. Your NEAR Developer Certificate lives on NEAR testnet and is soulbound to your account. Advanced NEAR is unlocked.</p>
+            <p>Minted. Your NEAR Developer Certificate lives on NEAR mainnet and is soulbound to your account. Advanced NEAR is unlocked.</p>
           ) : (
             <>
               <p>

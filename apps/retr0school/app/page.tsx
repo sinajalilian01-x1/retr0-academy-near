@@ -37,7 +37,11 @@ export default function HomePage() {
         <HomeHero />
         <div id="courses" className="mt-12 grid items-start gap-10 md:grid-cols-2 lg:mt-16 lg:gap-12">
           <div>
-          <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">NEAR Developer path</p>
+          <p className="mb-4 text-sm font-medium tracking-eyebrow text-muted uppercase">1 · Foundations: HTML, CSS &amp; JavaScript, then advanced</p>
+          <TrackGrid tracks={foundations} />
+          </div>
+          <div>
+          <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">2 · NEAR Developer path</p>
           <TrackGrid tracks={featured} numbered />
           <Link
             href="/near/quiz"
@@ -60,10 +64,15 @@ export default function HomePage() {
             <span className="text-sm font-medium text-highlight">Holders</span>
             <ArrowRight className="h-4 w-4 text-accent-text" aria-hidden />
           </Link>
-          </div>
-          <div>
-          <p className="mb-4 text-sm font-medium tracking-eyebrow text-muted uppercase">Foundations · HTML, CSS &amp; JavaScript</p>
-          <TrackGrid tracks={foundations} />
+          <Link
+            href="/guides/perps-on-near"
+            data-testid="track-card-perps"
+            className="mt-3 flex items-center gap-3 border-2 border-line bg-elevated px-4 py-3.5 text-ink shadow-sm hover:border-accent"
+          >
+            <span className="flex-1 font-semibold">Perps on NEAR</span>
+            <span className="text-sm font-medium text-muted">Guide</span>
+            <ArrowRight className="h-4 w-4 text-accent-text" aria-hidden />
+          </Link>
           </div>
         </div>
       </section>
@@ -83,7 +92,7 @@ export default function HomePage() {
             No wallet yet?{" "}
             <Link href="/near/quiz" className="text-info underline underline-offset-4">Try a practice paper</Link>{" "}
             or{" "}
-            <Link href="/verify?account=exam-tester.retr0school.testnet" className="text-info underline underline-offset-4">look up a real certificate</Link>{" "}
+            <Link href="/verify/hlpok1lad.tg" className="text-info underline underline-offset-4">look up a real certificate</Link>{" "}
             without signing in.
           </p>
         </div>
@@ -96,7 +105,7 @@ export default function HomePage() {
               Retr0 Academy is a Web3 development school on NEAR. Follow the NEAR Developer path through fundamentals,
               smart contracts, tokens, and dApp frontends, with animated diagrams and examples you can edit in the
               Playground. Pass the server-graded final exam to mint a soulbound NEAR Developer Certificate on NEAR
-              testnet, which unlocks the Advanced NEAR deep dives. HTML, CSS, and JavaScript, basic and advanced, are
+              mainnet, which unlocks the Advanced NEAR deep dives. HTML, CSS, and JavaScript, basic and advanced, are
               there as supporting courses.
             </p>
             <p className="mt-4">
