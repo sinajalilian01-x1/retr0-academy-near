@@ -87,6 +87,9 @@ pub struct DiplomaExtra {
     pub issued_at_ms: u64,
     /// UTC date, YYYY-MM-DD.
     pub date: String,
+    /// Letter grade from the final exam (A+, A, B). Missing on diplomas minted before v3.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grade: Option<String>,
 }
 
 /// Result of `verify_diploma`.
@@ -102,6 +105,7 @@ pub struct Verification {
     pub max_score: u8,
     pub issued_at_ms: u64,
     pub date: String,
+    pub grade: Option<String>,
 }
 
 #[near(contract_state)]
@@ -156,6 +160,18 @@ fn parse_ed25519(public_key: &PublicKey) -> [u8; 32] {
     public_key.as_bytes()[1..33]
         .try_into()
         .unwrap_or_else(|_| env::panic_str("Bad ed25519 key"))
+}
+
+/// Letter grade for a passing score: A+ >= 95%, A >= 90%, otherwise B.
+pub fn grade_for(score: u8, max_score: u8) -> String {
+    let pct = (score as u32 * 100) / (max_score.max(1) as u32);
+    if pct >= 95 {
+        "A+".to_string()
+    } else if pct >= 90 {
+        "A".to_string()
+    } else {
+        "B".to_string()
+    }
 }
 
 pub fn date_from_ms(ms: u64) -> String {
@@ -254,6 +270,30 @@ impl Contract {
         self.attestor_pk = Some(parse_ed25519(&public_key));
     }
 
+    /// Owner-only rebrand: set the collection name and rewrite the old brand in every minted
+    /// diploma's title and description. Token ids, owners and scores are untouched.
+    pub fn rebrand(&mut self, name: String, old_brand: String, new_brand: String) -> u32 {
+        self.assert_owner();
+        require!(!old_brand.is_empty(), "old_brand is empty");
+        let mut m = self.metadata.get().unwrap();
+        m.name = name;
+        self.metadata.set(&m);
+        let ids: Vec<TokenId> = self.tokens.owner_by_id.iter().map(|(id, _)| id).collect();
+        let mut updated = 0u32;
+        if let Some(by_id) = self.tokens.token_metadata_by_id.as_mut() {
+            for id in ids {
+                if let Some(mut tm) = by_id.get(&id) {
+                    tm.title = tm.title.map(|t| t.replace(&old_brand, &new_brand));
+                    tm.description = tm.description.map(|d| d.replace(&old_brand, &new_brand));
+                    tm.updated_at = Some(env::block_timestamp_ms().to_string());
+                    by_id.insert(&id, &tm);
+                    updated += 1;
+                }
+            }
+        }
+        updated
+    }
+
     pub fn set_base_uri(&mut self, base_uri: Option<String>) {
         self.assert_owner();
         let mut m = self.metadata.get().unwrap();
@@ -330,12 +370,14 @@ impl Contract {
             owner: account_id.clone(),
             issued_at_ms,
             date: date_from_ms(issued_at_ms),
+            grade: Some(grade_for(score, max_score)),
         };
+        let grade = extra.grade.clone().unwrap_or_default();
         let metadata = TokenMetadata {
-            title: Some(format!("Retr0 Academy Diploma: {}", t.title)),
+            title: Some(format!("Retr0 Academy Diploma: {} (Grade {})", t.title, grade)),
             description: Some(format!(
-                "{} passed the Retr0 Academy \"{}\" track with {}/{} on {} (UTC). Soulbound credential.",
-                account_id, t.title, score, max_score, extra.date
+                "{} passed the Retr0 Academy \"{}\" final exam with {}/{} (grade {}) on {} (UTC). Soulbound credential.",
+                account_id, t.title, score, max_score, grade, extra.date
             )),
             media: Some(self.media_for(&track, &account_id)),
             media_hash: None,
@@ -398,6 +440,7 @@ impl Contract {
             max_score: extra.max_score,
             issued_at_ms: extra.issued_at_ms,
             date: extra.date,
+            grade: extra.grade,
         })
     }
 

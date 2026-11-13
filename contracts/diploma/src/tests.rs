@@ -65,7 +65,7 @@ fn mint_and_verify() {
     assert_eq!(t.token_id, "near:bob");
     assert_eq!(t.owner_id, accounts(1));
     let m = t.metadata.unwrap();
-    assert_eq!(m.title.unwrap(), "Retr0 Academy Diploma: NEAR Fundamentals");
+    assert_eq!(m.title.unwrap(), "Retr0 Academy Diploma: NEAR Fundamentals (Grade B)");
     assert_eq!(m.media.unwrap(), "https://example.com/api/diploma/near/bob");
     let extra: DiplomaExtra = near_sdk::serde_json::from_str(&m.extra.unwrap()).unwrap();
     assert_eq!(extra.score, 6);
@@ -73,6 +73,7 @@ fn mint_and_verify() {
     assert_eq!(extra.track, "near");
     assert_eq!(extra.owner, accounts(1));
     assert_eq!(extra.date, "2026-11-13");
+    assert_eq!(extra.grade.as_deref(), Some("B"));
     assert!(
         get_logs().iter().any(|l| l.contains("nft_mint")),
         "NEP-297 mint event"
@@ -281,4 +282,42 @@ fn migrate_from_v1_keeps_tokens_and_drops_answer_keys() {
     let v = c.verify_diploma(accounts(1), "near".into()).unwrap();
     assert_eq!(v.score, 7);
     assert!(c.get_attestor().is_some());
+}
+
+#[test]
+fn grades() {
+    assert_eq!(grade_for(40, 40), "A+");
+    assert_eq!(grade_for(38, 40), "A+");
+    assert_eq!(grade_for(36, 40), "A");
+    assert_eq!(grade_for(32, 40), "B");
+}
+
+#[test]
+fn old_extra_without_grade_still_parses() {
+    let e: DiplomaExtra = near_sdk::serde_json::from_str(
+        r#"{"track":"near","score":7,"max_score":8,"owner":"bob","issued_at_ms":1,"date":"2026-11-12"}"#,
+    )
+    .unwrap();
+    assert!(e.grade.is_none());
+}
+
+#[test]
+fn rebrand_rewrites_collection_and_tokens() {
+    let mut c = setup();
+    mint(&mut c, accounts(1), "near", 6, 8);
+    ctx(accounts(0), NearToken::from_yoctonear(0));
+    let n = c.rebrand("New Name".into(), "Retr0 Academy".into(), "Brand X".into());
+    assert_eq!(n, 1);
+    assert_eq!(c.nft_metadata().name, "New Name");
+    let t = c.nft_token("near:bob".into()).unwrap();
+    assert!(t.metadata.unwrap().title.unwrap().starts_with("Brand X Diploma"));
+    assert_eq!(c.verify_diploma(accounts(1), "near".into()).unwrap().score, 6);
+}
+
+#[test]
+#[should_panic(expected = "Only the contract owner")]
+fn only_owner_rebrands() {
+    let mut c = setup();
+    ctx(accounts(1), NearToken::from_yoctonear(0));
+    c.rebrand("x".into(), "a".into(), "b".into());
 }
