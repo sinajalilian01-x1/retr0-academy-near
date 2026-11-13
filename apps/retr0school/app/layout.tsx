@@ -30,20 +30,20 @@ const jetbrains = JetBrains_Mono({
 const themeBoot = `(function(){try{var stored=localStorage.getItem("w3h-theme");var dark=stored!=="light";var root=document.documentElement;root.classList.toggle("dark",dark);root.style.colorScheme=dark?"dark":"light";}catch(e){}})();`;
 
 const siteDescription =
-  "Learn NEAR from scratch and graduate on-chain with Retr0 Academy. Short lessons, examples you run in Code E, a quiz, and a soulbound diploma NFT on NEAR testnet.";
+  "Retr0 Academy is a NEAR-based coding academy for the web: short lessons in NEAR, Web3, HTML, CSS, and JavaScript, with examples you can edit and run in the browser or open in Code E. Finish the NEAR track to mint a soulbound diploma NFT on NEAR testnet.";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Retr0 Academy on NEAR",
+    default: "Learn Web3 with Retr0 Academy",
     template: "%s · Retr0 Academy",
   },
   description: siteDescription,
   applicationName: "Retr0 Academy",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Retr0 Academy on NEAR",
+    title: "Learn Web3 with Retr0 Academy",
     description: siteDescription,
     url: siteUrl,
     siteName: "Retr0 Academy on NEAR",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Retr0 Academy on NEAR",
+    title: "Learn Web3 with Retr0 Academy",
     description: siteDescription,
   },
   robots: { index: true, follow: true },

@@ -62,7 +62,7 @@ site: verify_diploma / nft_tokens view calls → verify page, leaderboard, holde
 
 No install needed. Testnet only.
 
-1. Open https://retr0school-near.vercel.app → the hero says "Learn NEAR from scratch and graduate on-chain with Retr0 Academy." and the NEAR card is first in "Browse courses".
+1. Open https://retr0school-near.vercel.app → the hero says "Learn Web3 with Retr0 Academy" and the NEAR card is first in "Browse courses".
 2. Open https://retr0school-near.vercel.app/near/view-vs-change-calls → press **Try it Yourself** or **Open in Code E ↗**, then **Verify** → you see the JSON credential of `demo-learner.retr0school.testnet` read from the contract (score 7/8).
 3. Open https://code-e-near.vercel.app/#template=near → Code E loads the NEAR starter. Press **Connect**, then **Verify diploma** → the preview shows the account balance and "Valid diploma: NEAR Fundamentals, 7/8".
 4. Open https://retr0school-near.vercel.app/verify?account=demo-learner.retr0school.testnet → a diploma card shows owner, score 7/8, date, "Valid · soulbound".

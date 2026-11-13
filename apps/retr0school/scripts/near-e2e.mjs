@@ -23,7 +23,7 @@ const page = await ctx.newPage();
 try {
   // 1. Home
   await page.goto(R0, { waitUntil: "networkidle" });
-  ok("home hero", await page.getByText("Learn NEAR from scratch and graduate on-chain with Retr0 Academy.").isVisible());
+  ok("home hero", await page.getByText("Learn Web3 with Retr0 Academy").isVisible());
   ok("connect button", await page.getByTestId("near-connect").isVisible());
   await page.screenshot({ path: OUT + "01-home.png" });
 

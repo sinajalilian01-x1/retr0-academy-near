@@ -6,7 +6,7 @@ Everything here is a draft for Sina to review. Nothing has been posted or submit
 
 | Time | Screen | Voice-over |
 | --- | --- | --- |
-| 0:00-0:08 | Retr0 Academy home, hero "Learn NEAR from scratch and graduate on-chain with Retr0 Academy." | "Online course certificates prove nothing. Anyone can fake a PDF. So we made Retr0 Academy on NEAR, where your diploma lives on chain." |
+| 0:00-0:08 | Retr0 Academy home, hero "Learn Web3 with Retr0 Academy" | "Online course certificates prove nothing. Anyone can fake a PDF. So we made Retr0 Academy on NEAR, where your diploma lives on chain." |
 | 0:08-0:18 | `/near` track, open "View vs Change Calls", press **Verify** in the example | "Nine short lessons. Every example runs live against NEAR testnet. This one calls our diploma contract with a free view call." |
 | 0:18-0:26 | Click **Open in Code E**, Code E opens with the same code, press Run | "One click sends the example to Code E, our playground, so you can break it and rebuild it." |
 | 0:26-0:36 | `/near/quiz`, answer, **Score my quiz**, green "Passed" box | "The answer key never leaves our server. It grades you and signs the result, and the smart contract only accepts a grade with a valid signature for your account." |
