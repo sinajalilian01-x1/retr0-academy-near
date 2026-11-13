@@ -81,7 +81,7 @@ pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space
   const account_id = document.getElementById("acc").value.trim();
   out.textContent = "Looking up " + account_id + "...";
   try {
-    const res = await fetch("https://rpc.testnet.near.org", {
+    const res = await fetch("https://rpc.testnet.fastnear.com", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

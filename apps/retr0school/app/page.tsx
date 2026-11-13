@@ -23,9 +23,10 @@ export default function HomePage() {
 
   return (
     <main id="content">
-      <section className="mx-auto grid max-w-page items-start gap-12 px-5 py-12 md:px-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.8fr)] lg:gap-16 lg:py-20">
+      <section className="mx-auto max-w-page px-5 py-12 md:px-8 lg:py-20">
         <HomeHero />
-        <div id="courses">
+        <div id="courses" className="mt-12 grid items-start gap-10 md:grid-cols-2 lg:mt-16 lg:gap-12">
+          <div>
           <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">NEAR Developer path</p>
           <TrackGrid tracks={featured} numbered />
           <Link
@@ -49,8 +50,11 @@ export default function HomePage() {
             <span className="text-sm font-medium text-highlight">Holders</span>
             <ArrowRight className="h-4 w-4 text-accent-text" aria-hidden />
           </Link>
-          <p className="mt-8 mb-3 text-sm font-medium tracking-eyebrow text-muted uppercase">Foundations</p>
-          <TrackGrid tracks={foundations} compact />
+          </div>
+          <div>
+          <p className="mb-4 text-sm font-medium tracking-eyebrow text-muted uppercase">Foundations · HTML, CSS &amp; JavaScript</p>
+          <TrackGrid tracks={foundations} />
+          </div>
         </div>
       </section>
       <section id="about" className="border-t border-line">

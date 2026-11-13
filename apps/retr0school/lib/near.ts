@@ -5,8 +5,8 @@ export const NEAR_TRACK = "near";
 /** Must match the pass_score set on chain with set_track. */
 export const NEAR_PASS_SCORE = 32;
 export const RPC_URLS = [
-  process.env.NEXT_PUBLIC_NEAR_RPC || "https://rpc.testnet.near.org",
-  "https://test.rpc.fastnear.com",
+  process.env.NEXT_PUBLIC_NEAR_RPC || "https://rpc.testnet.fastnear.com",
+  "https://rpc.testnet.near.org",
 ];
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app").replace(/\/+$/, "");
 export const CODE_E_URL = (process.env.NEXT_PUBLIC_CODE_E_URL || "https://code-e-near.vercel.app").replace(/\/+$/, "");
@@ -60,6 +60,7 @@ export async function viewCall<T>(contractId: string, method: string, args: Reco
           },
         }),
         cache: "no-store",
+        signal: AbortSignal.timeout(6000),
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error.cause?.name || json.error.message || "RPC error");

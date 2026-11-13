@@ -174,7 +174,7 @@ pre {
   font-size: 13px;
 }
 code { font-family: ui-monospace, monospace; color: #00ec97; }`,
-  js: `const RPC = "https://rpc.testnet.near.org";
+  js: `const RPC = "https://rpc.testnet.fastnear.com";
 const CONTRACT = "diploma.retr0school.testnet";
 let accountId = null;
 

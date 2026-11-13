@@ -120,7 +120,7 @@ a {
   },
   {
     name: 'script.js',
-    content: `const RPC = "https://rpc.testnet.near.org";
+    content: `const RPC = "https://rpc.testnet.fastnear.com";
 const CONTRACT = "${DIPLOMA_CONTRACT}";
 const ACADEMY = "${ACADEMY_URL}";
 

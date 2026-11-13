@@ -50,7 +50,7 @@ pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space
 
 document.getElementById("go").addEventListener("click", async () => {
   const id = document.getElementById("acc").value.trim();
-  const res = await fetch("https://rpc.testnet.near.org", {
+  const res = await fetch("https://rpc.testnet.fastnear.com", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: "r0", method: "query",

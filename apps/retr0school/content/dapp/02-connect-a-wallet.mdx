@@ -43,7 +43,7 @@ const greeting = await provider.callFunction({
 });
 ```
 
-Plain `fetch` to `https://rpc.testnet.near.org` with `query` / `call_function` also works — that is what the Playground examples in these lessons use.
+Plain `fetch` to `https://rpc.testnet.fastnear.com` with `query` / `call_function` also works — that is what the Playground examples in these lessons use.
 
 ## Change calls
 
@@ -82,7 +82,7 @@ input { padding: 8px; border: 2px solid #3a3466; background: #17132b; color: inh
 button { background: #ff3fa4; color: #1a0a14; border: 2px solid #ece8ff; padding: 8px 14px; font-weight: 700; cursor: pointer; }
 pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space: pre-wrap; }`}
   js={`async function view(contractId, method, args) {
-  const res = await fetch("https://rpc.testnet.near.org", {
+  const res = await fetch("https://rpc.testnet.fastnear.com", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
