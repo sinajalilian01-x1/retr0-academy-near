@@ -201,7 +201,7 @@ near contract call-function as-transaction my-diploma.testnet set_track \
   prepaid-gas '30 Tgas' attached-deposit '0 NEAR' sign-as my-diploma.testnet network-config testnet sign-with-keychain send
 
 # 5. web apps on Vercel (set the two grader secrets first)
-cd apps/code-e && vercel deploy --prod --build-env VITE_RETR0SCHOOL_URL=https://<your-retr0school>.vercel.app
+cd apps/code-e && vercel deploy --prod --build-env VITE_RETR0SCHOOL_URL=https://<your-site>.vercel.app
 cd apps/retr0school && vercel env add NEAR_ATTESTOR_SEED production && vercel env add EXAM_BANK_KEY production
 vercel deploy --prod \
   --build-env NEXT_PUBLIC_CODE_E_URL=https://<your-code-e>.vercel.app \
