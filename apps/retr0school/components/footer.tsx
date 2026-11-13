@@ -43,7 +43,7 @@ export function Footer({ tracks }: { tracks: { slug: string; title: string }[] }
               {track.title}
             </Link>
           ))}
-          <Link href="/tryit" className="text-muted hover:text-ink">
+          <Link href="/playground" className="text-muted hover:text-ink">
             Playground
           </Link>
           <Link href="/#about" className="text-muted hover:text-ink">

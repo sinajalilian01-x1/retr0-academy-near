@@ -7,7 +7,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const tracks = getTracks();
   const pages: MetadataRoute.Sitemap = [
     { url: SITE, changeFrequency: "weekly", priority: 1 },
-    { url: `${SITE}/tryit`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${SITE}/playground`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE}/diploma`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${SITE}/verify`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE}/leaderboard`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE}/advanced`, changeFrequency: "weekly", priority: 0.6 },
   ];
 
   for (const track of tracks) {

@@ -27,14 +27,19 @@ try {
   ok("connect button", await page.getByTestId("near-connect").isVisible());
   await page.screenshot({ path: OUT + "01-home.png" });
 
-  // 2. Lesson with Open in Code E
+  // 2. Lesson links to the Playground with the example prefilled
   await page.goto(R0 + "/near/view-vs-change-calls", { waitUntil: "networkidle" });
+  const playgroundLink = page.getByTestId("open-in-playground").first();
+  const playgroundHref = await playgroundLink.getAttribute("href");
+  ok("open in playground link", Boolean(playgroundHref && playgroundHref.includes("/playground")), playgroundHref?.slice(0, 80));
+  await page.screenshot({ path: OUT + "02-lesson-view-call.png", fullPage: false });
+  await playgroundLink.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: OUT + "03-lesson-open-in-code-e.png" });
+
+  await page.goto(new URL(playgroundHref, R0).href, { waitUntil: "networkidle" });
   const link = page.getByTestId("open-in-code-e").first();
   const href = await link.getAttribute("href");
-  ok("open in code e link", Boolean(href && href.startsWith(CE + "/#code=")), href?.slice(0, 60));
-  await page.screenshot({ path: OUT + "02-lesson-view-call.png", fullPage: false });
-  await link.scrollIntoViewIfNeeded();
-  await page.screenshot({ path: OUT + "03-lesson-open-in-code-e.png" });
+  ok("open in code e from playground", Boolean(href && href.startsWith(CE + "/#code=")), href?.slice(0, 60));
 
   // 3. Follow the link into Code E and run the verify example
   const ce = await ctx.newPage();

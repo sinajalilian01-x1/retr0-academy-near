@@ -4,6 +4,7 @@ import { LessonShell } from "@/components/lesson-shell";
 import { LessonToolbar } from "@/components/lesson-toolbar";
 import { PrevNext } from "@/components/prev-next";
 import { getLesson, getLessons, getTrack, getTracks, neighbors, toSummary } from "@/lib/content";
+import { playgroundHrefForLesson } from "@/lib/code-e";
 import { renderMdx } from "@/lib/mdx";
 
 type Props = { params: Promise<{ track: string; slug: string }> };
@@ -42,7 +43,7 @@ export default async function LessonPage({ params }: Props) {
           <p className="mt-3 text-lead text-muted">{lesson.description}</p>
           <div className="lesson-prose mt-8">{renderMdx(lesson.body, lesson.title)}</div>
           <div className="mt-10 border-t border-line pt-6">
-            <LessonToolbar track={track.slug} slug={lesson.slug} />
+            <LessonToolbar track={track.slug} slug={lesson.slug} playgroundHref={playgroundHrefForLesson(track.slug, lesson.body)} />
             <PrevNext prev={prev} next={next} />
           </div>
         </article>

@@ -7,7 +7,7 @@ import matter from "gray-matter";
 /** Bonus lessons for diploma holders. Kept outside content/ so they are not a regular public track. */
 const DIR = path.join(process.cwd(), "content-advanced");
 
-export type AdvancedLesson = { slug: string; title: string; description: string; order: number; body: string };
+export type AdvancedLesson = { slug: string; title: string; description: string; order: number; body: string; locked: boolean };
 
 export function getAdvancedLessons(): AdvancedLesson[] {
   return fs
@@ -21,6 +21,7 @@ export function getAdvancedLessons(): AdvancedLesson[] {
         description: String(data.description),
         order: Number(data.order),
         body: content,
+        locked: data.locked !== false && data.open !== true,
       };
     })
     .sort((a, b) => a.order - b.order);

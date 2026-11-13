@@ -9,6 +9,8 @@ import { EditorView } from "@codemirror/view";
 import { Button } from "@/components/ui/button";
 import { w3hEditorTheme, w3hSyntax } from "@/lib/editor-theme";
 import { buildSrcDoc } from "@/lib/srcdoc";
+import { codeELink } from "@/lib/code-e";
+import type { PlaygroundExample } from "@/lib/playground-starters";
 
 type PaneId = "html" | "css" | "js";
 
@@ -39,16 +41,26 @@ export function Playground({
   initialHtml,
   initialCss,
   initialJs,
+  examples,
+  activeExample,
+  showCodeE = false,
+  autoRun = false,
 }: {
   initialHtml: string;
   initialCss: string;
   initialJs: string;
+  examples?: PlaygroundExample[];
+  activeExample?: string;
+  showCodeE?: boolean;
+  autoRun?: boolean;
 }) {
   const [code, setCode] = useState({ html: initialHtml, css: initialCss, js: initialJs });
+  const [baseline, setBaseline] = useState({ html: initialHtml, css: initialCss, js: initialJs });
   const [pane, setPane] = useState<PaneId>("html");
   const [srcDoc, setSrcDoc] = useState<string | null>(null);
   const [runId, setRunId] = useState(0);
   const [logs, setLogs] = useState<Log[]>([]);
+  const [exampleId, setExampleId] = useState(activeExample ?? examples?.[0]?.id ?? "");
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -67,12 +79,27 @@ export function Playground({
     setRunId((value) => value + 1);
   }
 
+  useEffect(() => {
+    if (autoRun) runWith({ html: initialHtml, css: initialCss, js: initialJs });
+    // Run once when the editor first mounts with its starting code.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function run() {
     runWith(code);
   }
 
   function reset() {
-    const next = { html: initialHtml, css: initialCss, js: initialJs };
+    setCode(baseline);
+    runWith(baseline);
+  }
+
+  function loadExample(id: string) {
+    const example = examples?.find((item) => item.id === id);
+    if (!example) return;
+    const next = { html: example.html, css: example.css, js: example.js };
+    setExampleId(id);
+    setBaseline(next);
     setCode(next);
     runWith(next);
   }
@@ -80,8 +107,39 @@ export function Playground({
   return (
     <div className="flex h-full min-h-0 flex-col bg-canvas">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-3 py-2">
-        <p className="text-sm text-muted">Sandboxed preview</p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-sm text-muted">Sandboxed preview</p>
+          {examples && examples.length > 0 ? (
+            <label className="flex items-center gap-2 text-sm text-muted">
+              <span className="sr-only">Starter example</span>
+              <select
+                data-testid="playground-example"
+                className="h-10 border-2 border-line bg-elevated px-2 text-sm text-ink"
+                value={exampleId || "custom"}
+                onChange={(event) => loadExample(event.target.value)}
+              >
+                {exampleId ? null : <option value="custom">Loaded from lesson</option>}
+                {examples.map((example) => (
+                  <option key={example.id} value={example.id}>
+                    {example.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {showCodeE ? (
+            <a
+              href={codeELink(code)}
+              target="_blank"
+              rel="noopener"
+              data-testid="open-in-code-e"
+              className="inline-flex h-10 items-center rounded-md border-2 border-line bg-elevated px-4 text-sm font-medium text-ink shadow-sm hover:border-cyan"
+            >
+              Open in Code E ↗
+            </a>
+          ) : null}
           <Button type="button" variant="outline" data-testid="tryit-reset" onClick={reset}>
             Reset
           </Button>

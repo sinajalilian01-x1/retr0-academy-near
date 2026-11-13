@@ -1,0 +1,111 @@
+---
+title: Frontend dApp with near-api-js
+description: "Connect a wallet, read state with near-api-js, and send a function call. Official docs now recommend NEAR Connect; Wallet Selector is deprecated."
+order: 11
+locked: false
+tags: ["advanced", "frontend", "near-api-js"]
+---
+
+# Frontend dApp with near-api-js
+
+A NEAR frontend does two jobs: **view** calls over RPC (free, no wallet) and **change** calls the user signs. The RPC library is [`near-api-js`](https://docs.near.org/tools/near-api). For wallets, [docs.near.org](https://docs.near.org/web3-apps/tutorials/wallet-login) now tells you **not** to start a new app on `@near-wallet-selector/*` — that stack is deprecated and unmaintained. Use [`@hot-labs/near-connect`](https://docs.near.org/tools/near-connect) instead.
+
+This academy’s diploma button still uses Wallet Selector because it was built against that stack. New work should follow the official connector.
+
+## Install and connect
+
+```bash
+npm install @hot-labs/near-connect near-api-js
+```
+
+```js
+import { NearConnector } from "@hot-labs/near-connect";
+import { JsonRpcProvider } from "near-api-js";
+
+const connector = new NearConnector({ network: "testnet" });
+const provider = new JsonRpcProvider({ url: "https://test.rpc.fastnear.com" });
+
+// Connect (opens the wallet UI)
+await connector.connect();
+const wallet = await connector.wallet();
+const accountId = await wallet.getAddress();
+```
+
+## View calls
+
+NEAR Connect does not wrap view methods. Call the provider directly:
+
+```js
+const greeting = await provider.callFunction({
+  contractId: "hello.near-examples.testnet",
+  method: "get_greeting",
+  args: {},
+});
+```
+
+Plain `fetch` to `https://rpc.testnet.near.org` with `query` / `call_function` also works — that is what the Playground examples in these lessons use.
+
+## Change calls
+
+```js
+const result = await wallet.signAndSendTransaction({
+  receiverId: "hello.near-examples.testnet",
+  actions: [
+    {
+      type: "FunctionCall",
+      params: {
+        methodName: "set_greeting",
+        args: { greeting: "Hello from Retr0 Academy" },
+        gas: "30000000000000", // 30 Tgas
+        deposit: "0",
+      },
+    },
+  ],
+});
+```
+
+Attach a deposit as a yoctoNEAR string when the method is payable (`"10000000000000000000000"` is 0.01 NEAR). Budget 30–100 Tgas for simple calls; cross-contract work needs more.
+
+## If you still see Wallet Selector
+
+Older tutorials look like `setupWalletSelector({ network: "testnet", modules: [...] })` plus `setupModal`. That is the API this site uses for minting. Do not copy it into a new project. If you are maintaining an existing app, plan a move to NEAR Connect; the official “Your First Web3 App” guide already uses it with a function-call-key plugin for zero-deposit methods.
+
+<TryIt
+  title="Read get_greeting with a view call"
+  html={`<h1>near-api-js style view call</h1>
+<input id="contract" value="hello.near-examples.testnet" aria-label="Contract id" />
+<button type="button" id="go">Read greeting</button>
+<pre id="out">Press the button. Change calls need a wallet; views do not.</pre>`}
+  css={`body { font-family: system-ui, sans-serif; background: #0d0b1a; color: #ece8ff; padding: 20px; }
+h1 { font-size: 20px; color: #00ec97; margin-top: 0; }
+input { padding: 8px; border: 2px solid #3a3466; background: #17132b; color: inherit; width: 280px; }
+button { background: #ff3fa4; color: #1a0a14; border: 2px solid #ece8ff; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space: pre-wrap; }`}
+  js={`async function view(contractId, method, args) {
+  const res = await fetch("https://rpc.testnet.near.org", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: "r0", method: "query",
+      params: {
+        request_type: "call_function", finality: "final",
+        account_id: contractId, method_name: method,
+        args_base64: btoa(JSON.stringify(args || {}))
+      }
+    })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(JSON.stringify(json.error.cause || json.error));
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(json.result.result)));
+}
+document.getElementById("go").addEventListener("click", async () => {
+  const out = document.getElementById("out");
+  const contractId = document.getElementById("contract").value.trim();
+  out.textContent = "Calling get_greeting...";
+  try {
+    out.textContent = JSON.stringify(await view(contractId, "get_greeting", {}), null, 2);
+  } catch (e) {
+    out.textContent = "Error: " + e.message;
+  }
+});`}
+/>

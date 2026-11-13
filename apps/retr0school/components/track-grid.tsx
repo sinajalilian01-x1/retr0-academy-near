@@ -14,7 +14,7 @@ export type TrackCardData = {
   slugs: string[];
 };
 
-export function TrackGrid({ tracks }: { tracks: TrackCardData[] }) {
+export function TrackGrid({ tracks, compact = false }: { tracks: TrackCardData[]; compact?: boolean }) {
   const progress = useProgress();
 
   return (
@@ -26,7 +26,11 @@ export function TrackGrid({ tracks }: { tracks: TrackCardData[] }) {
             <Link
               href={`/${track.slug}`}
               data-testid={`track-card-${track.slug}`}
-              className="flex items-center gap-3 border-2 border-line bg-elevated px-4 py-3.5 text-ink shadow-sm hover:border-accent"
+              className={
+                compact
+                  ? "flex items-center gap-3 border-2 border-line bg-elevated px-4 py-2.5 text-ink shadow-sm hover:border-accent"
+                  : "flex items-center gap-3 border-2 border-line bg-elevated px-4 py-3.5 text-ink shadow-sm hover:border-accent"
+              }
             >
               <span className={track.slug === "web3" ? "h-2.5 w-2.5 shrink-0 rounded-full bg-web3" : "h-2.5 w-2.5 shrink-0 rounded-full bg-accent"} aria-hidden />
               <span className="flex-1 font-semibold">{track.title}</span>

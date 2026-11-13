@@ -6,16 +6,14 @@ import { SearchField } from "@/components/search-field";
 export function HomeHero() {
   return (
     <div className="max-w-2xl">
-      <p className="mb-4 inline-flex items-center gap-2 border-2 border-line bg-elevated px-3 py-1 font-pixel text-[0.55rem] uppercase tracking-wide text-ink">
-        <span className="inline-block h-2 w-2" style={{ background: "#00EC97" }} aria-hidden />
-        New · Retr0 Academy on NEAR
-      </p>
       <h1 className="font-pixel text-hero text-ink">
         Learn NEAR from scratch and graduate on-chain with Retr0 Academy.
       </h1>
       <p className="mt-6 max-w-md text-lead text-muted">
-        Short lessons, examples you run in Code E, a secret-key quiz, and a soulbound
-        diploma NFT anyone can verify. Holders unlock Advanced NEAR.
+        A Web3 development academy on NEAR: short lessons on contracts, wallets, and
+        tokens, a playground, a quiz, and a soulbound diploma NFT anyone can verify.
+        HTML, CSS, and JavaScript are here as foundations. New Advanced lessons are
+        open to everyone; diploma holders unlock four extra deep dives.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link

@@ -1,17 +1,15 @@
-import { CODE_E_URL } from "@/lib/near";
+import { playgroundPath } from "@/lib/code-e";
 
-/** Link that opens Code E with its built-in NEAR starter template (#template=near). */
+/** Link that opens the Playground with the NEAR starter template. */
 export function CodeEStarter() {
   return (
     <p className="not-prose my-6">
       <a
-        href={`${CODE_E_URL}/#template=near`}
-        target="_blank"
-        rel="noopener"
+        href={playgroundPath(undefined, "near")}
         data-testid="code-e-near-starter"
         className="inline-flex h-11 items-center gap-2 rounded-md border-2 border-ink bg-accent px-4 text-sm font-medium text-accent-ink no-underline shadow-md hover:bg-accent-hover"
       >
-        Open the NEAR starter in Code E ↗
+        Open the NEAR starter in the Playground
       </a>
     </p>
   );
