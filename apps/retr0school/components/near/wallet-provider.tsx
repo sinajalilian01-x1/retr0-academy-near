@@ -92,7 +92,7 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     let unsubscribe: (() => void) | undefined;
-    (async () => {
+    const init = async () => {
       const [{ setupWalletSelector }, { setupModal }, { setupMyNearWallet }, { setupMeteorWallet }] = await Promise.all([
         import("@near-wallet-selector/core"),
         import("@near-wallet-selector/modal-ui"),
@@ -115,9 +115,16 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       unsubscribe = () => sub.unsubscribe();
       setSelector(s);
       setModal(m);
-    })().catch((error) => console.error("Wallet Selector failed to start", error));
+    };
+    // Load the wallet code after first paint so it does not compete with the page itself.
+    const run = () => void init().catch((error) => console.error("Wallet Selector failed to start", error));
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    const idle = w.requestIdleCallback ? w.requestIdleCallback(run, { timeout: 1500 }) : null;
+    const timer = idle === null ? window.setTimeout(run, 300) : null;
     return () => {
       cancelled = true;
+      if (idle !== null) w.cancelIdleCallback?.(idle);
+      if (timer !== null) window.clearTimeout(timer);
       unsubscribe?.();
     };
   }, []);

@@ -13,7 +13,7 @@ Everything here is a draft for Sina to review. Nothing has been posted or submit
 
 | Criterion | What judges will see |
 | --- | --- |
-| Runs and matches the README (AI screen) | Live site and Code E, step-by-step "do X → see Y" checks, CLI view calls, a testnet mint from a passed exam linked in the README, `cargo test` (26 tests) and `npm run build` pass, no secrets needed to run locally (practice bank) |
+| Runs and matches the README (AI screen) | Live site and Code E, `npm run test:e2e` checks every judge flow on the live site, a practice exam paper for judges without a wallet, step-by-step "do X → see Y" checks, CLI view calls, a testnet mint from a passed exam linked in the README, `cargo test` (22 tests) and `npm run build` pass, no secrets needed to run locally (practice bank) |
 | Technical implementation | Rust NEP-171/177/181 contract with ed25519 attestations, soulbound transfers, in-place upgrade + `rebrand` data fix; server-graded exam with a sealed session, option shuffles, server timer, replay guard, QuickJS sandbox with hidden tests, encrypted bank; NEP-413 + `view_access_key` server-side holder lock; rate limits via Runtime Cache |
 | Design | Original retro look kept; 22 original animated diagrams; numbered NEAR Developer path; fewer tabs; mobile checked on 7 main pages |
 | Impact | A free, complete NEAR developer curriculum (24 NEAR lessons including 7 advanced, plus 37 supporting web lessons) whose certificate means something: hard exam, verifiable by anyone with one view call, usable by other dApps for gating |

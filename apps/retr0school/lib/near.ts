@@ -99,6 +99,7 @@ export async function listDiplomas(limit = 500): Promise<Verification[]> {
           max_score: x.max_score,
           issued_at_ms: x.issued_at_ms,
           date: x.date,
+          grade: x.grade ?? null,
         });
       } catch {}
     }

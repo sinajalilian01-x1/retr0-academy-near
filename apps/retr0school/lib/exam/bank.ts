@@ -11,6 +11,12 @@ export type BankTask = { id: string; title: string; fn: string; points: number; 
 export type Bank = { version: number; questions: BankQuestion[]; tasks: BankTask[]; practice: boolean };
 
 let cached: Bank | null = null;
+const sampleBank: Bank = { ...(sample as unknown as Omit<Bank, "practice">), practice: true };
+
+/** The public 5-question practice paper. Never earns a certificate. */
+export function loadPracticeBank(): Bank {
+  return sampleBank;
+}
 
 /**
  * The real bank (67 questions, answer key, hidden tests) is committed only in encrypted form and
@@ -27,7 +33,7 @@ export function loadBank(): Bank {
     const plain = Buffer.concat([d.update(Buffer.from(e.data, "base64")), d.final()]).toString("utf8");
     cached = { ...(JSON.parse(plain) as Omit<Bank, "practice">), practice: false };
   } else {
-    cached = { ...(sample as unknown as Omit<Bank, "practice">), practice: true };
+    cached = sampleBank;
   }
   return cached;
 }

@@ -17,6 +17,13 @@ function toCard(track: { slug: string; title: string; description: string; icon:
   };
 }
 
+const HOW = [
+  { title: "Learn the NEAR path", body: "Four courses with animated diagrams and examples that run live against NEAR testnet." },
+  { title: "Pass the final exam", body: "25 random questions and 3 coding tasks, graded on the server with hidden tests. 80% to pass." },
+  { title: "Mint your certificate", body: "The contract checks the grader's ed25519 signature, then mints a soulbound NFT with your score and grade." },
+  { title: "Unlock Advanced NEAR", body: "Sign a free message with your wallet; the server checks your certificate on chain and opens the deep dives." },
+];
+
 export default function HomePage() {
   const featured = getCourseTracks().map(toCard);
   const foundations = getFoundationTracks().map(toCard);
@@ -57,6 +64,27 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      <section id="how-it-works" className="border-t border-line" aria-labelledby="how-title">
+        <div className="mx-auto max-w-page px-5 py-14 md:px-8">
+          <h2 id="how-title" className="font-pixel text-[0.8rem] uppercase tracking-eyebrow text-highlight">How the certificate works</h2>
+          <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {HOW.map((step, i) => (
+              <li key={step.title} className="border-2 border-line bg-elevated p-4 shadow-sm">
+                <span className="inline-flex h-6 w-6 items-center justify-center border-2 border-accent font-pixel text-[0.55rem] text-accent-text" aria-hidden>{i + 1}</span>
+                <h3 className="mt-3 font-semibold text-ink">{step.title}</h3>
+                <p className="mt-2 text-sm text-muted">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 text-sm text-muted">
+            No wallet yet?{" "}
+            <Link href="/near/quiz" className="text-info underline underline-offset-4">Try a practice paper</Link>{" "}
+            or{" "}
+            <Link href="/verify?account=exam-tester.retr0school.testnet" className="text-info underline underline-offset-4">look up a real certificate</Link>{" "}
+            without signing in.
+          </p>
+        </div>
+      </section>
       <section id="about" className="border-t border-line">
         <div className="mx-auto grid max-w-page gap-8 px-5 py-16 md:px-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)]">
           <h2 className="font-pixel text-title text-highlight">About Retr0 Academy</h2>
@@ -69,7 +97,7 @@ export default function HomePage() {
               there as supporting courses.
             </p>
             <p className="mt-4">
-              Designed by Sina Jalilian. Lesson progress and quiz scores stay on this device until you choose to mint a diploma on chain.
+              Designed by Sina Jalilian. Lesson progress and quiz scores stay on this device until you choose to mint your certificate on chain.
             </p>
           </div>
         </div>

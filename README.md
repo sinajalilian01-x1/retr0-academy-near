@@ -84,7 +84,7 @@ No install needed. Testnet only.
 2. Open **Learn** in the header → the same path in order, then Foundations.
 3. Open https://retr0school-near.vercel.app/contracts/promises-and-callbacks → an animated cross-contract diagram plays above the lesson text.
 4. Open https://retr0school-near.vercel.app/js-advanced/mini-app-near-explorer → the example queries NEAR testnet live and shows `hackathon-judge.retr0school.testnet` with its certificate. Press **Open in Playground**, then **Open in Code E**.
-5. Open https://retr0school-near.vercel.app/near/quiz → the rules and the prerequisite checklist. Pass the four course quizzes (`/fundamentals/quiz`, `/contracts/quiz`, `/tokens/quiz`, `/dapp/quiz`) with 70%+ → **Start the final exam** → a 40:00 timer, 25 questions with code snippets, 3 coding tasks with **Run visible tests**.
+5. Open https://retr0school-near.vercel.app/near/quiz → the rules and the prerequisite checklist. No wallet and no time? Press **Try a practice paper** → a 5-question paper with the 3 coding tasks, graded by the same server code (it cannot earn a certificate). Pass the four course quizzes (`/fundamentals/quiz`, `/contracts/quiz`, `/tokens/quiz`, `/dapp/quiz`) with 70%+ → **Start the final exam** → a 40:00 timer, 25 questions with code snippets, 3 coding tasks with **Run visible tests**.
 6. Submit → the server returns your score, percent, grade, per-topic bars, per-question marks and per-test results. View the page source or network tab: no answers or hidden tests are ever sent. Fail → a 30-minute cooldown starts.
 7. Pass → **Connect wallet** → **Mint** → approve `mint_diploma` (0.02 NEAR deposit, unused part refunded) → the certificate card shows score and grade; `/verify?account=<you>` shows it to anyone.
 8. Open https://retr0school-near.vercel.app/advanced/testing-contracts without a holder session → a locked teaser; the lesson body is not in the HTML (`curl -s …/advanced/testing-contracts | grep mint_end_to_end` → nothing). With a holder wallet press **Unlock with signature** → sign the free NEP-413 message → the server renders the lesson.
@@ -119,7 +119,7 @@ apps/retr0school/            Next.js 15 + MDX learning site
   app/api/exam/start, app/api/grade, app/api/holder, app/api/diploma
   components/exam/           final exam UI (timer, tasks, local visible-test runner, results)
 apps/code-e/                 Vite + TypeScript playground (pre-existing app, NEAR starter added)
-contracts/diploma/           Rust NEP-171 certificate contract + 26 unit tests
+contracts/diploma/           Rust NEP-171 certificate contract + 22 unit tests
 docs/media/                  GIF renders of the diagrams for this README
 ```
 
@@ -143,14 +143,18 @@ Requirements: Node 20+, Rust with `wasm32-unknown-unknown`, `cargo-near`, `near-
 ```bash
 # contract
 cd contracts/diploma
-cargo test                                   # 26 unit tests
+cargo test                                   # 22 unit tests
 cargo near build non-reproducible-wasm       # -> target/near/retr0school_diploma.wasm
 
 # Retr0 Academy (http://localhost:43123)
 cd apps/retr0school
 npm ci
+cp .env.example .env.local   # optional: all values have working defaults
 npm run dev        # without EXAM_BANK_KEY the exam uses the public practice bank and cannot mint
-npm run build
+npm run build && npm run start   # http://localhost:3000
+
+# end-to-end checks of the live site (or R0_URL=http://localhost:3000 for local); prints PASS/FAIL per flow
+npx playwright install chromium && npm run test:e2e
 
 # animated diagrams
 python3 scripts/make-anims.py

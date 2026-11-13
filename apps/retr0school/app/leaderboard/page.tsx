@@ -24,7 +24,7 @@ export default async function LeaderboardPage() {
       <p className="font-pixel text-[0.65rem] uppercase tracking-eyebrow text-muted">Hall of fame · NEAR testnet</p>
       <h1 className="mt-3 font-pixel text-title">Leaderboard</h1>
       <p className="mt-3 max-w-lesson text-lead text-muted">
-        Every diploma holder, read from <code className="font-mono">{DIPLOMA_CONTRACT}</code> with the NEP-181{" "}
+        Every certificate holder, read from <code className="font-mono">{DIPLOMA_CONTRACT}</code> with the NEP-181{" "}
         <code className="font-mono">nft_tokens</code> view. Sorted by score, then by who minted first. Live from chain on every load.
       </p>
       {error ? (
@@ -40,6 +40,7 @@ export default async function LeaderboardPage() {
                 <th className="px-4 py-3">Holder</th>
                 <th className="px-4 py-3">Track</th>
                 <th className="px-4 py-3">Score</th>
+                <th className="px-4 py-3">Grade</th>
                 <th className="px-4 py-3">Date (UTC)</th>
                 <th className="px-4 py-3">Explorer</th>
               </tr>
@@ -57,12 +58,13 @@ export default async function LeaderboardPage() {
                   <td className="px-4 py-3 font-mono text-ink">
                     {r.score}/{r.max_score}
                   </td>
+                  <td className="px-4 py-3 font-pixel text-[0.7rem] text-highlight">{r.grade ?? "–"}</td>
                   <td className="px-4 py-3 font-mono text-muted">{r.date}</td>
                   <td className="px-4 py-3">
-                    <a className="text-info underline underline-offset-4" href={explorerToken(r.token_id)} target="_blank" rel="noopener">
+                    <a className="mr-3 inline-block py-1.5 text-info underline underline-offset-4" href={explorerToken(r.token_id)} target="_blank" rel="noopener">
                       token ↗
                     </a>{" "}
-                    <a className="text-info underline underline-offset-4" href={explorerAccount(r.owner_id)} target="_blank" rel="noopener">
+                    <a className="inline-block py-1.5 text-info underline underline-offset-4" href={explorerAccount(r.owner_id)} target="_blank" rel="noopener">
                       holder ↗
                     </a>
                   </td>
@@ -70,8 +72,8 @@ export default async function LeaderboardPage() {
               ))}
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-muted">
-                    No certificates yet. <Link className="text-info underline" href="/near">Be the first.</Link>
+                  <td colSpan={7} className="px-4 py-6 text-center text-muted">
+                    No certificates yet. <Link className="text-info underline" href="/near/quiz">Take the final exam and be the first.</Link>
                   </td>
                 </tr>
               ) : null}

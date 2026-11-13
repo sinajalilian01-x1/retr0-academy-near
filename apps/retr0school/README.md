@@ -1,50 +1,15 @@
-# Retr0 Academy
+# Retr0 Academy (Next.js app)
 
-Beginner lessons in HTML, CSS, JavaScript, and Web3. Each lesson has syntax-highlighted examples, a Try it Yourself editor, and a quiz at the end of the track. Progress stays in the browser.
-
-Live site: [retr0school-near.vercel.app](https://retr0school-near.vercel.app)
-
-The look is controlled from one file. See [THEMING.md](THEMING.md). Lesson files follow [CONTENT_GUIDE.md](CONTENT_GUIDE.md).
-
-![Home on a desktop](docs/screenshots/home-desktop.png)
-
-![A lesson on a phone](docs/screenshots/lesson-mobile.png)
-
-## Run locally
+The learning site of Retr0 Academy on NEAR. See the [repository README](../../README.md) for the full story, architecture and judge steps.
 
 ```bash
-npm install
-npm run dev
+npm ci
+npm run dev                      # http://127.0.0.1:43123 (writes to .next-dev)
+npm run build && npm run start   # production build on http://localhost:3000
+npm run typecheck
+npx playwright install chromium && npm run test:e2e   # live end-to-end checks; R0_URL=… to target another server
 ```
 
-The dev server is at [http://127.0.0.1:43123](http://127.0.0.1:43123). Dev writes to `.next-dev` so it does not replace a production build in `.next`.
+No environment variables are required: without secrets the final exam runs the public practice paper and cannot sign mint attestations. See `.env.example`.
 
-No environment variables or secrets are required.
-
-## Production build
-
-```bash
-npm run build
-npm run start
-```
-
-`npm run build` statically generates every page, including `/sitemap.xml` and `/robots.txt`. Deploy from source with the Vercel CLI. `vercel.json` sets the framework to Next.js. Do not set env vars for the build.
-
-## Tests and CI
-
-```bash
-npx playwright install chromium
-npm run build
-npm run test:e2e
-```
-
-`npm run test:e2e` covers home, search, lesson navigation, the mobile lessons drawer, Try it Yourself (all 38 examples), the playground, quiz scoring, progress, and the theme toggle at 1440×900 and 390×844.
-
-GitHub Actions runs the same build and end-to-end suite on pushes and pull requests (`.github/workflows/ci.yml`).
-
-## Project map
-
-- `app/` routes: home, `/[track]`, `/[track]/[slug]`, `/[track]/quiz`, `/tryit`, sitemap, robots
-- `content/` lessons, `_track.json`, and `quiz.json`
-- `styles/theme.css` light and dark tokens
-- `components/playground.tsx` the sandboxed HTML/CSS/JS editor
+The look is controlled from one file, see [THEMING.md](THEMING.md). Lesson files follow [CONTENT_GUIDE.md](CONTENT_GUIDE.md).

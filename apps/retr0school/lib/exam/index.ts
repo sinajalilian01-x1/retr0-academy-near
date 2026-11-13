@@ -1,7 +1,7 @@
 import "server-only";
 
 import crypto from "node:crypto";
-import { loadBank } from "@/lib/exam/bank";
+import { loadBank, loadPracticeBank } from "@/lib/exam/bank";
 import { EXAM, letterGrade } from "@/lib/exam/config";
 import { runTask } from "@/lib/exam/runner";
 import type { ExamPaper, ExamResult, ExamTopic, PublicQuestion, PublicTask } from "@/lib/exam/types";
@@ -22,8 +22,8 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export function startExam(): ExamPaper {
-  const bank = loadBank();
+export function startExam(opts: { practice?: boolean } = {}): ExamPaper {
+  const bank = opts.practice ? loadPracticeBank() : loadBank();
   const topics: ExamTopic[] = ["fundamentals", "contracts", "tokens", "dapp", "advanced"];
   const per = bank.practice ? 1 : EXAM.questionsPerTopic;
   const picked = shuffle(topics.flatMap((topic) => shuffle(bank.questions.filter((q) => q.topic === topic)).slice(0, per)));
@@ -85,7 +85,7 @@ export async function gradeExam(token: unknown, answers: unknown, code: unknown)
   if (await kvGet(`used:${session.n}`)) throw new ExamError("This attempt was already submitted.", 409);
   await kvSet(`used:${session.n}`, 1, Math.ceil((session.e + EXAM.graceMs - now) / 1000) + 60);
 
-  const bank = loadBank();
+  const bank = session.practice ? loadPracticeBank() : loadBank();
   const byId = new Map(bank.questions.map((q) => [q.id, q]));
   const given = answers && typeof answers === "object" ? (answers as Record<string, unknown>) : {};
   const byTopic: ExamResult["mcq"]["byTopic"] = {};
@@ -131,7 +131,7 @@ export async function gradeExam(token: unknown, answers: unknown, code: unknown)
     tasks,
     durationSec: Math.round((now - session.s) / 1000),
     passToken,
-    cooldownUntil: passed ? null : now + EXAM.cooldownMs,
+    cooldownUntil: passed || session.practice ? null : now + EXAM.cooldownMs,
   };
 }
 

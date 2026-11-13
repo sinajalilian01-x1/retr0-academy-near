@@ -124,15 +124,15 @@ To cheat on a real blockchain, you would have to redo the work for every later b
 Computers that keep a copy of the blockchain are called **nodes**. They must agree on which new block comes next. The rules they use are called a **consensus mechanism**:
 
 - **Proof of Work (PoW)**: "miners" compete to solve a hard puzzle using computing power. Bitcoin uses this.
-- **Proof of Stake (PoS)**: "validators" lock up (stake) cryptocurrency as collateral, and can lose it if they cheat. Ethereum has used PoS since 2022 ("The Merge"), cutting its energy use by over 99%.
+- **Proof of Stake (PoS)**: "validators" lock up (stake) cryptocurrency as collateral, and can lose it if they cheat. NEAR uses PoS, as does Ethereum since 2022.
 
 <Note>
-In this track we focus on **Ethereum** and EVM-compatible chains (like Polygon, Arbitrum, Base, and Optimism), since they are the most common platforms for smart contracts.
+This path focuses on **NEAR**: a proof-of-stake chain that splits work across **shards** (Nightshade), produces a block about every second, reaches finality in about two seconds, and uses human-readable account names like `alice.near`. The ideas in this lesson apply to every blockchain.
 </Note>
 
 ## Public by default
 
-Anyone can read a public blockchain. Block explorers like **Etherscan** let you look up any address, transaction, or contract.
+Anyone can read a public blockchain. Block explorers like **[NearBlocks](https://testnet.nearblocks.io)** let you look up any account, transaction, or contract.
 
 <Warning>
 "Public" means everything you do on-chain is visible forever: your balance, your transactions, and who you interacted with. Never put private information on a blockchain.

@@ -76,11 +76,11 @@ export function FinalExam() {
   });
   const prereqsDone = prereqs.every((p) => p.done);
 
-  async function start() {
+  async function start(practice = false) {
     setError(null);
-    setBusy("Preparing your exam…");
+    setBusy(practice ? "Preparing a practice paper…" : "Preparing your exam…");
     try {
-      const res = await fetch("/api/exam/start", { method: "POST" });
+      const res = await fetch(practice ? "/api/exam/start?mode=practice" : "/api/exam/start", { method: "POST" });
       const data = await res.json();
       if (res.status === 429 && data.cooldownUntil) {
         examStore.saveCooldown(data.cooldownUntil);
@@ -220,7 +220,7 @@ export function FinalExam() {
     return (
       <section className="mt-8 flex flex-col gap-6" data-testid="exam-result">
         <div className={`border-2 p-5 ${result.passed ? "border-good bg-good-soft" : "border-danger bg-danger-soft"}`}>
-          <p className="font-pixel text-[0.65rem] uppercase tracking-wide text-ink">{result.passed ? "Passed" : "Not passed"}{result.practice ? " · practice bank" : ""}</p>
+          <p className="font-pixel text-[0.65rem] uppercase tracking-wide text-ink">{result.passed ? "Passed" : "Not passed"}{result.practice ? " · practice paper" : ""}</p>
           <p className="mt-3 font-pixel text-title text-ink" data-testid="exam-score">
             {result.score}/{result.max_score} · {result.percent}%{result.grade ? ` · Grade ${result.grade}` : ""}
           </p>
@@ -270,7 +270,14 @@ export function FinalExam() {
           </div>
         </div>
         {result.passed && !result.practice ? renderCertificate() : null}
-        {!result.passed ? (
+        {result.practice ? (
+          <p className="border-2 border-line bg-elevated p-4 text-sm text-ink" data-testid="exam-practice-done">
+            That was the practice paper. The real final exam draws 25 questions from a 67-question bank, runs hidden tests and earns the
+            NEAR Developer Certificate.{" "}
+            <button type="button" className="text-info underline underline-offset-4" onClick={() => setResult(null)}>Back to the exam rules</button>
+          </p>
+        ) : null}
+        {!result.passed && !result.practice ? (
           <p className="text-sm text-muted">
             Review the topics with low scores, then retake.{" "}
             <Link href="/fundamentals" className="text-info underline underline-offset-4">Back to the courses</Link>
@@ -295,7 +302,7 @@ export function FinalExam() {
             {busy ? "Grading…" : "Submit exam"}
           </Button>
         </div>
-        {paper.practice ? <p className="mt-4 text-sm text-warn">Practice bank: the server has no exam key configured, so this attempt cannot earn a certificate.</p> : null}
+        {paper.practice ? <p className="mt-4 border-2 border-line bg-elevated p-3 text-sm text-warn" data-testid="exam-practice-note">Practice paper: 5 public questions and the 3 coding tasks with visible tests only. Graded on the server exactly like the real exam, but it cannot earn a certificate.</p> : null}
         <h2 className="mt-8 font-pixel text-[0.75rem] uppercase text-highlight">Part 1 · Multiple choice ({paper.questions.length} points)</h2>
         <ol className="mt-4 flex flex-col gap-5">
           {paper.questions.map((q, i) => (
@@ -401,8 +408,11 @@ export function FinalExam() {
             You passed: {pass.score}/{pass.max}, grade {pass.grade}. <Link href="/diploma" className="text-info underline">Mint your certificate →</Link>
           </p>
         ) : null}
-        <Button type="button" className="h-12" onClick={start} disabled={!prereqsDone || Boolean(coolingDown) || Boolean(busy)} data-testid="exam-start">
+        <Button type="button" className="h-12" onClick={() => start(false)} disabled={!prereqsDone || Boolean(coolingDown) || Boolean(busy)} data-testid="exam-start">
           {!prereqsDone ? <><Lock className="h-4 w-4" aria-hidden /> Finish the 4 course quizzes to unlock</> : coolingDown ? `Cooldown · ${mmss(cooldown - now)}` : busy ?? "Start the final exam"}
+        </Button>
+        <Button type="button" variant="outline" className="h-11" onClick={() => start(true)} disabled={Boolean(busy)} data-testid="exam-practice">
+          Try a practice paper (no wallet, no prerequisites)
         </Button>
         {error ? <p role="alert" className="text-sm text-danger">{error}</p> : null}
       </div>

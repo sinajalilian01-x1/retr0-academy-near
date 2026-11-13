@@ -151,7 +151,7 @@ export function NavDropdown({
                 >
                   <span>{item.label}</span>
                   {item.locked ? (
-                    <Lock className="h-3.5 w-3.5 text-muted" aria-label="Locked for diploma holders" />
+                    <Lock className="h-3.5 w-3.5 text-muted" aria-label="Locked for certificate holders" />
                   ) : null}
                 </Link>
               </li>

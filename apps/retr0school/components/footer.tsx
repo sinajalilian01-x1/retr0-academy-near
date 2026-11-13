@@ -17,7 +17,7 @@ export function Footer({ tracks }: { tracks: { slug: string; title: string }[] }
               <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
             </p>
             <p className="mt-1 max-w-lesson text-sm text-muted">
-              A beginner coding school for the web. Designed by Sina Jalilian. Progress stays in this browser.
+              A Web3 developer school on NEAR, built at NEAR HACKATHON. Designed by Sina Jalilian. Progress stays in this browser.
             </p>
           </div>
           <button
@@ -43,9 +43,21 @@ export function Footer({ tracks }: { tracks: { slug: string; title: string }[] }
               {track.title}
             </Link>
           ))}
+          <Link href="/near/quiz" className="text-muted hover:text-ink">
+            Final exam
+          </Link>
+          <Link href="/verify" className="text-muted hover:text-ink">
+            Verify a certificate
+          </Link>
+          <Link href="/leaderboard" className="text-muted hover:text-ink">
+            Leaderboard
+          </Link>
           <Link href="/playground" className="text-muted hover:text-ink">
             Playground
           </Link>
+          <a href="https://code-e-near.vercel.app" className="text-muted hover:text-ink" target="_blank" rel="noopener">
+            Code E ↗
+          </a>
           <Link href="/#about" className="text-muted hover:text-ink">
             About
           </Link>

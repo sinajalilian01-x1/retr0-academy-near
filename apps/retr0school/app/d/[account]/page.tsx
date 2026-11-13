@@ -19,10 +19,10 @@ async function load(params: Props["params"]) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { account, diploma } = await load(params);
-  const title = diploma ? `${account} earned a NEAR diploma` : `${account} on Retr0 Academy`;
+  const title = diploma ? `${account} earned the NEAR Developer Certificate` : `${account} on Retr0 Academy`;
   const description = diploma
     ? `${diploma.track_title}: ${diploma.score}/${diploma.max_score} on ${diploma.date}. Soulbound NEP-171 credential on NEAR testnet, verifiable by anyone.`
-    : "Learn NEAR and mint a soulbound diploma NFT.";
+    : "Learn NEAR, pass the final exam and mint a soulbound NEAR Developer Certificate.";
   const image = { url: `${SITE_URL}/api/diploma/${NEAR_TRACK}/${encodeURIComponent(account)}`, width: 1200, height: 630, alt: title };
   return {
     title,
@@ -52,14 +52,14 @@ export default async function SharedDiplomaPage({ params }: Props) {
           </div>
         ) : (
           <p data-testid="verify-none" className="rounded-md border-2 border-line bg-elevated p-4 text-ink">
-            No NEAR diploma for <span className="font-mono">{account}</span> yet.
+            No NEAR Developer Certificate for <span className="font-mono">{account}</span> yet.
           </p>
         )}
         <div className="flex flex-col gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`/api/diploma/${NEAR_TRACK}/${encodeURIComponent(account)}`}
-            alt={`Diploma art for ${account}`}
+            alt={`Certificate art for ${account}`}
             width={1200}
             height={630}
             className="h-auto w-full border-2 border-line"
@@ -68,7 +68,7 @@ export default async function SharedDiplomaPage({ params }: Props) {
           <p className="text-sm text-muted">
             Read live from the contract with <code className="font-mono">verify_diploma</code>.{" "}
             <Link className="text-info underline underline-offset-4" href="/near">
-              Earn your own diploma →
+              Earn your own certificate →
             </Link>
           </p>
         </div>

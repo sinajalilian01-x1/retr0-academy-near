@@ -2,11 +2,19 @@ import "server-only";
 
 import crypto from "node:crypto";
 
-/** Purpose-specific HMAC keys derived from the grader seed, so no extra secrets are needed. */
+let devSeed: Buffer | null = null;
+
+/**
+ * Purpose-specific HMAC keys derived from the grader seed, so no extra secrets are needed.
+ * Without NEAR_ATTESTOR_SEED (local clone, practice mode) a random per-process seed is used: sessions
+ * and cookies still work and cannot be forged, but nothing can be attested for minting.
+ */
 export function deriveKey(label: string): Buffer {
-  const seed = process.env.NEAR_ATTESTOR_SEED;
-  if (!seed) throw new Error("NEAR_ATTESTOR_SEED is not configured");
-  return crypto.createHmac("sha256", Buffer.from(seed, "hex")).update(`retr0-academy|${label}`).digest();
+  const hex = process.env.NEAR_ATTESTOR_SEED;
+  let seed: Buffer;
+  if (hex && /^[0-9a-f]{64}$/i.test(hex)) seed = Buffer.from(hex, "hex");
+  else seed = devSeed ??= crypto.randomBytes(32);
+  return crypto.createHmac("sha256", seed).update(`retr0-academy|${label}`).digest();
 }
 
 const b64u = (b: Buffer) => b.toString("base64url");
