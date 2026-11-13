@@ -91,7 +91,8 @@ await step("exam API", async () => {
   const r = await fetch(R0 + "/api/exam/start", { method: "POST" });
   const j = await r.json();
   if (r.status === 429) return ok("exam API: start (rate limited or cooldown)", true, j.error);
-  ok("exam API: 25 questions + 3 tasks, 40 points", j.questions?.length === 25 && j.tasks?.length === 3 && j.maxScore === 40, `${j.questions?.length}/${j.tasks?.length}/${j.maxScore}`);
+  if (j.practice) ok("exam API: practice bank served (server has no EXAM_BANK_KEY, cannot mint)", j.questions?.length === 5 && j.tasks?.length === 3);
+  else ok("exam API: 25 questions + 3 tasks, 40 points", j.questions?.length === 25 && j.tasks?.length === 3 && j.maxScore === 40, `${j.questions?.length}/${j.tasks?.length}/${j.maxScore}`);
   ok("exam API: no answers or hidden tests sent", !JSON.stringify(j).includes('"answer"') && j.tasks.every((t) => t.visibleTests.length < 5));
   const bad = await fetch(R0 + "/api/grade", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ track: "near", examToken: "x.y.z", answers: {}, code: {} }) });
   ok("exam API: tampered session rejected", bad.status === 400 || bad.status === 429, String(bad.status));
