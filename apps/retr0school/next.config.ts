@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     "/api/diploma/[track]/[account]": ["./assets/fonts/PressStart2P-Regular.ttf"],
     "/d/[account]": ["./assets/fonts/PressStart2P-Regular.ttf"],
     // Retr0 Tutor reads public lessons at runtime. Quiz files and the exam bank are deliberately not included.
-    "/api/tutor": ["./content/**/*.mdx", "./content/**/_track.json", "./content-advanced/*.mdx"],
+    "/api/tutor": ["./content/**/*.mdx", "./content/**/_track.json", "./content-advanced/*.mdx", "./content-guides/*.mdx"],
   },
   serverExternalPackages: [
     "quickjs-emscripten",

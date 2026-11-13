@@ -1,0 +1,112 @@
+---
+title: "Perps on NEAR: A Plain-English Guide"
+description: "What perpetual futures are, how leverage, margin, liquidation and funding work, and where perps show up in the NEAR ecosystem. Educational only, not financial advice."
+tags: ["perps", "perpetual", "futures", "derivatives", "leverage", "defi", "trading"]
+updated: "2026-11-13"
+---
+
+<Warning>
+This guide is educational only and is **not financial advice**. Leveraged trading can lose money fast, sometimes more than you expect. Perp products are also restricted in some countries (near.com, for example, says its perps are not available to US persons or in other restricted jurisdictions).
+</Warning>
+
+## What a perpetual future (perp) is
+
+A **perpetual future** ("perp") is a contract that tracks the price of an asset, like BTC or NEAR, **without an expiry date**. You never receive the asset itself. You only gain or lose the difference in price while your position is open.
+
+Perps are the most heavily traded product in crypto derivatives. They are usually quoted and settled in a stablecoin. For example, every perp market on Orderly Network is denominated and settled in USDC, with symbols like `PERP_NEAR_USDC`.
+
+## Long and short
+
+- **Long**: you profit if the price goes up and lose if it goes down.
+- **Short**: you profit if the price goes down and lose if it goes up.
+
+Shorting is one big difference from spot trading: you can bet on a price falling without owning the asset first.
+
+## Leverage and margin
+
+**Margin** is the collateral you deposit (for example USDC). **Leverage** lets you open a position bigger than your margin.
+
+- With 100 USDC of margin at 5x leverage, you control a 500 USDC position.
+- A 10% price move in your favour is about +50 USDC (+50% on your margin). A 10% move against you is about -50 USDC.
+- Higher leverage increases both potential gains and potential losses.
+
+Two common margin modes:
+
+- **Cross margin**: one pool of collateral backs all your open positions. Orderly launched with cross margin, where the USDC you deposit is used across all open positions.
+- **Isolated margin**: each position has its own margin, so one bad trade can't drain the rest of your account. Orderly's docs describe an isolated margin mode too.
+
+Maximum leverage differs by venue and market. As of late 2026, near.com advertises up to 40x on its perps, and Orderly's market data lists up to 50x on some markets. These numbers change, so always check the venue.
+
+## Liquidation
+
+If the market moves against you and your margin gets too small, the position is **liquidated**: it is closed automatically and you lose some or all of that margin.
+
+On Orderly, for example, liquidation happens when the account's margin ratio falls below the maintenance margin ratio. Orderly then cancels open orders and hands the positions to liquidators.
+
+Rule of thumb: the higher the leverage, the smaller the price move that liquidates you. At 10x, a move of roughly 10% against you wipes out the margin, and liquidation usually triggers before that because of maintenance margin and fees.
+
+## Funding rates
+
+Because a perp never expires, something must keep its price close to the real (spot) price. That job is done by **funding**: small payments exchanged between longs and shorts at fixed intervals.
+
+- **Positive funding rate**: longs pay shorts (the perp trades above the index price).
+- **Negative funding rate**: shorts pay longs (the perp trades below the index price).
+
+On Orderly, funding settles every 1, 4 or 8 hours depending on the market. The NEAR perp uses an 8-hour period (00:00, 08:00 and 16:00 UTC), with funding capped between +2% and -2% per period. Accrued funding = position size × mark price × funding rate.
+
+High positive funding means longs are paying a lot to keep their bets open. Traders often read it as a sign the market is crowded on one side.
+
+## Mark price, index price and last price
+
+- **Index price**: a reference price built from several major spot exchanges, so one venue can't easily manipulate it.
+- **Mark price**: the venue's fair-value estimate for the perp. It is derived from the index price (plus funding and the perp's own prices) and is used for unrealized profit and loss and for **liquidations**.
+- **Last price**: the latest trade on that venue. On Orderly, last price is not used for liquidations.
+
+Using the mark price for liquidations protects traders from being liquidated by a single odd trade.
+
+## Oracles
+
+Smart contracts can't see prices on other exchanges by themselves. An **oracle** brings outside data, like prices, on chain.
+
+On NEAR, **Pyth Network** runs an oracle contract at `pyth-oracle.near` (mainnet) and `pyth-oracle.testnet` (testnet). It is a "pull" oracle:
+
+- `update_price_feeds` writes fresh signed price data (fetched from Pyth's Hermes service) into the contract. It is a change call, so it costs gas and a small deposit.
+- `get_price` reads the latest stored price for a feed id. It is a view call, so it is free and needs no signature.
+
+```bash
+near contract call-function as-read-only pyth-oracle.testnet get_price \
+  json-args '{"price_identifier":"<64-hex-feed-id-without-0x>"}' \
+  network-config testnet now
+```
+
+Oracles matter for perps because a bad or stale price can trigger wrong liquidations. NEAR lending protocols like Templar use Pyth as their primary source and RedStone as a second one.
+
+## Perps in the NEAR ecosystem
+
+- **Orderly Network**: an order-book trading infrastructure that launched a perpetual futures beta on NEAR mainnet in the first half of 2023. It now describes itself as an "omnichain" order book providing perp liquidity to many front-ends. It lists a USDC-settled NEAR perp (`PERP_NEAR_USDC`).
+- **Ref Finance, now RHEA Finance**: in 2023 Ref Finance added an order-book page for spot and perps on top of Orderly's NEAR infrastructure. In 2025 Ref merged with Burrow (lending) and rebranded as **RHEA Finance**. Its 2026 roadmap describes "RHEA Liquid", multi-chain perps that use Hyperliquid liquidity, with NEAR Intents for deposits from any chain.
+- **near.com perps**: launched 17 September 2026. You trade Hyperliquid perp markets (50+ markets, up to 40x according to near.com) and fund positions from many chains through **NEAR Intents**, which swaps your assets into margin. Positions are "confidential by default": NEAR's Confidential Intents hide the link between your account and the position, but the trades themselves still appear on Hyperliquid's order book. near.com says it is not available to US persons or in restricted jurisdictions.
+- **NEAR Intents as plumbing**: other perp venues use NEAR Intents for cross-chain deposits. In September 2026, for example, NEAR announced Intents powering Bitcoin deposits from 30+ chains into Decibel, a perps exchange on Aptos.
+
+The pattern: NEAR mostly provides the **accounts, cross-chain routing and settlement** (NEAR Intents, chain signatures), while the matching engine and liquidity often live on a specialised venue such as Orderly or Hyperliquid.
+
+## Risks to understand before touching perps
+
+- **Leverage risk**: small moves can liquidate a high-leverage position.
+- **Funding costs**: holding a position on the crowded side can cost money every funding period.
+- **Oracle and price risk**: stale or manipulated prices can cause unfair liquidations.
+- **Smart contract and venue risk**: bugs, exploits or a venue outage can lock or lose funds.
+- **Liquidity risk**: thin markets mean slippage, and fast markets can liquidate positions at worse prices.
+- **Legal risk**: many perp products are geo-restricted. Follow your local rules.
+
+## Sources
+
+- [Orderly docs: Supported markets](https://orderly.network/docs/introduction/trade-on-orderly/supported-markets)
+- [Orderly docs: Funding rate](https://orderly.network/docs/introduction/trade-on-orderly/perpetual-futures/funding-rate)
+- [Orderly docs: Mark, index and last price](https://orderly.network/docs/introduction/trade-on-orderly/perpetual-futures/mark-price-index-price-and-last-price)
+- [Orderly docs: Liquidations](https://orderly.network/docs/introduction/trade-on-orderly/perpetual-futures/liquidations)
+- [NEAR docs: Oracles (Pyth on NEAR)](https://docs.near.org/primitives/oracles)
+- [near.com perps](https://perps.near.com/)
+- [RHEA Finance history](https://guide.rhea.finance/history)
+- [NEAR blog: RHEA Finance debuts $RHEA](https://www.near.org/blog/rhea-finance-debuts-rhea-token-unifying-nea-rs-leading-de-fi-protocols-with-chain-abstracted-liquidity)
+- [Orderly: Ref Finance perps campaign](https://orderly.network/blog/announcing-the-brokers-perp-mainnet-warm-up-campaign)

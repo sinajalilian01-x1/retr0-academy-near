@@ -119,6 +119,8 @@ An AI tutor that lives on every page, in the same retro look (pixel font, hard s
 - **Can't be used to cheat:** quiz files, the encrypted exam bank and holder-locked lessons are never put in its context (only `content/**/*.mdx` is traced into the function). The system prompt refuses exam/quiz answers and teaches the concept instead. The button is hidden on `/near/quiz`, and `/api/tutor` rejects requests from the exam path.
 - **Built to stay up to 25 Nov:** 1,200-character question cap, last 8 messages only, 700 output tokens; per-IP limits (10 per 2 minutes, 80 per day) plus a global daily cap (`TUTOR_DAILY_CAP`, default 5,000) in the Vercel Runtime Cache.
 - **No Lighthouse cost:** only the small button ships with the page. The panel loads on first click.
+- **Fullscreen mode:** the expand button next to close makes the chat fill the screen on desktop and mobile, with a centered reading column. Collapse with the same button or press Esc; a second Esc closes the panel. The choice is remembered for the browser session.
+- **Perps on NEAR guide** (`/guides/perps-on-near`, `content-guides/perps-on-near.mdx`): a sourced background guide covering perpetual futures basics (long/short, leverage, margin, liquidation, funding, mark vs index price, oracles, risks) and how perps exist around NEAR (Orderly Network, RHEA Finance (formerly Ref Finance), near.com perps through NEAR Intents, Pyth's `pyth-oracle.near`). The tutor retrieves it for perps questions, never recommends trades, and ends those answers with "Educational only, not financial advice." Facts were checked against the linked sources on 13 Nov 2026.
 
 ```bash
 curl -N https://retr0school-near.vercel.app/api/tutor -H 'content-type: application/json' \

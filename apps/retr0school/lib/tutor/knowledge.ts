@@ -2,6 +2,7 @@ import "server-only";
 
 import { getAdvancedLessons } from "@/lib/advanced";
 import { getLessons, getListedTracks } from "@/lib/content";
+import { getGuides } from "@/lib/guides";
 
 /**
  * Retr0 Tutor knowledge base: every public lesson, split into sections.
@@ -60,6 +61,7 @@ function flattenTryIt(body: string): string {
 function clean(body: string): string {
   return flattenTryIt(body)
     .replace(/^import .*$/gm, "")
+    .replace(/^## Sources[\s\S]*$/m, "")
     .replace(/<Anim[^>]*\/>/g, "")
     .replace(/<\/?(Note|Tip|Warning|Anim|CodeSample|TryItLauncher|CodeEStarter)[^>]*>/g, "")
     .replace(/\n{3,}/g, "\n\n")
@@ -117,6 +119,9 @@ function build() {
     if (lesson.locked) continue;
     push(`/advanced/${lesson.slug}`, lesson.title, "Advanced NEAR", lesson.description, lesson.body, []);
   }
+  for (const guide of getGuides()) {
+    push(`/guides/${guide.slug}`, guide.title, "Guides", guide.description, guide.body, guide.tags);
+  }
   const df = new Map<string, number>();
   for (const c of chunks) for (const t of c.terms.keys()) df.set(t, (df.get(t) ?? 0) + 1);
   const avg = chunks.reduce((n, c) => n + c.length, 0) / Math.max(1, chunks.length);
@@ -146,7 +151,8 @@ export function retrieve(query: string, currentPath: string | null, k = 4): Chun
   for (const { c, score } of scored) {
     if (score <= 0.5 || picked.length >= k) break;
     const n = perLesson.get(c.href) ?? 0;
-    if (n >= 2) continue;
+    // Guides are long single docs, so they may contribute one more section than a lesson.
+    if (n >= (c.href.startsWith("/guides/") ? 3 : 2)) continue;
     perLesson.set(c.href, n + 1);
     picked.push(c);
   }

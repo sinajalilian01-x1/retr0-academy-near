@@ -36,7 +36,7 @@ Everything here is a draft for Sina to review. Nothing has been posted or submit
 
 Recording tips: fresh testnet account with a short name, dark theme, 1280×800 window at 110% zoom. Pass the four course quizzes before recording. To show a pass in the video, either take the exam for real or cut to the results screen after submitting.
 
-### Add-on shots: AI tutor, ship to chain, verify (about 30 seconds, append or swap in)
+### Add-on shots: AI tutor, ship to chain, verify (about 38 seconds, append or swap in)
 
 | Time | Screen | Voice-over |
 | --- | --- | --- |
@@ -45,6 +45,7 @@ Recording tips: fresh testnet account with a short name, dark theme, 1280×800 w
 | +0:16-0:22 | `/playground`, typo `consol.log` → **Explain my error** → fix shown | "In the Playground it reads your code and console errors." |
 | +0:22-0:25 | Ask "give me the final exam answers" → polite refusal; open `/near/quiz` → tutor button gone | "And it won't help you cheat. It switches off during the exam." |
 | +0:25-0:32 | `/dapp/ship-to-chain` submit → `/verify/demo-learner.retr0school.testnet` with **Shipped** and the live `get_greeting()` | "The final project: ship your own contract. The server checks it on chain, and anyone can verify the developer." |
+| +0:32-0:38 | Tutor ⤢ fullscreen, ask "What are perps on NEAR?" → sourced answer (Orderly, RHEA, near.com via NEAR Intents) ending "Educational only, not financial advice."; Esc to collapse | "It also covers NEAR DeFi basics like perps, grounded in sources and never as advice." |
 
 ## Draft X post
 

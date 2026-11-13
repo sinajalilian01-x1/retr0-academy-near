@@ -67,7 +67,7 @@ export function TutorMarkdown({ text, cite }: { text: string; cite: string[] }) 
 
 function inline(text: string, cite: string[]): ReactNode[] {
   const out: ReactNode[] = [];
-  const re = /(`[^`]+`)|(\*\*[^*]+\*\*)|(\[[^\]]+\]\([^)\s]+\))|(\[S(\d+)\](?:\[S\d+\])*)|(\*[^*\s][^*]*\*)/g;
+  const re = /(`[^`]+`)|(\*\*[^*]+\*\*)|(\[[^\]]+\]\([^)\s]+\))|(\[S(\d+)\](?:\[S\d+\])*)|(\*[^*\s][^*]*\*)|((?<!\w)_[^_\s][^_\n]*?_(?!\w))/g;
   let last = 0;
   let m: RegExpExecArray | null;
   let k = 0;
@@ -93,7 +93,7 @@ function inline(text: string, cite: string[]): ReactNode[] {
           ) : null,
         );
       }
-    } else if (m[6]) out.push(<em key={k++}>{tok.slice(1, -1)}</em>);
+    } else if (m[6] || m[7]) out.push(<em key={k++} className="text-muted">{tok.slice(1, -1)}</em>);
     last = m.index + tok.length;
   }
   if (last < text.length) out.push(text.slice(last));

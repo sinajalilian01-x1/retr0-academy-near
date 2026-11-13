@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getLessons, getListedTracks } from "@/lib/content";
+import { getGuides } from "@/lib/guides";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
 
@@ -14,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/advanced`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/near`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/near/quiz`, changeFrequency: "weekly", priority: 0.7 },
+    ...getGuides().map((g) => ({ url: `${SITE}/guides/${g.slug}`, changeFrequency: "monthly" as const, priority: 0.5 })),
   ];
 
   for (const track of tracks) {
