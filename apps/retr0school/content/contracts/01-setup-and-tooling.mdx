@@ -1,0 +1,54 @@
+---
+title: "Setup and Tooling"
+description: "Install Rust, the Wasm target, cargo-near, and near-cli-rs, then build a contract without touching testnet yet."
+order: 1
+tags: ["setup", "cli", "cargo-near", "tooling"]
+---
+# Setup and Tooling
+
+You will write contracts in Rust or JavaScript, compile them to WebAssembly, and talk to testnet with a CLI. Official docs live at [docs.near.org](https://docs.near.org/smart-contracts/quickstart).
+
+## Install the toolchain
+
+```bash
+# Rust + the Wasm target
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup target add wasm32-unknown-unknown
+
+# cargo-near (build and deploy helpers)
+curl --proto '=https' --tlsv1.2 -LsSf \
+  https://github.com/near/cargo-near/releases/latest/download/cargo-near-installer.sh | sh
+
+# near-cli-rs (the `near` command)
+curl --proto '=https' --tlsv1.2 -LsSf \
+  https://github.com/near/near-cli-rs/releases/latest/download/near-cli-rs-installer.sh | sh
+# or: npm install -g near-cli-rs@latest
+```
+
+Create a project with `cargo near new hello` (Rust) or the JS project generator in the docs. `near` defaults to **testnet**. Pass `--networkId testnet` anyway so the command is explicit.
+
+## A first build
+
+```bash
+cargo near build non-reproducible-wasm
+# Wasm lands in ./target/near/<crate>.wasm
+```
+
+You do not need a testnet account until the deploying lesson. Until then, `cargo test` runs on your machine.
+
+## What you will use later
+
+| Tool | Job |
+| --- | --- |
+| `cargo near build` | Compile the contract to Wasm |
+| `cargo test` | Unit and sandbox tests |
+| `near create-account ... --useFaucet` | A free testnet account |
+| `near deploy` / `cargo near deploy` | Put Wasm on that account |
+| `near view` / `near call` | Read and write methods |
+
+The older Node `near-cli` package is not what current docs recommend. Use `near-cli-rs`.
+
+## Exercise
+
+Install the tools on your machine (or note which ones you still need). Run `near --version` and `cargo near --version` and keep the output. You will deploy in the last lesson.
+

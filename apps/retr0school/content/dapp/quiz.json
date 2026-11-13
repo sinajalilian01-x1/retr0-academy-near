@@ -1,0 +1,57 @@
+[
+  {
+    "question": "What is the difference between a view call and a change call?",
+    "options": [
+      "View calls need a wallet; change calls do not",
+      "A view call reads state for free with no signature; a change call is a signed transaction that costs gas",
+      "There is no difference",
+      "View calls can only be made by the contract owner"
+    ],
+    "answer": 1,
+    "explanation": "View methods run on an RPC node without a transaction. Writes must be signed and burn gas."
+  },
+  {
+    "question": "What do official NEAR docs recommend for new wallet integrations?",
+    "options": [
+      "Paste a private key into the page",
+      "@hot-labs/near-connect with near-api-js",
+      "Only Wallet Selector, which they still recommend for new apps",
+      "A custom RPC you host in the browser with a seed phrase"
+    ],
+    "answer": 1,
+    "explanation": "docs.near.org says Wallet Selector is deprecated for new work. Use NEAR Connect plus near-api-js for views."
+  },
+  {
+    "question": "What does NEAR Wallet Selector (the older stack this site still mints with) do for a dApp?",
+    "options": [
+      "It gives one API and modal to sign in and sign transactions with many wallets, like MyNearWallet and Meteor",
+      "It mines blocks",
+      "It deploys contracts",
+      "It stores your seed phrase on the server"
+    ],
+    "answer": 0,
+    "explanation": "Wallet Selector abstracts wallets behind one interface. New apps should prefer NEAR Connect, but you may still see Selector in existing code."
+  },
+  {
+    "question": "In a FunctionCall, deposit is measured in...",
+    "options": [
+      "US dollars",
+      "Tgas only",
+      "yoctoNEAR, as a string",
+      "Megabytes"
+    ],
+    "answer": 2,
+    "explanation": "Deposit is yoctoNEAR (1 NEAR = 10^24 yoctoNEAR), passed as a string."
+  },
+  {
+    "question": "After a successful change call you should...",
+    "options": [
+      "Assume the UI is right and close the laptop",
+      "Re-read state with a view call",
+      "Delete the contract",
+      "Switch to mainnet immediately"
+    ],
+    "answer": 1,
+    "explanation": "Refresh from chain. The wallet confirmation is not a substitute for reading the new state."
+  }
+]

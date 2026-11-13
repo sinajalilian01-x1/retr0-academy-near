@@ -1,6 +1,14 @@
 {
   "title": "CSS",
   "description": "Style the web: selectors, colors, the box model, typography, Flexbox, Grid, responsive design, and smooth animations.",
-  "icon": "🎨",
-  "color": "#1572B6"
+  "icon": "\ud83c\udfa8",
+  "color": "#1572B6",
+  "group": "foundations",
+  "listed": true,
+  "level": "Beginner",
+  "prerequisites": [
+    "HTML, or follow along while you learn selectors and the box model."
+  ],
+  "youWillBuild": "Styled layouts with Flexbox, Grid, and responsive rules.",
+  "overview": "Style the web: selectors, the box model, typography, Flexbox, Grid, and responsive design."
 }

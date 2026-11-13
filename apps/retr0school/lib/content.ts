@@ -6,7 +6,7 @@ import matter from "gray-matter";
 import type { Lesson, LessonSummary, NavItem, QuizQuestion, SearchEntry, Track } from "@/lib/types";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
-const PREFERRED_ORDER = ["near", "web3", "html", "css", "javascript"];
+const PREFERRED_ORDER = ["fundamentals", "contracts", "tokens", "dapp", "html", "css", "javascript", "near"];
 const LESSON_FILE = /^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)\.mdx$/;
 const RESERVED_SLUGS = new Set(["quiz"]);
 
@@ -61,12 +61,20 @@ export function getTrack(slug: string): Track | null {
       fail(`content/${slug}/_track.json is missing a non-empty "${key}"`);
     }
   }
+  const group = data.group === "foundations" || data.group === "diploma" || data.group === "web3" ? data.group : slug === "html" || slug === "css" || slug === "javascript" ? "foundations" : slug === "near" ? "diploma" : "web3";
+  const prerequisites = Array.isArray(data.prerequisites) ? data.prerequisites.filter((item): item is string => typeof item === "string") : [];
   return {
     slug,
     title: (data.title as string).trim(),
     description: (data.description as string).trim(),
     icon: (data.icon as string).trim(),
     color: (data.color as string).trim(),
+    group,
+    listed: data.listed !== false,
+    level: typeof data.level === "string" ? data.level.trim() : undefined,
+    prerequisites,
+    youWillBuild: typeof data.youWillBuild === "string" ? data.youWillBuild.trim() : undefined,
+    overview: typeof data.overview === "string" ? data.overview.trim() : undefined,
   };
 }
 
@@ -76,6 +84,19 @@ export function getTracks(): Track[] {
     if (!track) fail(`content/${slug}/_track.json could not be read`);
     return track;
   });
+}
+
+/** Courses shown in the Learn menu, homepage, and sitemap. The diploma quiz track is excluded. */
+export function getListedTracks(): Track[] {
+  return getTracks().filter((track) => track.listed);
+}
+
+export function getCourseTracks(): Track[] {
+  return getListedTracks().filter((track) => track.group === "web3");
+}
+
+export function getFoundationTracks(): Track[] {
+  return getListedTracks().filter((track) => track.group === "foundations");
 }
 
 export function getLessons(track: string): Lesson[] {
@@ -218,13 +239,13 @@ export function neighbors(track: string, key: string) {
 }
 
 export function nextTrack(slug: string) {
-  const tracks = getTracks();
+  const tracks = getListedTracks();
   const index = tracks.findIndex((track) => track.slug === slug);
   return index >= 0 ? tracks[index + 1] ?? null : null;
 }
 
 export function getSearchIndex(): SearchEntry[] {
-  return getTracks().flatMap((track) =>
+  return getListedTracks().flatMap((track) =>
     getLessons(track.slug).map((lesson) => ({
       href: `/${track.slug}/${lesson.slug}`,
       title: lesson.title,

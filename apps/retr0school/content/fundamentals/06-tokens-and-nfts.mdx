@@ -1,0 +1,60 @@
+---
+title: "Tokens and NFTs"
+description: "Fungible tokens vs unique NFTs, ERC-20 and ERC-721 as ideas, and the NEAR standards NEP-141 and NEP-171 \u2014 including why a diploma is soulbound."
+order: 6
+tags: ["tokens", "nft", "nep-141", "nep-171"]
+---
+# Tokens and NFTs
+
+Two kinds of on-chain assets show up in almost every Web3 app.
+
+**Fungible tokens** are interchangeable. One USDC is the same as any other USDC. On Ethereum the common interface is ERC-20 (`transfer`, `approve`, `transferFrom`, `balanceOf`). On NEAR the equivalent standard is **NEP-141**, with `ft_transfer`, `ft_balance_of`, `ft_transfer_call`, and a storage deposit so the contract can pay for your balance row.
+
+**Non-fungible tokens** are unique. A diploma, a profile picture, or a ticket is not interchangeable with another. Ethereum uses ERC-721. NEAR uses **NEP-171**, with `nft_token`, `nft_transfer`, and metadata in NEP-177. The Retr0 Academy diploma is a *soulbound* NEP-171 NFT: the contract refuses `nft_transfer`, so the credential stays with the account that earned it.
+
+Amounts on NEAR are usually **strings of yocto-units** (1 NEAR = 10^24 yoctoNEAR). Wallets need strings so 24-decimal values do not get rounded in JavaScript.
+
+You will implement NEP-141 and NEP-171 in the Tokens & NFTs on NEAR course. For now, remember the split: fungible vs unique, standard method names, and why a credential should not be tradable.
+
+<TryIt
+  title="Read diploma metadata from testnet"
+  html={`<h1>Is this a token or an NFT?</h1>
+<p>This view call reads <code>nft_metadata</code> on the diploma contract.</p>
+<button type="button" id="go">Read nft_metadata</button>
+<pre id="out">Press the button.</pre>`}
+  css={`body { font-family: system-ui, sans-serif; background: #0d0b1a; color: #ece8ff; padding: 20px; }
+h1 { font-size: 20px; color: #00ec97; margin-top: 0; }
+button { background: #ff3fa4; color: #1a0a14; border: 2px solid #ece8ff; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space: pre-wrap; word-break: break-all; }`}
+  js={`async function view(contractId, method, args) {
+  const res = await fetch("https://rpc.testnet.near.org", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: "r0", method: "query",
+      params: {
+        request_type: "call_function", finality: "final",
+        account_id: contractId, method_name: method,
+        args_base64: btoa(JSON.stringify(args || {}))
+      }
+    })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(JSON.stringify(json.error.cause || json.error));
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(json.result.result)));
+}
+document.getElementById("go").addEventListener("click", async () => {
+  const out = document.getElementById("out");
+  out.textContent = "Calling nft_metadata...";
+  try {
+    out.textContent = JSON.stringify(await view("diploma.retr0school.testnet", "nft_metadata", {}), null, 2);
+  } catch (e) {
+    out.textContent = "Error: " + e.message;
+  }
+});`}
+/>
+
+## Exercise
+
+Open the Playground example and read the diploma metadata. Then write one sentence explaining why this contract is an NFT (NEP-171) and not a fungible token (NEP-141).
+

@@ -1,0 +1,52 @@
+---
+title: "Marketplace Basics"
+description: "How a NEAR marketplace lists an NEP-171 NFT, takes payment, and transfers the token with approvals or nft_transfer_call \u2014 and why a soulbound diploma cannot be sold."
+order: 3
+tags: ["marketplace", "nft", "nep-171", "promises"]
+---
+# Marketplace Basics
+
+A marketplace does not need users' private keys. It needs a **standard way to move the NFT and the payment** in one settled flow. On NEAR that is usually a combination of NEP-171 + a marketplace contract.
+
+## Two common patterns
+
+**Approvals (NEP-178).** The seller calls `nft_approve` on the NFT contract, naming the marketplace and, optionally, a minimum price in a message. The buyer calls `marketplace.buy(token_id)`. The marketplace uses the approval to call `nft_transfer` (or `nft_transfer_from` style transfer) to the buyer and pays the seller. 1 yoctoNEAR is still required on the NFT transfer, so the marketplace must use a full-access key for that account — typically the *marketplace contract itself* signs, because a contract call can attach a deposit from the contract account or from the buyer.
+
+**`nft_transfer_call`.** The seller (or an escrow) transfers the NFT *to the marketplace contract* with a message. The marketplace implements `nft_on_transfer`, keeps the token listed, and later transfers it to the buyer when `buy` is paid. This is simpler to reason about (the marketplace holds the NFT) but means the seller temporarily gives up ownership.
+
+## A sketch of `buy`
+
+```rust
+#[payable]
+pub fn buy(&mut self, nft_contract: AccountId, token_id: TokenId) -> Promise {
+    let listing = self.listings.get(&(nft_contract.clone(), token_id.clone()))
+        .expect("not listed");
+    require!(env::attached_deposit() >= listing.price, "Attach the price");
+
+    // Pay the seller, then ask the NFT contract to transfer to the buyer.
+    Promise::new(listing.seller).transfer(listing.price).then(
+        ext_nft::ext(nft_contract)
+            .with_attached_deposit(NearToken::from_yoctonear(1))
+            .with_static_gas(Gas::from_tgas(20))
+            .nft_transfer(env::predecessor_account_id(), token_id, None, None)
+    )
+}
+```
+
+The exact `nft_transfer` arguments follow NEP-171 (`receiver_id`, `token_id`, optional `approval_id`, optional `memo`). In production you also:
+
+- Refund extra deposit
+- Clear the listing in a **callback** if the NFT transfer fails (promises are async; do not assume the transfer succeeded)
+- Support paying in a NEP-141 token with `ft_transfer_call` instead of attached NEAR
+- Take a fee by splitting the payment
+
+## Trust
+
+The NFT contract is the source of truth for ownership (`nft_token`). A marketplace you do not trust can fail to pay you if you transferred the NFT into it first. Approvals keep ownership with the seller until the sale. Always read the marketplace contract, and start with testnet.
+
+The diploma contract is *not* marketplace-friendly on purpose: it panics on `nft_transfer`, so a diploma cannot be listed or sold.
+
+## Exercise
+
+Draw the sequence for an approval-based sale (seller, marketplace, NFT contract, buyer) in three or four steps. Mark which step is a view call and which steps are change calls.
+

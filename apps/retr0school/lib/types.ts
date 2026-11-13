@@ -1,9 +1,17 @@
+export type TrackGroup = "web3" | "foundations" | "diploma";
+
 export type Track = {
   slug: string;
   title: string;
   description: string;
   icon: string;
   color: string;
+  group: TrackGroup;
+  listed: boolean;
+  level?: string;
+  prerequisites: string[];
+  youWillBuild?: string;
+  overview?: string;
 };
 
 export type LessonSummary = {

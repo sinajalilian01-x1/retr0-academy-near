@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-const LEARN_HREFS = ["/near", "/html", "/css", "/javascript", "/web3", "/advanced"];
+const LEARN_HREFS = ["/fundamentals", "/contracts", "/tokens", "/dapp", "/html", "/css", "/javascript", "/advanced", "/near"];
 
 export function Header() {
   const pathname = usePathname();
@@ -23,8 +23,10 @@ export function Header() {
   const mobileId = useId();
 
   const learnItems = [
-    { href: "/near", label: "NEAR", testId: "learn-near" },
-    { href: "/web3", label: "Web3", testId: "learn-web3" },
+    { href: "/fundamentals", label: "Web3 Fundamentals", testId: "learn-fundamentals" },
+    { href: "/contracts", label: "NEAR Smart Contracts", testId: "learn-contracts" },
+    { href: "/tokens", label: "Tokens & NFTs on NEAR", testId: "learn-tokens" },
+    { href: "/dapp", label: "Build a NEAR dApp", testId: "learn-dapp" },
     { href: "/advanced", label: "Advanced NEAR", testId: "learn-advanced" },
     { heading: true, label: "Foundations" },
     { href: "/html", label: "HTML", testId: "learn-html" },

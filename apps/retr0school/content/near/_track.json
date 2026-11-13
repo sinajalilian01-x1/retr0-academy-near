@@ -1,6 +1,8 @@
 {
-  "title": "NEAR",
-  "description": "Learn NEAR from scratch: named accounts, access keys, gas and storage, Wallet Selector, view and change calls, NEP-141 tokens, NEP-171 NFTs, your first contract, and Intents. Pass the quiz to mint an on-chain diploma.",
-  "icon": "🎓",
-  "color": "#00EC97"
+  "title": "NEAR diploma",
+  "description": "Capstone quiz covering the Web3 courses. Pass it to mint a soulbound diploma NFT on NEAR testnet.",
+  "icon": "\ud83c\udf93",
+  "color": "#00EC97",
+  "group": "diploma",
+  "listed": false
 }

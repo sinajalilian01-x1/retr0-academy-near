@@ -18,15 +18,18 @@ content/<track>/
 
 The folder name is the URL slug. Current tracks:
 
-| Folder | URL |
-| --- | --- |
-| `html` | `/html` |
-| `css` | `/css` |
-| `javascript` | `/javascript` |
-| `web3` | `/web3` |
-| `near` | `/near` (pass the quiz to mint a diploma at `/diploma`) |
+| Folder | URL | Group |
+| --- | --- | --- |
+| `fundamentals` | `/fundamentals` | Web3 course |
+| `contracts` | `/contracts` | Web3 course |
+| `tokens` | `/tokens` | Web3 course |
+| `dapp` | `/dapp` | Web3 course |
+| `html` | `/html` | Foundations |
+| `css` | `/css` | Foundations |
+| `javascript` | `/javascript` | Foundations |
+| `near` | `/near` and `/near/quiz` (unlisted capstone; pass the quiz to mint at `/diploma`) | Diploma |
 
-Preferred display order is `html`, `css`, `javascript`, `web3`. Any other folder that contains `_track.json` is listed after those, alphabetically.
+Preferred display order is `fundamentals`, `contracts`, `tokens`, `dapp`, `html`, `css`, `javascript`, `near`. Set `"listed": false` on a track to keep it out of the Learn menu, homepage, and `[track]` static paths (used for the diploma quiz). Advanced holder-only lessons live in `content-advanced/` and are served under `/advanced`.
 
 `quiz` is a reserved lesson slug. Do not name a lesson `quiz`.
 
@@ -39,7 +42,13 @@ Preferred display order is `html`, `css`, `javascript`, `web3`. Any other folder
   "title": "HTML",
   "description": "The skeleton of a page: headings, text, links, and lists.",
   "icon": "CodeXml",
-  "color": "#d4522a"
+  "color": "#d4522a",
+  "group": "foundations",
+  "listed": true,
+  "level": "Beginner",
+  "prerequisites": ["None."],
+  "youWillBuild": "A small personal page.",
+  "overview": "Optional longer course intro on the course page."
 }
 ```
 
@@ -49,6 +58,12 @@ Preferred display order is `html`, `css`, `javascript`, `web3`. Any other folder
 | `description` | yes | One or two sentences on the card and the track page. |
 | `icon` | yes | A Lucide icon name or an emoji. |
 | `color` | yes | CSS color used only as that track's accent stripe and icon. Hex is the usual form. |
+| `group` | no | `web3`, `foundations`, or `diploma`. Defaults from the folder name if omitted. |
+| `listed` | no | Defaults to true. Set false to hide the track from the catalog (diploma quiz). |
+| `level` | no | Shown on the course page (for example Beginner or Intermediate). |
+| `prerequisites` | no | Array of strings listed on the course page. |
+| `youWillBuild` | no | Short sentence about the course outcome. |
+| `overview` | no | Longer intro on the course page. |
 
 Built-in Lucide names: `CodeXml`, `Palette`, `Braces`, `Blocks`. Any other string is rendered as text, so an emoji works with no code change. Adding a new Lucide name means adding it to the map in `components/track-icon.tsx`.
 

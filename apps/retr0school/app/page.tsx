@@ -1,31 +1,32 @@
 import { HomeHero } from "@/components/home-hero";
 import { TrackGrid, type TrackCardData } from "@/components/track-grid";
-import { getLessons, getTracks } from "@/lib/content";
+import { getFoundationTracks, getCourseTracks, getLessons } from "@/lib/content";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+function toCard(track: { slug: string; title: string; description: string; icon: string; color: string }): TrackCardData {
+  const lessons = getLessons(track.slug);
+  return {
+    slug: track.slug,
+    title: track.title,
+    description: track.description,
+    icon: track.icon,
+    color: track.color,
+    lessonCount: lessons.length,
+    slugs: lessons.map((lesson) => lesson.slug),
+  };
+}
+
 export default function HomePage() {
-  const tracks: TrackCardData[] = getTracks().map((track) => {
-    const lessons = getLessons(track.slug);
-    return {
-      slug: track.slug,
-      title: track.title,
-      description: track.description,
-      icon: track.icon,
-      color: track.color,
-      lessonCount: lessons.length,
-      slugs: lessons.map((lesson) => lesson.slug),
-    };
-  });
-  const featured = tracks.filter((track) => track.slug === "near" || track.slug === "web3");
-  const foundations = tracks.filter((track) => track.slug === "html" || track.slug === "css" || track.slug === "javascript");
+  const featured = getCourseTracks().map(toCard);
+  const foundations = getFoundationTracks().map(toCard);
 
   return (
     <main id="content">
       <section className="mx-auto grid max-w-page items-start gap-12 px-5 py-12 md:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.8fr)] lg:gap-16 lg:py-24">
         <HomeHero />
         <div id="courses" className="lg:pt-4">
-          <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">Web3 tracks</p>
+          <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">Web3 courses</p>
           <TrackGrid tracks={featured} />
           <Link
             href="/advanced"
@@ -34,7 +35,7 @@ export default function HomePage() {
           >
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent" aria-hidden />
             <span className="flex-1 font-semibold">Advanced NEAR</span>
-            <span className="text-sm font-medium text-highlight">Open + holders</span>
+            <span className="text-sm font-medium text-highlight">Holders</span>
             <ArrowRight className="h-4 w-4 text-accent-text" aria-hidden />
           </Link>
           <p className="mt-8 mb-3 text-sm font-medium tracking-eyebrow text-muted uppercase">Foundations</p>
@@ -46,9 +47,9 @@ export default function HomePage() {
           <h2 className="font-pixel text-title text-highlight">About Retr0 Academy</h2>
           <div className="max-w-lesson text-muted">
             <p>
-              Retr0 Academy is a Web3 development school on NEAR. Learn to ship on-chain work: accounts, smart
-              contracts, tokens, and frontends, with examples you can edit in the Playground and a soulbound diploma NFT
-              on NEAR testnet. HTML, CSS, and JavaScript stay available as optional foundations.
+              Retr0 Academy is a Web3 development school on NEAR. Work through courses on fundamentals, smart contracts,
+              tokens, and frontends, with examples you can edit in the Playground and a soulbound diploma NFT on NEAR
+              testnet. HTML, CSS, and JavaScript stay available as optional foundations.
             </p>
             <p className="mt-4">
               Designed by Sina Jalilian. Lesson progress and quiz scores stay on this device until you choose to mint a diploma on chain.

@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { SiteProvider } from "@/components/site-provider";
 import { NearWalletProvider } from "@/components/near/wallet-provider";
-import { getSearchIndex, getTracks } from "@/lib/content";
+import { getSearchIndex, getListedTracks } from "@/lib/content";
 import "@near-wallet-selector/modal-ui/styles.css";
 import "./globals.css";
 
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const tracks = getTracks().map((track) => ({ slug: track.slug, title: track.title }));
+  const tracks = getListedTracks().map((track) => ({ slug: track.slug, title: track.title }));
   const entries = getSearchIndex();
 
   return (

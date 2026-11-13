@@ -3,14 +3,14 @@ import { notFound } from "next/navigation";
 import { LessonShell } from "@/components/lesson-shell";
 import { LessonToolbar } from "@/components/lesson-toolbar";
 import { PrevNext } from "@/components/prev-next";
-import { getLesson, getLessons, getTrack, getTracks, neighbors, toSummary } from "@/lib/content";
+import { getLesson, getLessons, getTrack, getListedTracks, neighbors, toSummary } from "@/lib/content";
 import { playgroundHrefForLesson } from "@/lib/code-e";
 import { renderMdx } from "@/lib/mdx";
 
 type Props = { params: Promise<{ track: string; slug: string }> };
 
 export function generateStaticParams() {
-  return getTracks().flatMap((track) =>
+  return getListedTracks().flatMap((track) =>
     getLessons(track.slug).map((lesson) => ({ track: track.slug, slug: lesson.slug })),
   );
 }

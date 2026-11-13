@@ -1,0 +1,82 @@
+---
+title: "Accounts and Named Accounts"
+description: "NEAR accounts are human-readable names like alice.near, with sub-accounts, implicit accounts, and balances you can read in one RPC call."
+order: 3
+tags: ["accounts", "basics", "near"]
+---
+# Accounts and Named Accounts
+
+On most chains your "account" is a long hex address derived from a key. On NEAR the account is a **name**. `alice.near` is not an alias that points somewhere else; it *is* the account, and it holds a balance, a set of keys, and optionally one smart contract.
+
+## Kinds of accounts
+
+| Kind | Example | Notes |
+| --- | --- | --- |
+| Top-level named | `alice.near`, `alice.testnet` | Created through the `near` or `testnet` registrar. |
+| Sub-account | `diploma.retr0school.testnet` | Only `retr0school.testnet` can create it. Great for organizing apps. |
+| Implicit | `98793cd9…a8f` (64 hex chars) | Derived from a public key. Exists as soon as it receives NEAR. |
+| ETH-implicit | `0x…` | Lets Ethereum wallets use NEAR directly. |
+
+This course runs on **testnet**, so accounts end in `.testnet`. The diploma contract you will mint from lives at `diploma.retr0school.testnet`, a sub-account of `retr0school.testnet`.
+
+<Note>
+
+An account can have **many keys** and keys can be rotated. Your identity is the name, not a single private key. That is a big usability win over key-derived addresses.
+
+</Note>
+
+## Read an account
+
+Every account's balance and storage use are public. Run the example, then try your own testnet account.
+
+<TryIt
+  codeE
+  title="Look up a NEAR account"
+  html={`<h1>NEAR account lookup</h1>
+<input id="acc" value="retr0school.testnet">
+<button id="go">Look up</button>
+<pre id="out">Press Look up.</pre>`}
+  css={`body { font-family: system-ui, sans-serif; background: #0d0b1a; color: #ece8ff; padding: 20px; }
+h1 { font-size: 20px; color: #00ec97; margin-top: 0; }
+input { padding: 8px; border: 2px solid #3a3466; background: #17132b; color: inherit; width: 260px; }
+button { background: #ff3fa4; color: #1a0a14; border: 2px solid #ece8ff; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space: pre-wrap; word-break: break-all; }`}
+  js={`const RPC = "https://rpc.testnet.near.org";
+const out = document.getElementById("out");
+
+async function lookup(accountId) {
+  const res = await fetch(RPC, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: "r0", method: "query",
+      params: { request_type: "view_account", finality: "final", account_id: accountId }
+    })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(json.error.cause ? json.error.cause.name : json.error.message);
+  return json.result;
+}
+
+document.getElementById("go").addEventListener("click", async () => {
+  const id = document.getElementById("acc").value.trim();
+  out.textContent = "Loading " + id + "...";
+  try {
+    const a = await lookup(id);
+    const near = Number(BigInt(a.amount) / 10n ** 20n) / 10000;
+    out.textContent = id + "\\nbalance: " + near + " NEAR\\nstorage used: " + a.storage_usage + " bytes\\nhas contract: " + (a.code_hash !== "11111111111111111111111111111111");
+    console.log("account", a);
+  } catch (e) {
+    out.textContent = "Error: " + e.message;
+  }
+});`}
+/>
+
+## Units
+
+NEAR has 24 decimals. The smallest unit is the **yoctoNEAR**: 1 NEAR = 10^24 yocto. RPC responses return balances as strings in yocto, which is why the example uses `BigInt`.
+
+## Exercise
+
+Look up `demo-learner.retr0school.testnet` on the testnet explorer and note its balance. Then explain the difference between that named account and an implicit account made from a public key.
+

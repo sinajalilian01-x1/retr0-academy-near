@@ -4,12 +4,12 @@ import { notFound } from "next/navigation";
 import { LessonShell } from "@/components/lesson-shell";
 import { PrevNext } from "@/components/prev-next";
 import { QuizRunner } from "@/components/quiz-runner";
-import { getLessons, getQuiz, getTrack, getTracks, neighbors, nextTrack, toSummary } from "@/lib/content";
+import { getLessons, getQuiz, getTrack, getListedTracks, neighbors, nextTrack, toSummary } from "@/lib/content";
 
 type Props = { params: Promise<{ track: string }> };
 
 export function generateStaticParams() {
-  return getTracks().map((track) => ({ track: track.slug }));
+  return getListedTracks().map((track) => ({ track: track.slug }));
 }
 
 export const dynamicParams = false;
@@ -52,8 +52,8 @@ export default async function QuizPage({ params }: Props) {
             ) : (
               <p className="mt-6 text-sm text-muted">
                 That was the last track.{" "}
-                <Link href="/tryit" className="font-medium text-info underline underline-offset-4">
-                  Keep going in the playground.
+                <Link href="/playground" className="font-medium text-info underline underline-offset-4">
+                  Keep going in the Playground, or take the NEAR diploma quiz.
                 </Link>
               </p>
             )}

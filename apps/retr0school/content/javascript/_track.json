@@ -1,6 +1,14 @@
 {
   "title": "JavaScript",
   "description": "Make the web interactive: variables, logic, functions, arrays, objects, the DOM, events, and fetching data asynchronously.",
-  "icon": "⚡",
-  "color": "#F7DF1E"
+  "icon": "\u26a1",
+  "color": "#F7DF1E",
+  "group": "foundations",
+  "listed": true,
+  "level": "Beginner",
+  "prerequisites": [
+    "HTML and CSS help. You can start here if you already know basic markup."
+  ],
+  "youWillBuild": "Interactive pages that handle events and fetch data \u2014 the same skills the dApp course uses.",
+  "overview": "Make the web interactive: variables, functions, the DOM, events, and fetching data asynchronously."
 }

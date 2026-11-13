@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getTracks } from "@/lib/content";
+import { getListedTracks } from "@/lib/content";
 
 export default function NotFound() {
-  const tracks = getTracks();
+  const tracks = getListedTracks();
   return (
     <main id="content" className="mx-auto max-w-lesson px-5 py-20 md:px-8">
       <p className="text-sm font-medium tracking-eyebrow text-accent-text uppercase">Missing page</p>

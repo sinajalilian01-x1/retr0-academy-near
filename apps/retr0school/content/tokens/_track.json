@@ -1,0 +1,15 @@
+{
+  "title": "Tokens & NFTs on NEAR",
+  "description": "Implement NEP-141 fungible tokens and NEP-171 NFT minting, then learn how a simple marketplace moves them.",
+  "icon": "\ud83e\ude99",
+  "color": "#F5C518",
+  "group": "web3",
+  "listed": true,
+  "level": "Intermediate",
+  "prerequisites": [
+    "NEAR Smart Contracts (collections, deposits, and deploying to testnet).",
+    "Web3 Fundamentals: the difference between fungible tokens and NFTs."
+  ],
+  "youWillBuild": "A mental (and optional testnet) implementation of an FT and an NFT mint, plus a sketch of a marketplace buy flow using approvals or nft_transfer_call.",
+  "overview": "This course is about NEAR token standards. You will implement NEP-141 with storage deposits, mint NEP-171 NFTs with metadata (including soulbound diplomas), and walk through how a marketplace settles a sale without taking custody of private keys."
+}

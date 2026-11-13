@@ -1,0 +1,68 @@
+[
+  {
+    "question": "What does a block typically chain together?",
+    "options": [
+      "Random advertisements",
+      "A hash of the previous block plus a batch of new transactions",
+      "Only NFT images",
+      "Validator salaries in cash"
+    ],
+    "answer": 1,
+    "explanation": "Each block includes a hash of the previous block, which is why changing history is obvious to the network."
+  },
+  {
+    "question": "Who should ever see your seed phrase?",
+    "options": [
+      "The dApp you just opened",
+      "The RPC provider",
+      "Nobody. It stays offline or in a wallet you control",
+      "Anyone who asks to 'validate' your wallet"
+    ],
+    "answer": 2,
+    "explanation": "A seed phrase is the master key. No website, support agent, or contract needs it."
+  },
+  {
+    "question": "What is alice.near?",
+    "options": [
+      "A hash of Alice's public key",
+      "An ENS-style name that points to a 0x address",
+      "A human-readable named account that can own keys, tokens, and a contract",
+      "A fungible token ticker"
+    ],
+    "answer": 2,
+    "explanation": "NEAR accounts are named. alice.near is the account itself and can hold keys, tokens, and one contract."
+  },
+  {
+    "question": "Who pays for the bytes a NEAR contract stores?",
+    "options": [
+      "Nobody, storage is free",
+      "The validator that produced the block",
+      "The RPC provider",
+      "The account holding the data, by locking NEAR in its balance (storage staking)"
+    ],
+    "answer": 3,
+    "explanation": "Storage staking: every 100 KB locks about 1 NEAR on the account that owns the state."
+  },
+  {
+    "question": "NEP-141 is the NEAR standard for...",
+    "options": [
+      "Non-fungible tokens",
+      "Account names",
+      "Fungible tokens, such as stablecoins and wrapped NEAR",
+      "Storage deposits only"
+    ],
+    "answer": 2,
+    "explanation": "NEP-141 is fungible tokens. NEP-171 is NFTs."
+  },
+  {
+    "question": "What do NEAR Chain Signatures let a NEAR account do?",
+    "options": [
+      "Mine Bitcoin",
+      "Sign transactions for other chains such as Bitcoin and Ethereum through an MPC network",
+      "Skip gas fees forever",
+      "Rename other people's accounts"
+    ],
+    "answer": 1,
+    "explanation": "Chain Signatures derive addresses on other chains and an MPC network signs for them when your account asks."
+  }
+]

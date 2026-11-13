@@ -1,8 +1,8 @@
-import { getLesson, getLessons, getTrack, getTracks } from "@/lib/content";
+import { getLesson, getLessons, getTrack, getListedTracks } from "@/lib/content";
 import { ogCard, ogContentType, ogSize } from "@/lib/og-card";
 
 export function generateStaticParams() {
-  return getTracks().flatMap((track) =>
+  return getListedTracks().flatMap((track) =>
     getLessons(track.slug).map((lesson) => ({ track: track.slug, slug: lesson.slug })),
   );
 }

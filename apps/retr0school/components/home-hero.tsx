@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { SearchField } from "@/components/search-field";
 
 export function HomeHero() {
@@ -9,33 +8,6 @@ export function HomeHero() {
       <h1 className="font-pixel text-hero text-ink">
         Learn NEAR from scratch and graduate on-chain with Retr0 Academy.
       </h1>
-      <p className="mt-6 max-w-md text-lead text-muted">
-        A Web3 development academy on NEAR: short lessons on contracts, wallets, and
-        tokens, a playground, a quiz, and a soulbound diploma NFT anyone can verify.
-        HTML, CSS, and JavaScript are here as foundations. New Advanced lessons are
-        open to everyone; diploma holders unlock four extra deep dives.
-      </p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href="/near"
-          data-testid="hero-start-near"
-          className="inline-flex h-12 items-center rounded-md border-2 border-ink bg-accent px-5 text-base font-medium text-accent-ink shadow-md hover:bg-accent-hover"
-        >
-          Start the NEAR track
-        </Link>
-        <Link
-          href="/leaderboard"
-          className="inline-flex h-12 items-center rounded-md border-2 border-line bg-elevated px-5 text-base font-medium text-ink shadow-sm hover:border-cyan"
-        >
-          Leaderboard
-        </Link>
-        <Link
-          href="/verify"
-          className="inline-flex h-12 items-center rounded-md border-2 border-line bg-elevated px-5 text-base font-medium text-ink shadow-sm hover:border-cyan"
-        >
-          Verify a diploma
-        </Link>
-      </div>
       <div className="mt-8">
         <SearchField
           testId="search-input"

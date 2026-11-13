@@ -1,6 +1,14 @@
 {
   "title": "HTML",
   "description": "Learn the language that structures every web page: elements, links, images, lists, tables, forms, and semantic, accessible markup.",
-  "icon": "🧱",
-  "color": "#E34F26"
+  "icon": "\ud83e\uddf1",
+  "color": "#E34F26",
+  "group": "foundations",
+  "listed": true,
+  "level": "Beginner",
+  "prerequisites": [
+    "None. This is the starting point if you are new to the web."
+  ],
+  "youWillBuild": "A small personal page using semantic HTML.",
+  "overview": "Learn the language that structures every web page, then use it in the Playground when you reach Web3 examples."
 }

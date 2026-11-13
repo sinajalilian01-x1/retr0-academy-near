@@ -1,0 +1,102 @@
+---
+title: "Mini Project: Diploma Checker"
+description: "Put it together: a small front end that calls verify_diploma on testnet, shows the result, and links to the public verify page. Optional: connect a wallet with NEAR Connect."
+order: 4
+tags: ["project", "frontend", "diploma"]
+---
+# Mini Project: Diploma Checker
+
+Build a small page that looks up any NEAR testnet account and shows whether it holds a Retr0 Academy diploma. This is a complete, useful dApp you can run entirely in the Playground with **view calls only**. After it works, you can optionally add NEAR Connect to sign in and deep-link to mint.
+
+## What you will ship
+
+1. An input for a testnet account id
+2. A Verify button
+3. A result panel: valid diploma (track, score, date) or a clear "no diploma yet"
+4. A link to the public verify page `/verify?account=...`
+
+## Starter (open this in the Playground and finish it)
+
+The example below already performs the RPC call. Your job is to improve the UX: validate the account id, show a loading state, format the score, and handle errors without looking broken.
+
+<TryIt
+  title="Diploma checker mini project"
+  html={`<main>
+  <p class="eyebrow">Retr0 Academy</p>
+  <h1>Diploma checker</h1>
+  <p>Look up any testnet account. This is a view call — no wallet needed.</p>
+  <div class="row">
+    <input id="account" value="demo-learner.retr0school.testnet" spellcheck="false" aria-label="NEAR account id" />
+    <button type="button" id="go">Verify</button>
+  </div>
+  <pre id="out">Press Verify.</pre>
+  <p id="link"></p>
+</main>`}
+  css={`body { margin: 0; min-height: 100vh; background: #0d0b1a; color: #ece8ff; font-family: "Segoe UI", system-ui, sans-serif; }
+main { width: min(560px, calc(100% - 32px)); margin: 32px auto; }
+.eyebrow { margin: 0; color: #00ec97; font: 700 11px/1.4 ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; }
+h1 { margin: 6px 0 8px; font-size: 30px; }
+.row { display: flex; gap: 8px; margin: 16px 0; }
+input { flex: 1; border: 2px solid #3a3466; background: #17132b; color: inherit; padding: 10px 12px; font: 14px ui-monospace, monospace; }
+button { border: 2px solid #ece8ff; padding: 10px 16px; background: #ff3fa4; color: #1a0a14; font: inherit; font-weight: 700; cursor: pointer; }
+pre { border: 1px solid #3a3466; background: #17132b; padding: 12px; white-space: pre-wrap; word-break: break-all; }
+a { color: #00ec97; }`}
+  js={`const CONTRACT = "diploma.retr0school.testnet";
+const SITE = "https://retr0school-near.vercel.app";
+
+async function view(method, args) {
+  const res = await fetch("https://rpc.testnet.near.org", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: "r0", method: "query",
+      params: {
+        request_type: "call_function", finality: "final",
+        account_id: CONTRACT, method_name: method,
+        args_base64: btoa(JSON.stringify(args || {}))
+      }
+    })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(JSON.stringify(json.error.cause || json.error));
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(json.result.result)));
+}
+
+document.getElementById("go").addEventListener("click", async () => {
+  const account = document.getElementById("account").value.trim().toLowerCase();
+  const out = document.getElementById("out");
+  const link = document.getElementById("link");
+  out.textContent = "Calling verify_diploma...";
+  link.textContent = "";
+  try {
+    const diploma = await view("verify_diploma", { account_id: account, track: "near" });
+    if (diploma) {
+      out.textContent = "Valid diploma\\n" + diploma.track_title + "\\nScore " + diploma.score + "/" + diploma.max_score + "\\n" + diploma.date;
+    } else {
+      out.textContent = "No NEAR diploma for " + account + " yet.";
+    }
+    const a = document.createElement("a");
+    a.href = SITE + "/verify?account=" + encodeURIComponent(account);
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = "Open the public verify page ↗";
+    link.appendChild(a);
+  } catch (e) {
+    out.textContent = "Error: " + e.message;
+  }
+});`}
+/>
+
+## Stretch goals
+
+- Style a "holder" card when `valid` is true (score, date, token id if the view returns it)
+- Reject obviously invalid ids before calling RPC (NEAR account ids are lowercase and contain a `.` or are 64-character implicit ids)
+- Add a Connect button with NEAR Connect (previous lesson) and default the input to the signed-in account
+- After a pass on the [diploma quiz](/near/quiz), mint from `/diploma` and check *your* account in this app
+
+When the checker works in the Playground, use **Open in Code E** if you want a multi-file project to share.
+
+## Exercise
+
+Finish the checker in the Playground. Verify `demo-learner.retr0school.testnet` (should be valid) and a made-up account (should be empty or an error). Then add the public verify link and one stretch goal.
+

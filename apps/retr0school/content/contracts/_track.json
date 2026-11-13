@@ -1,0 +1,15 @@
+{
+  "title": "NEAR Smart Contracts",
+  "description": "Set up the toolchain, write and test a contract, use storage collections and promises, understand access keys, and deploy to testnet.",
+  "icon": "\ud83d\udcdc",
+  "color": "#00EC97",
+  "group": "web3",
+  "listed": true,
+  "level": "Intermediate",
+  "prerequisites": [
+    "Web3 Fundamentals, especially accounts, gas, and what a smart contract is.",
+    "Comfortable reading a little Rust or JavaScript. You can follow the Rust examples even if you write JS contracts later."
+  ],
+  "youWillBuild": "A small greeting (or similar) contract you test locally, then deploy to a faucet-funded testnet account and call with near-cli-rs.",
+  "overview": "This is the core contract-development course. You install cargo-near and near-cli-rs, write and unit-test a near-sdk contract, store data in near_sdk::store collections, make asynchronous cross-contract calls with promises and callbacks, issue function-call keys safely, and deploy to NEAR testnet."
+}

@@ -1,0 +1,57 @@
+[
+  {
+    "question": "What must an account usually do before it can receive a NEP-141 token for the first time?",
+    "options": [
+      "Publish a blog post",
+      "Call storage_deposit so the contract can pay for the balance row",
+      "Hold a diploma",
+      "Switch to mainnet"
+    ],
+    "answer": 1,
+    "explanation": "NEP-145 storage deposits register the account and cover the bytes of its balance record."
+  },
+  {
+    "question": "Why does ft_transfer require 1 yoctoNEAR attached?",
+    "options": [
+      "It is a bug",
+      "So a leaked function-call key cannot drain tokens; attaching a deposit needs a full-access key",
+      "Wallets like the number 1",
+      "Storage costs exactly 1 yoctoNEAR"
+    ],
+    "answer": 1,
+    "explanation": "Function-call keys cannot attach a deposit, so this is a standard safety check."
+  },
+  {
+    "question": "Why does the Retr0 Academy diploma contract reject nft_transfer?",
+    "options": [
+      "Because of a bug",
+      "Transfers cost too much gas",
+      "NEP-171 forbids transfers",
+      "The diploma is soulbound: a credential should stay with the account that earned it"
+    ],
+    "answer": 3,
+    "explanation": "NEP-171 allows transfers, but a credential that could be sold would prove nothing."
+  },
+  {
+    "question": "In an approval-based marketplace sale, when does the seller usually lose ownership of the NFT?",
+    "options": [
+      "When they tweet the listing",
+      "When the buyer\u2019s successful buy call transfers the token, not merely when they approve the marketplace",
+      "The moment they call nft_approve",
+      "Never"
+    ],
+    "answer": 1,
+    "explanation": "nft_approve lets the marketplace transfer later. Ownership stays with the seller until nft_transfer succeeds."
+  },
+  {
+    "question": "If the NFT transfer in a marketplace buy promise fails, what should the contract do?",
+    "options": [
+      "Assume the sale succeeded anyway",
+      "Undo or avoid settling payment in a private callback; receipts are not rolled back automatically",
+      "Refund twice",
+      "Delete the NFT contract"
+    ],
+    "answer": 1,
+    "explanation": "Cross-contract calls are asynchronous. Handle failure in a callback."
+  }
+]

@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
-import { getLessons, getTracks } from "@/lib/content";
+import { getLessons, getListedTracks } from "@/lib/content";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const tracks = getTracks();
+  const tracks = getListedTracks();
   const pages: MetadataRoute.Sitemap = [
     { url: SITE, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE}/playground`, changeFrequency: "monthly", priority: 0.7 },
@@ -12,6 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/verify`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/leaderboard`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/advanced`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE}/near`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE}/near/quiz`, changeFrequency: "weekly", priority: 0.7 },
   ];
 
   for (const track of tracks) {

@@ -1,0 +1,134 @@
+---
+title: "Fungible Tokens (NEP-141)"
+description: "Implement a fungible token with near-contract-standards: metadata, storage deposits, ft_transfer, and ft_transfer_call."
+order: 1
+tags: ["tokens", "nep-141", "standards"]
+---
+# NEP-141 Fungible Token
+
+[NEP-141](https://nomicon.io/Standards/Tokens/FungibleToken/Core) is NEAR’s fungible-token standard. Wallets expect a fixed set of methods, plus [NEP-148](https://nomicon.io/Standards/Tokens/FungibleToken/Metadata) metadata and [NEP-145](https://nomicon.io/Standards/StorageManagement) storage deposits.
+
+The supported way to implement this in Rust is `near-contract-standards`, not a hand-rolled map of balances.
+
+## What wallets call
+
+| Method | Kind | Role |
+| --- | --- | --- |
+| `ft_metadata` | View | Name, symbol, decimals, icon |
+| `ft_total_supply` / `ft_balance_of` | View | Supply and balances, as strings of yocto-units |
+| `storage_deposit` | Change, payable | Register the receiver before the first transfer |
+| `ft_transfer` | Change, 1 yoctoNEAR | Send tokens (`sender` is `predecessor`) |
+| `ft_transfer_call` | Change, 1 yoctoNEAR | Send, then call `ft_on_transfer` on the receiver contract |
+
+Amounts are **strings**, not numbers, so wallets can handle 24-decimal values.
+
+## A minimal contract
+
+```rust
+use near_contract_standards::fungible_token::metadata::{FungibleTokenMetadata, FT_METADATA_SPEC};
+use near_contract_standards::fungible_token::FungibleToken;
+use near_contract_standards::fungible_token::FungibleTokenCore;
+use near_contract_standards::storage_management::StorageManagement;
+use near_sdk::{near, AccountId, NearToken, PanicOnDefault};
+
+#[near(contract_state)]
+#[derive(PanicOnDefault)]
+pub struct Contract {
+    token: FungibleToken,
+    metadata: FungibleTokenMetadata,
+}
+
+#[near]
+impl Contract {
+    #[init]
+    pub fn new(owner: AccountId, total_supply: NearToken) -> Self {
+        let mut this = Self {
+            token: FungibleToken::new(b"t"),
+            metadata: FungibleTokenMetadata {
+                spec: FT_METADATA_SPEC.to_string(),
+                name: "Retr0 Token".to_string(),
+                symbol: "R0T".to_string(),
+                decimals: 24,
+                icon: None,
+                reference: None,
+                reference_hash: None,
+            },
+        };
+        this.token.internal_register_account(&owner);
+        this.token.internal_deposit(&owner, total_supply);
+        this
+    }
+}
+
+// Implement FungibleTokenCore, FungibleTokenResolver, StorageManagement,
+// and FungibleTokenMetadataProvider by delegating to self.token / self.metadata.
+// The official ft-rs example in near-examples shows the full boilerplate.
+```
+
+## Storage deposits
+
+The first time an account receives tokens, the contract stores a balance row. That row must already be paid for with `storage_deposit` (typically ~0.00125 NEAR). If you skip it, `ft_transfer` panics. Marketplaces and wallets do this automatically; when you test with CLI you must call it yourself:
+
+```bash
+near call r0t.alice.testnet storage_deposit '{"account_id":"bob.testnet"}' \
+  --deposit 0.00125 --useAccount bob.testnet --networkId testnet
+
+near call r0t.alice.testnet ft_transfer \
+  '{"receiver_id":"bob.testnet","amount":"1000000000000000000000000"}' \
+  --depositYocto 1 --useAccount alice.testnet --networkId testnet
+```
+
+The attached 1 yoctoNEAR on `ft_transfer` is a standard safety check so the sender must use a full-access key (or a carefully issued function-call key).
+
+## Try a live token
+
+<TryIt
+  codeE
+  title="Read a NEP-141 token"
+  html={`<h1>NEP-141 token</h1>
+<input id="ft" value="wrap.testnet">
+<button id="go">Read token</button>
+<pre id="out">Press Read token.</pre>`}
+  css={`body { font-family: system-ui, sans-serif; background: #0d0b1a; color: #ece8ff; padding: 20px; }
+h1 { font-size: 20px; color: #00ec97; margin-top: 0; }
+input { padding: 8px; border: 2px solid #3a3466; background: #17132b; color: inherit; width: 260px; }
+button { background: #ff3fa4; color: #1a0a14; border: 2px solid #ece8ff; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+pre { background: #17132b; border: 1px solid #3a3466; padding: 12px; white-space: pre-wrap; word-break: break-all; }`}
+  js={`const RPC = "https://rpc.testnet.near.org";
+
+// Read-only call: no wallet, no gas, no signature.
+async function view(contractId, method, args) {
+  const res = await fetch(RPC, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: "r0", method: "query",
+      params: {
+        request_type: "call_function", finality: "final",
+        account_id: contractId, method_name: method,
+        args_base64: btoa(JSON.stringify(args || {}))
+      }
+    })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(JSON.stringify(json.error.cause || json.error));
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(json.result.result)));
+}
+
+const out = document.getElementById("out");
+document.getElementById("go").addEventListener("click", async () => {
+  const ft = document.getElementById("ft").value.trim();
+  try {
+    const meta = await view(ft, "ft_metadata", {});
+    const supply = await view(ft, "ft_total_supply", {});
+    out.textContent = meta.name + " (" + meta.symbol + ")\\ndecimals: " + meta.decimals + "\\ntotal supply (raw): " + supply;
+  } catch (e) {
+    out.textContent = "Error: " + e.message;
+  }
+});`}
+/>
+
+## Exercise
+
+Write the `near call` you would use to register `bob.testnet` with `storage_deposit` and then send them 1 token (10^24 yocto-units if decimals are 24). Include the 1 yoctoNEAR deposit on `ft_transfer`.
+

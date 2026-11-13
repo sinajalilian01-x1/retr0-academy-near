@@ -1,0 +1,69 @@
+---
+title: "Calling Contract Methods"
+description: "Choose gas and deposit correctly, pass arguments that match the ABI, handle failures, and refresh state with a view call after a change call."
+order: 3
+tags: ["frontend", "near-api-js", "transactions"]
+---
+# Calling Contract Methods
+
+Once you can connect a wallet and make a view call, the remaining job is to **call the right method with the right arguments, gas, and deposit**.
+
+## Views, again, with near-api-js
+
+```js
+import { JsonRpcProvider } from "near-api-js";
+
+const provider = new JsonRpcProvider({ url: "https://test.rpc.fastnear.com" });
+
+const diploma = await provider.callFunction({
+  contractId: "diploma.retr0school.testnet",
+  method: "verify_diploma",
+  args: { account_id: "demo-learner.retr0school.testnet", track: "near" },
+});
+```
+
+If you cannot use the library (for example in the Playground), a raw `fetch` to `https://rpc.testnet.near.org` with `request_type: "call_function"` and `args_base64` is the same RPC.
+
+## Change calls with NEAR Connect
+
+```js
+const wallet = await connector.wallet();
+
+const result = await wallet.signAndSendTransaction({
+  receiverId: "hello.near-examples.testnet",
+  actions: [
+    {
+      type: "FunctionCall",
+      params: {
+        methodName: "set_greeting",
+        args: { greeting: "Hello from Retr0 Academy" },
+        gas: "30000000000000", // 30 Tgas
+        deposit: "0",
+      },
+    },
+  ],
+});
+```
+
+Rules of thumb:
+
+- **Gas** is a string of gas units. 30 Tgas (`30` + 12 zeros) is enough for a simple call. Cross-contract work often needs 50–100 Tgas or more, and the contract may attach static gas to promises.
+- **Deposit** is a string of yoctoNEAR. `"0"` for non-payable methods. `"10000000000000000000000"` is 0.01 NEAR. Payable methods (`#[payable]` in Rust) will panic if you attach nothing when they require a deposit.
+- **Args** must match the ABI. A typo in a field name is a failed transaction, not a compiler error, when you call from JS.
+- Wait for the transaction, then **re-read state with a view call**. Do not trust the wallet UI alone.
+
+## Errors you will see
+
+| Symptom | Likely cause |
+| --- | --- |
+| `MethodNotFound` | Wrong name or you deployed a different Wasm |
+| `Must attach X yoctoNEAR` | Payable method or 1-yocto safety check |
+| `Exceeded the prepaid gas` | Raise gas, or the contract's promises need a bigger budget |
+| Wallet closed / rejected | The user cancelled; offer to try again |
+
+The next lesson puts a view call, a result panel, and optional signed calls together as a mini project.
+
+## Exercise
+
+Write a `signAndSendTransaction` call to a payable method that attaches 0.01 NEAR and 30 Tgas. Then write the view call you would run afterwards to confirm the state change.
+

@@ -1,0 +1,14 @@
+{
+  "title": "Web3 Fundamentals",
+  "description": "Wallets, keys, accounts, transactions, gas, blocks, and the ideas behind tokens and NFTs \u2014 with a NEAR focus.",
+  "icon": "\u26d3\ufe0f",
+  "color": "#8B5CF6",
+  "group": "web3",
+  "listed": true,
+  "level": "Beginner",
+  "prerequisites": [
+    "None required. HTML, CSS, and JavaScript in Foundations help when you reach the Playground examples."
+  ],
+  "youWillBuild": "A clear model of how a blockchain account holds keys and signs transactions, plus a live testnet view call you run in the Playground.",
+  "overview": "This course is the starting point for Web3 development on NEAR. You will learn how blocks and accounts work, how wallets keep keys, what gas and storage cost, how tokens differ from NFTs, and how Chain Signatures let one NEAR account act on other chains."
+}

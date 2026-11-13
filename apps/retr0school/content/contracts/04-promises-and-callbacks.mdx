@@ -1,0 +1,69 @@
+---
+title: "Promises and Callbacks"
+description: "Schedule a cross-contract call with Promise, attach gas, and handle the result in a private callback."
+order: 4
+tags: ["promises", "callbacks"]
+---
+# Promises and Callbacks
+
+A contract cannot call another contract synchronously. Accounts can live on different shards, so NEAR turns the call into a **receipt**. You create a [`Promise`](https://docs.near.org/smart-contracts/anatomy/crosscontract), the runtime runs the other contract later, and if you need the result you chain a **callback** with `.then(...)`.
+
+## The pattern
+
+1. Build a promise to the other contract (`ext_contract` in Rust, or `Promise` in JS).
+2. Attach static gas for that leg with `with_static_gas`.
+3. Chain `.then(Self::ext(current).callback(...))` and attach gas for the callback too.
+4. Mark the callback `#[private]` so only the contract can call it.
+5. Read the result with `#[callback_result]`.
+
+```rust
+use near_sdk::{env, ext_contract, near, AccountId, Gas, NearToken, Promise, PromiseError};
+
+#[ext_contract(ext_ft)]
+trait FungibleToken {
+    fn ft_balance_of(&self, account_id: AccountId) -> NearToken;
+}
+
+#[near]
+impl Contract {
+    pub fn snapshot_balance(&mut self, token: AccountId, who: AccountId) -> Promise {
+        ext_ft::ext(token)
+            .with_static_gas(Gas::from_tgas(10))
+            .ft_balance_of(who.clone())
+            .then(
+                Self::ext(env::current_account_id())
+                    .with_static_gas(Gas::from_tgas(5))
+                    .on_balance(who),
+            )
+    }
+
+    #[private]
+    pub fn on_balance(
+        &mut self,
+        who: AccountId,
+        #[callback_result] result: Result<NearToken, PromiseError>,
+    ) -> String {
+        match result {
+            Ok(amount) => {
+                self.last = amount;
+                format!("{who} has {amount}")
+            }
+            Err(_) => "Balance lookup failed".to_string(),
+        }
+    }
+}
+```
+
+## Rules that bite
+
+- If the other contract fails, **your earlier state writes are not rolled back**. Undo them in the callback.
+- Budget gas for both legs. A typical split is 10–30 Tgas on the outgoing call and 5–10 Tgas on the callback.
+- Deposits you attach with `with_attached_deposit` are spent even if the callee panics, unless you refund in the callback.
+- `#[private]` is not a suggestion. Without it, anyone could spoof the callback.
+
+The holder-only Cross-Contract Calls lesson applies this pattern to gate a feature on a Retr0 Academy diploma.
+
+## Exercise
+
+Write (on paper or in a file) a `join_club` method that calls `verify_diploma` on `diploma.retr0school.testnet` and a `#[private]` callback that only records the member when the result is `Ok(Some(_))`.
+

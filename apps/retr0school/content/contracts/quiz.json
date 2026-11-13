@@ -1,0 +1,68 @@
+[
+  {
+    "question": "Which tools do current NEAR docs recommend for building and deploying a Rust contract?",
+    "options": [
+      "Truffle and Hardhat only",
+      "cargo-near and near-cli-rs (`near`)",
+      "The deprecated Node near-cli plus Remix",
+      "Metamask"
+    ],
+    "answer": 1,
+    "explanation": "docs.near.org's quickstart and deploy guides use cargo-near to build and near-cli-rs to create accounts and deploy."
+  },
+  {
+    "question": "Why is get_greeting a view method in near-sdk?",
+    "options": [
+      "It is marked payable",
+      "It only takes &self and does not write state",
+      "It attaches 1 yoctoNEAR",
+      "View methods cannot exist in Rust"
+    ],
+    "answer": 1,
+    "explanation": "A method that takes &self and does not mutate contract state is exposed as a free view method."
+  },
+  {
+    "question": "Why does every near_sdk::store collection need a unique prefix?",
+    "options": [
+      "To look pretty in the explorer",
+      "To namespace its storage keys so two collections cannot collide",
+      "Prefixes are optional",
+      "The prefix is the account name"
+    ],
+    "answer": 1,
+    "explanation": "The prefix is prepended to every storage key the collection writes."
+  },
+  {
+    "question": "If a cross-contract call fails, what happens to state writes you already made in the calling method?",
+    "options": [
+      "They always roll back automatically",
+      "They are not rolled back; you must undo them in the callback if needed",
+      "The whole chain halts",
+      "The deposit is doubled"
+    ],
+    "answer": 1,
+    "explanation": "Each receipt commits on its own. Handle failure in a private callback."
+  },
+  {
+    "question": "Which kind of access key can transfer NEAR and attach deposits?",
+    "options": [
+      "A full-access key",
+      "A function-call key",
+      "A view key",
+      "A storage key"
+    ],
+    "answer": 0,
+    "explanation": "Only a full-access key can attach deposits or move NEAR. Function-call keys are limited to non-payable calls on one contract."
+  },
+  {
+    "question": "How do you create a faucet-funded testnet account with near-cli-rs?",
+    "options": [
+      "near mine --mainnet",
+      "near create-account <id> --useFaucet --networkId testnet",
+      "Send real NEAR first",
+      "near login is the only way"
+    ],
+    "answer": 1,
+    "explanation": "`--useFaucet` sponsors a new testnet account. Do not use the faucet on mainnet."
+  }
+]
