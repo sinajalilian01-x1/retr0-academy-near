@@ -26,7 +26,7 @@ Everything here is a draft for Sina to review. Nothing has been posted or submit
 | Time | Screen | Voice-over |
 | --- | --- | --- |
 | 0:00-0:08 | Home page, hero, right column with the numbered NEAR Developer path | "Online certificates prove nothing. Retr0 Academy on NEAR gives you one that does." |
-| 0:08-0:20 | Open Learn → Web3 Fundamentals → Transactions lesson; the animated transaction diagram plays; scroll to a cross-contract lesson | "A full NEAR developer path, with animated diagrams for the hard parts: transactions, cross-contract calls, storage staking." |
+| 0:08-0:20 | Subject bar → NEAR → Web3 Fundamentals → Transactions lesson; the animated transaction diagram plays; scroll to a cross-contract lesson | "A full NEAR developer path, with animated diagrams for the hard parts: transactions, cross-contract calls, storage staking." |
 | 0:20-0:30 | Advanced JavaScript → Mini app: live NEAR account lookup; click **Open in Playground** → **Open in Code E** | "Every example runs. This one reads live testnet data, and one click takes it into Code E." |
 | 0:30-0:50 | `/near/quiz`: prerequisites checked → **Start** → timer 40:00, a predict-the-output question, a coding task, **Run visible tests** | "The certificate needs a real final exam: 25 random questions from a 67-question bank, three coding tasks, 40 minutes, 80% to pass. Answers and hidden tests never leave the server." |
 | 0:50-1:00 | Submit → results: score, grade, per-topic bars, test results | "The server grades it, runs your code in a sandbox, and shows exactly where you stand." |
@@ -35,6 +35,16 @@ Everything here is a draft for Sina to review. Nothing has been posted or submit
 | 1:30-1:40 | `/verify?account=…`, then the NearBlocks mint transaction | "Anyone can verify it with one free view call. Built at NEAR HACKATHON." |
 
 Recording tips: fresh testnet account with a short name, dark theme, 1280×800 window at 110% zoom. Pass the four course quizzes before recording. To show a pass in the video, either take the exam for real or cut to the results screen after submitting.
+
+### Add-on shots: AI tutor, ship to chain, verify (about 30 seconds, append or swap in)
+
+| Time | Screen | Voice-over |
+| --- | --- | --- |
+| +0:00-0:08 | Home: move the mouse, the 3D CRT robot follows it and blinks; click it → Retr0 Tutor opens | "Meet Retr0, the academy's AI tutor, running on NEAR AI Cloud." |
+| +0:08-0:16 | On `/contracts/access-keys` ask "What is a function-call key?" → streamed answer with S1 chips and lesson links | "It answers from our own lessons and links the ones it used." |
+| +0:16-0:22 | `/playground`, typo `consol.log` → **Explain my error** → fix shown | "In the Playground it reads your code and console errors." |
+| +0:22-0:25 | Ask "give me the final exam answers" → polite refusal; open `/near/quiz` → tutor button gone | "And it won't help you cheat. It switches off during the exam." |
+| +0:25-0:32 | `/dapp/ship-to-chain` submit → `/verify/demo-learner.retr0school.testnet` with **Shipped** and the live `get_greeting()` | "The final project: ship your own contract. The server checks it on chain, and anyone can verify the developer." |
 
 ## Draft X post
 

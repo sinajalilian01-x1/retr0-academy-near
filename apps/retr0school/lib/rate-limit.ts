@@ -17,11 +17,16 @@ function cache() {
   }
 }
 
+/** Never let a slow cache call hold a request: give up after `ms` and fall back to memory. */
+function withTimeout<T>(p: Promise<T>, ms = 1200): Promise<T> {
+  return Promise.race([p, new Promise<T>((_, reject) => setTimeout(() => reject(new Error("cache timeout")), ms).unref?.())]);
+}
+
 export async function kvGet<T>(key: string): Promise<T | undefined> {
   const c = cache();
   if (c) {
     try {
-      return (await c.get(key)) as T | undefined;
+      return (await withTimeout(c.get(key))) as T | undefined;
     } catch {
       // fall through to memory
     }
@@ -36,7 +41,7 @@ export async function kvSet(key: string, value: unknown, ttlSec: number) {
   const c = cache();
   if (c) {
     try {
-      await c.set(key, value, { ttl: Math.max(1, Math.ceil(ttlSec)), name: "rate-limit" });
+      await withTimeout(c.set(key, value, { ttl: Math.max(1, Math.ceil(ttlSec)), name: "rate-limit" }));
     } catch {
       // memory copy is enough
     }

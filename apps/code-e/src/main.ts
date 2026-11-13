@@ -10,7 +10,7 @@ import { formatCode } from './format'
 import { bootProject, writeStorage } from './project'
 import { ACADEMY_URL, nearStarterFiles } from './near-starter'
 import { assembleDocument, runPreview, watchPreview } from './preview'
-import { shareUrl } from './share'
+import { encodeShare, shareUrl } from './share'
 import { starterFiles } from './starter'
 import {
   extKind,
@@ -1026,6 +1026,17 @@ function bind(): void {
   const academyLink = document.getElementById('academy-link')
   if (academyLink instanceof HTMLAnchorElement) academyLink.href = `${ACADEMY_URL}/near`
   must<HTMLButtonElement>('console-peek').addEventListener('click', () => setPane('console'))
+  must<HTMLButtonElement>('ask-tutor').addEventListener('click', () => {
+    flushEditor()
+    const err = logs
+      .filter((item) => item.level === 'error')
+      .slice(-3)
+      .map((item) => item.text)
+      .join('\n')
+      .slice(0, 600)
+    const query = `tutor=explain${err ? `&err=${encodeURIComponent(err)}` : ''}`
+    window.open(`${ACADEMY_URL}/playground?${query}#code=${encodeShare(payload())}`, '_blank', 'noopener')
+  })
   must<HTMLButtonElement>('clear-console').addEventListener('click', () => {
     logs.length = 0
     renderLogs()

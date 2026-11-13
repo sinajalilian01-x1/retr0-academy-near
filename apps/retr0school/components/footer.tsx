@@ -47,7 +47,7 @@ export function Footer({ tracks }: { tracks: { slug: string; title: string }[] }
             Final exam
           </Link>
           <Link href="/verify" className="text-muted hover:text-ink">
-            Verify a certificate
+            Verify a developer
           </Link>
           <Link href="/leaderboard" className="text-muted hover:text-ink">
             Leaderboard

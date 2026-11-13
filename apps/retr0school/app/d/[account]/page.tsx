@@ -45,6 +45,9 @@ export default async function SharedDiplomaPage({ params }: Props) {
             <DiplomaCard diploma={diploma} />
             <div className="flex flex-wrap items-center gap-4 text-sm">
               <ShareButton accountId={account} score={diploma.score} maxScore={diploma.max_score} />
+              <Link className="font-medium text-info underline underline-offset-4" href={`/verify/${encodeURIComponent(account)}`} data-testid="verify-link">
+                Verify on chain →
+              </Link>
               <a className="font-medium text-info underline underline-offset-4" href={explorerToken(diploma.token_id)} target="_blank" rel="noopener">
                 Token on explorer ↗
               </a>

@@ -1,58 +1,16 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, Search, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/logo";
 import { SearchField } from "@/components/search-field";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ConnectButton } from "@/components/near/connect-button";
 import { HolderBadge } from "@/components/near/holder-badge";
-import { NavDropdown } from "@/components/nav-dropdown";
-import { Button } from "@/components/ui/button";
+import { SubjectBar } from "@/components/subject-bar";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-
-const LEARN_HREFS = ["/fundamentals", "/contracts", "/tokens", "/dapp", "/html", "/css", "/javascript", "/html-advanced", "/css-advanced", "/js-advanced", "/advanced", "/near", "/exam"];
 
 export function Header() {
-  const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const mobileId = useId();
-
-  const learnItems = [
-    { heading: true, label: "NEAR Developer path" },
-    { href: "/fundamentals", label: "1. Web3 Fundamentals", testId: "learn-fundamentals" },
-    { href: "/contracts", label: "2. NEAR Smart Contracts", testId: "learn-contracts" },
-    { href: "/tokens", label: "3. Tokens & NFTs on NEAR", testId: "learn-tokens" },
-    { href: "/dapp", label: "4. Build a NEAR dApp", testId: "learn-dapp" },
-    { href: "/near/quiz", label: "5. Final exam → Certificate", testId: "learn-exam" },
-    { href: "/advanced", label: "Advanced NEAR (holders)", testId: "learn-advanced" },
-    { heading: true, label: "Foundations" },
-    { href: "/html", label: "HTML", testId: "learn-html" },
-    { href: "/css", label: "CSS", testId: "learn-css" },
-    { href: "/javascript", label: "JavaScript", testId: "learn-javascript" },
-    { href: "/html-advanced", label: "Advanced HTML", testId: "learn-html-advanced" },
-    { href: "/css-advanced", label: "Advanced CSS", testId: "learn-css-advanced" },
-    { href: "/js-advanced", label: "Advanced JavaScript", testId: "learn-js-advanced" },
-  ];
-  const diplomaItems = [
-    { href: "/near/quiz", label: "Final exam", testId: "diploma-exam-link" },
-    { href: "/diploma", label: "Mint certificate", testId: "diploma-mint-link" },
-    { href: "/diploma#verify", label: "Verify a certificate", testId: "diploma-verify-link" },
-    { href: "/diploma#share", label: "Share certificate", testId: "diploma-share-link" },
-  ];
-
-  const learnActive = LEARN_HREFS.some((href) => pathname === href || pathname.startsWith(`${href}/`));
-  const playgroundActive = pathname === "/playground" || pathname === "/tryit";
-  const diplomaActive = pathname === "/diploma" || pathname === "/verify" || pathname.startsWith("/d/");
-  const leaderboardActive = pathname === "/leaderboard";
-
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -69,74 +27,17 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const nav = (
-    <>
-      <NavDropdown label="Learn" testId="nav-learn" items={learnItems} active={learnActive} />
-      <Link
-        href="/playground"
-        data-testid="nav-playground"
-        aria-current={playgroundActive ? "page" : undefined}
-        className={cn("text-sm font-medium", playgroundActive ? "text-highlight" : "text-cyan")}
-      >
-        Playground
-      </Link>
-      <NavDropdown label="Certificate" testId="nav-diploma" items={diplomaItems} active={diplomaActive} />
-      <Link
-        href="/leaderboard"
-        data-testid="nav-leaderboard"
-        aria-current={leaderboardActive ? "page" : undefined}
-        className={cn("text-sm font-medium", leaderboardActive ? "text-highlight" : "text-cyan")}
-      >
-        Leaderboard
-      </Link>
-    </>
-  );
-
   return (
     <header className="sticky top-0 z-40 border-b-2 border-line bg-bar">
       <div className="mx-auto flex h-header w-full max-w-page items-center gap-4 px-5 md:gap-6 md:px-8">
         <Logo />
-        <nav aria-label="Site" className="ml-auto hidden items-center gap-5 lg:flex">
-          {nav}
-        </nav>
-        <div className="ml-auto flex items-center gap-2 text-cyan lg:ml-0">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            data-testid="open-menu"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-            aria-controls={mobileId}
-            onClick={() => setMobileOpen((value) => !value)}
-          >
-            {mobileOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            data-testid="open-search"
-            aria-label="Search lessons"
-            onClick={() => setSearchOpen(true)}
-          >
-            <Search className="h-5 w-5" aria-hidden />
-          </Button>
+        <div className="ml-auto flex items-center gap-2 text-cyan">
           <ThemeToggle />
           <HolderBadge />
           <ConnectButton />
         </div>
       </div>
-      {mobileOpen ? (
-        <nav
-          id={mobileId}
-          aria-label="Site"
-          className="flex flex-col gap-4 border-t border-line px-5 py-4 lg:hidden"
-        >
-          {nav}
-        </nav>
-      ) : null}
+      <SubjectBar onSearch={() => setSearchOpen(true)} />
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent hideClose className="top-dialog left-1/2 w-dialog -translate-x-1/2 rounded-xl border border-line p-4">
           <DialogTitle>Search lessons</DialogTitle>

@@ -293,7 +293,7 @@ export function FinalExam() {
     const low = remaining < 5 * 60 * 1000;
     return (
       <section className="mt-6" data-testid="exam-paper">
-        <div className="sticky top-[var(--w3h-header-h)] z-20 -mx-5 flex flex-wrap items-center justify-between gap-3 border-y-2 border-line bg-canvas/95 px-5 py-3 backdrop-blur md:mx-0 md:border-2">
+        <div className="sticky top-header z-20 -mx-5 flex flex-wrap items-center justify-between gap-3 border-y-2 border-line bg-canvas/95 px-5 py-3 backdrop-blur md:mx-0 md:border-2">
           <span className={`inline-flex items-center gap-2 font-pixel text-[0.7rem] ${low ? "text-danger" : "text-highlight"}`} data-testid="exam-timer">
             <Clock className="h-4 w-4" aria-hidden /> {mmss(remaining)}
           </span>

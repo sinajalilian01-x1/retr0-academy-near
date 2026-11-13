@@ -13,7 +13,9 @@ Built at **NEAR HACKATHON** (Nov 2026). Tracks: **NFTs That Do Something** (`nft
 | Example certificate minted from a passed final exam (40/40, grade A+) | [`MoTocnN8iUHtDVSujzBxm2JPNShC5owBpc5y1Zuo3Ce`](https://testnet.nearblocks.io/txns/MoTocnN8iUHtDVSujzBxm2JPNShC5owBpc5y1Zuo3Ce) |
 | Contract upgrade (v3: grade in metadata, `rebrand`) | [`AokmCfpNTvEV42QcptTr6cE9j3NRihwehPJn54oNgtNq`](https://testnet.nearblocks.io/txns/AokmCfpNTvEV42QcptTr6cE9j3NRihwehPJn54oNgtNq) |
 | Final exam | https://retr0school-near.vercel.app/near/quiz |
-| Verify any account | https://retr0school-near.vercel.app/verify?account=exam-tester.retr0school.testnet |
+| Verify a developer (certificate + shipped contract) | https://retr0school-near.vercel.app/verify/demo-learner.retr0school.testnet |
+| Ship-to-chain final project | https://retr0school-near.vercel.app/dapp/ship-to-chain |
+| AI tutor | the **Ask AI** button on every page (off during the final exam) |
 | Leaderboard | https://retr0school-near.vercel.app/leaderboard |
 
 <p>
@@ -27,7 +29,7 @@ Online course certificates prove nothing. A PDF or a database badge can be faked
 
 ## The solution
 
-1. **A clear NEAR Developer path** (Learn menu and homepage, in order): Web3 Fundamentals (7 lessons) → NEAR Smart Contracts (6) → Tokens & NFTs on NEAR (3) → Build a NEAR dApp (4) → **Final exam** → certificate → **Advanced NEAR** (7 holder-only deep dives: cross-contract calls, storage staking, Chain Signatures, Intents, testing contracts, near-api-js + Wallet Selector + NEP-413, deploying to mainnet).
+1. **A clear NEAR Developer path** (subject bar and homepage, in order): Web3 Fundamentals (7 lessons) → NEAR Smart Contracts (6) → Tokens & NFTs on NEAR (3) → Build a NEAR dApp (5, ending with the **Ship-to-chain** final project) → **Final exam** → certificate → **Advanced NEAR** (7 holder-only deep dives: cross-contract calls, storage staking, Chain Signatures, Intents, testing contracts, near-api-js + Wallet Selector + NEP-413, deploying to mainnet).
 2. **Visual, runnable lessons.** 22 original looping animated diagrams (transaction flow, access keys, cross-contract promises, storage staking, NEP-171 mint events, Chain Signatures, Intents, the event loop, the box model, Grid, and more) and editable examples in every lesson that run in the browser, open in the Playground, and hand off to Code E.
 3. **Supporting foundations:** HTML, CSS, JavaScript (8 lessons each) and new **Advanced HTML** (4: semantics and accessibility, forms and validation, media/canvas/SVG, meta/SEO), **Advanced CSS** (4: Grid and Flexbox, custom properties and theming, animations, responsive and container queries) and **Advanced JavaScript** (5: async/await and fetch, ES modules, DOM events and patterns, closures and the event loop, a mini app that reads live NEAR testnet data). Every course has a course page, ordered lessons, Previous/Next, progress tracking and a quiz.
 4. **A hard final exam** that gates the certificate:
@@ -40,7 +42,7 @@ Online course certificates prove nothing. A PDF or a database badge can be faked
 5. **The certificate contract** (`contracts/diploma`, Rust, near-sdk 5): NEP-171 + 177 + 181 + NEP-297 events. `mint_diploma` verifies the grader's **ed25519 attestation** (`env::ed25519_verify`) over `contract|caller|track|score|max|expiry`, the expiry and the on-chain pass mark (32/40), then mints a **soulbound** token (transfers always panic), one per account. The token stores the score and the **letter grade** in `extra`, title and description.
 6. **The NFT does something:** Advanced NEAR is **locked on the server**. The learner signs a free NEP-413 message in their wallet; `/api/holder` verifies the signature, confirms with `view_access_key` that the key is a full-access key of that account, calls `verify_diploma`, and sets a signed HttpOnly cookie. Lesson bodies are only rendered for holders.
 7. **Abuse limits:** `/api/grade`, `/api/exam/start` and `/api/holder` are rate-limited per client IP, with state (rate windows, cooldowns, used exam ids) shared across instances through the Vercel Runtime Cache.
-8. **Verify and share:** `/verify?account=…` (no wallet), `/leaderboard` (NEP-181 enumeration), `/d/<account>` share page whose X card is the certificate art (`/api/diploma/near/<account>`).
+8. **Verify and share:** `/verify/<account>` (no wallet: certificates via `nft_tokens_for_owner` plus the shipped contract), `/leaderboard` (NEP-181 enumeration), `/d/<account>` share page whose X card is the certificate art (`/api/diploma/near/<account>`).
 
 ## NEAR technology used
 
@@ -55,6 +57,8 @@ Online course certificates prove nothing. A PDF or a database badge can be faked
 | NEP-413 signed messages + `view_access_key` | `lib/holder.ts`, `app/api/holder` |
 | JSON-RPC view calls (`verify_diploma`, `nft_tokens`, `view_account`) | verify page, leaderboard, lessons, mini app |
 | Named accounts | the credential reads `alice.testnet`, not a hex key |
+| Sub-accounts as proof of authorship + `view_account` code hash | Ship-to-chain check, `lib/ship.ts`, `/api/ship` |
+| NEAR AI Cloud (OpenAI-compatible inference) | Retr0 Tutor, `app/api/tutor/route.ts` |
 
 ## Architecture
 
@@ -80,14 +84,17 @@ wallet (Wallet Selector) ── mint_diploma(score, max, expiry, sig) ──▶ 
 
 No install needed. Testnet only.
 
-1. Open https://retr0school-near.vercel.app → the hero "Learn Web3 with Retr0 Academy"; on the right, the numbered **NEAR Developer path**, then **Final exam → NEAR Developer Certificate**, **Advanced NEAR**, and **Foundations** (including Advanced HTML/CSS/JavaScript).
-2. Open **Learn** in the header → the same path in order, then Foundations.
+1. Open https://retr0school-near.vercel.app → the hero "Learn Web3 with Retr0 Academy" with the 3D low-poly CRT robot (it follows your cursor, blinks; click it to open the AI tutor), the search bar, then the numbered **NEAR Developer path**, **Final exam → NEAR Developer Certificate**, **Advanced NEAR**, and **Foundations**.
+2. Use the **subject bar** under the header (NEAR · Contracts · Tokens & NFTs · dApps · Advanced NEAR · HTML · CSS · JavaScript · Playground · Exam · Certificate · Verify · Leaderboard, plus Search) → each subject opens its course; on lesson pages the left sidebar lists that course's lessons. On mobile the bar scrolls sideways.
 3. Open https://retr0school-near.vercel.app/contracts/promises-and-callbacks → an animated cross-contract diagram plays above the lesson text.
 4. Open https://retr0school-near.vercel.app/js-advanced/mini-app-near-explorer → the example queries NEAR testnet live and shows `hackathon-judge.retr0school.testnet` with its certificate. Press **Open in Playground**, then **Open in Code E**.
 5. Open https://retr0school-near.vercel.app/near/quiz → the rules and the prerequisite checklist. No wallet and no time? Press **Try a practice paper** → a 5-question paper with the 3 coding tasks, graded by the same server code (it cannot earn a certificate). Pass the four course quizzes (`/fundamentals/quiz`, `/contracts/quiz`, `/tokens/quiz`, `/dapp/quiz`) with 70%+ → **Start the final exam** → a 40:00 timer, 25 questions with code snippets, 3 coding tasks with **Run visible tests**.
 6. Submit → the server returns your score, percent, grade, per-topic bars, per-question marks and per-test results. View the page source or network tab: no answers or hidden tests are ever sent. Fail → a 30-minute cooldown starts.
 7. Pass → **Connect wallet** → **Mint** → approve `mint_diploma` (0.02 NEAR deposit, unused part refunded) → the certificate card shows score and grade; `/verify?account=<you>` shows it to anyone.
 8. Open https://retr0school-near.vercel.app/advanced/testing-contracts without a holder session → a locked teaser; the lesson body is not in the HTML (`curl -s …/advanced/testing-contracts | grep mint_end_to_end` → nothing). With a holder wallet press **Unlock with signature** → sign the free NEP-413 message → the server renders the lesson.
+9. Press **Ask AI** (bottom right) on https://retr0school-near.vercel.app/contracts/access-keys → ask "What is a function-call key?" → a streamed answer with `S1` citation chips and "From the lessons" links. Open `/playground`, break the JS (e.g. `consol.log(1)`) → **Explain my error** → the tutor reads your code and console. Ask it for final exam answers → it refuses and teaches the concept. Open `/near/quiz` → the tutor button is gone.
+10. Open https://retr0school-near.vercel.app/verify/demo-learner.retr0school.testnet → certificate (score, grade, date, token id, explorer link) and **Shipped: demo-learner.retr0school.testnet** with its live `get_greeting()` result. Try `nobody-here-123.testnet` → a clear "no certificate" state.
+11. Open https://retr0school-near.vercel.app/dapp/ship-to-chain → six guided steps (sub-account, Rust contract, build/deploy with init, call, browser check, submit) → enter an account + contract → **Verify on chain** → the server checks the chain and it appears on `/verify/<you>`.
 
 CLI checks:
 
@@ -101,6 +108,35 @@ near contract call-function as-read-only diploma.retr0school.testnet get_tracks 
 # start an exam (returns questions without answers, and a sealed session token)
 curl -s -X POST https://retr0school-near.vercel.app/api/exam/start | head -c 600
 ```
+
+## AI Tutor (Retr0 Tutor)
+
+An AI tutor that lives on every page, in the same retro look (pixel font, hard shadows, the low-poly CRT robot as its avatar).
+
+- **Streams answers** from **NEAR AI Cloud** (`https://cloud-api.near.ai/v1`, OpenAI-compatible). Default model `anthropic/claude-haiku-5-5`, automatic fallback to `openai/gpt-6-luna` (`TUTOR_MODELS`). The key is the `NEAR_AI_API_KEY` server env var and never reaches the browser.
+- **Grounded in the course:** every public lesson is split into sections and ranked with BM25 for each question (`lib/tutor/knowledge.ts`). The top sections go into the prompt; the answer cites them as `[S1]` chips and lists "From the lessons" links.
+- **Context-aware:** it knows the lesson you're reading (that lesson is boosted) and suggests matching prompts. In the Playground, **Explain my error** / **Ask AI** sends your HTML/CSS/JS and console errors. Code E has an **Ask AI ↗** button that opens the project in the Playground with the tutor already explaining the error (`/playground?tutor=explain&err=…#code=…`).
+- **Can't be used to cheat:** quiz files, the encrypted exam bank and holder-locked lessons are never put in its context (only `content/**/*.mdx` is traced into the function). The system prompt refuses exam/quiz answers and teaches the concept instead. The button is hidden on `/near/quiz`, and `/api/tutor` rejects requests from the exam path.
+- **Built to stay up to 25 Nov:** 1,200-character question cap, last 8 messages only, 700 output tokens; per-IP limits (10 per 2 minutes, 80 per day) plus a global daily cap (`TUTOR_DAILY_CAP`, default 5,000) in the Vercel Runtime Cache.
+- **No Lighthouse cost:** only the small button ships with the page. The panel loads on first click.
+
+```bash
+curl -N https://retr0school-near.vercel.app/api/tutor -H 'content-type: application/json' \
+  -d '{"path":"/contracts/access-keys","messages":[{"role":"user","content":"What is a function-call key?"}]}'
+# -> streamed plain text; headers x-tutor-model and x-tutor-sources (lessons used)
+```
+
+## Ship to chain and Verify a developer
+
+- **Final project** `/dapp/ship-to-chain`: the learner creates `hello.<you>.testnet`, writes a small Rust contract (`contracts/hello-ship`: greeting + owner check, with unit tests), deploys it with an init call, calls it, then submits it.
+- **Server check** (`POST /api/ship {student, contract}`, `lib/ship.ts`): the contract must be the student's account or a sub-account of it (on NEAR only the parent can create a sub-account, so the name proves authorship), and `view_account` must show Wasm deployed (`code_hash` ≠ `111…`). It also reads `get_greeting` if it exists. No signature or gas is needed because everything is checked on chain.
+- **Storage:** the certificate contract is **not** changed, so every existing certificate stays as minted. The link is an HMAC-signed record in Vercel Blob (`ships/<account>.json`), and `/verify/<account>` re-checks the code hash live every time (live / redeployed / removed).
+- **Verify a developer** `/verify/<account>`: a shareable server-rendered page with account status, every certificate from `nft_tokens_for_owner` (score, grade, date, token id, explorer link, share), and the shipped contract. It handles invalid ids, accounts that don't exist, and accounts with no certificate. It's linked from the subject bar, footer, certificate pages and `/d/<account>`.
+- Live example: `demo-learner.retr0school.testnet` has `hello_ship.wasm` deployed and initialized (`get_greeting` → "gm from a Retr0 Academy graduate. Shipped to NEAR testnet!").
+
+## Sister project
+
+**Muse Swarm** (live https://muse-swarm.vercel.app, repo https://github.com/sinajalilian01-x1/muse-swarm) is four AI agents that make, judge, mint and sell NFTs on NEAR Mainnet. It is an autonomous AI-agent NFT studio and marketplace for creators and collectors, running on mainnet. Retr0 Academy is a learning platform: it teaches people to build on NEAR and proves their skills with a server-graded exam and a soulbound certificate on testnet. Both are by the same builder, Sina Jalilian.
 
 ## Repository layout
 
@@ -116,10 +152,17 @@ apps/retr0school/            Next.js 15 + MDX learning site
   lib/holder.ts              NEP-413 verification + holder cookie
   lib/rate-limit.ts          rate limiting via Vercel Runtime Cache
   lib/grader.ts              ed25519 attestation signer
-  app/api/exam/start, app/api/grade, app/api/holder, app/api/diploma
+  lib/tutor/                 Retr0 Tutor: lesson retrieval (BM25) + system prompt with exam guard
+  lib/ship.ts                Ship-to-chain on-chain check + signed record (Vercel Blob)
+  app/api/exam/start, app/api/grade, app/api/holder, app/api/diploma, app/api/tutor, app/api/ship
+  app/verify/[account]       public "Verify a developer" page
+  components/tutor/          tutor launcher (tiny, on every page) + lazy chat panel
+  components/hero/           procedural three.js low-poly CRT robot head (lazy, poster fallback)
+  components/subject-bar.tsx horizontal subject bar
   components/exam/           final exam UI (timer, tasks, local visible-test runner, results)
 apps/code-e/                 Vite + TypeScript playground (pre-existing app, NEAR starter added)
 contracts/diploma/           Rust NEP-171 certificate contract + 22 unit tests
+contracts/hello-ship/        Ship-to-chain reference contract (greeting + owner check, 2 unit tests)
 docs/media/                  GIF renders of the diagrams for this README
 ```
 

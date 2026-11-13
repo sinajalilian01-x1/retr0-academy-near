@@ -1,0 +1,171 @@
+---
+title: "Final Project: Ship to Chain"
+description: "Deploy your own small Rust contract to a NEAR testnet account you control, call it, and submit it. The server checks it on chain and links it to your public verify page."
+order: 5
+tags: ["project", "deploy", "testnet", "rust", "capstone"]
+---
+# Final Project: Ship to Chain
+
+Reading code is one thing. Shipping it is what makes you a NEAR developer. In this project you deploy **your own contract** to **an account you control** on testnet, call it, and submit it. Retr0 Academy then checks the chain and puts **"Shipped: your-contract"** on your public [verify page](/verify).
+
+## What counts as shipped
+
+The server accepts a contract when both of these are true on chain:
+
+1. The contract account is **your account** or a **sub-account of it** (for example `hello.you.testnet`). Only `you.testnet` can create `hello.you.testnet`, so the name itself proves you made it.
+2. The account has **Wasm code deployed** (its `code_hash` is not the empty hash `1111…`).
+
+If your contract also has a `get_greeting` view method, the verify page shows what it returns.
+
+<Note>
+
+Everything here is on **testnet**: the NEAR comes from a faucet and costs nothing. A contract this small locks about 1 NEAR for storage (storage staking).
+
+</Note>
+
+## Step 1: create a sub-account for the contract
+
+You need a testnet account first. If you don't have one, create it with the faucet (`near create-account you.testnet --useFaucet`). Then make a sub-account to hold the contract:
+
+```bash
+export YOU=you.testnet            # your account
+export CONTRACT_ID=hello.$YOU     # the contract's account
+near create-account "$CONTRACT_ID" --masterAccount "$YOU" --initialBalance 2 --networkId testnet
+```
+
+Keeping the contract on its own sub-account means you can redeploy or delete it without touching your main account.
+
+## Step 2: write the contract
+
+Start from the official template and replace `src/lib.rs` with this. It stores a greeting, remembers the owner (whoever called `new`), and only lets the owner change it.
+
+```bash
+cargo near new hello-ship && cd hello-ship
+```
+
+```rust
+use near_sdk::{env, log, near, AccountId, PanicOnDefault};
+
+#[near(contract_state)]
+#[derive(PanicOnDefault)]
+pub struct Contract {
+    greeting: String,
+    owner: AccountId,
+}
+
+#[near]
+impl Contract {
+    #[init]
+    pub fn new(greeting: String) -> Self {
+        Self { greeting, owner: env::predecessor_account_id() }
+    }
+
+    // View call: free, anyone can read it.
+    pub fn get_greeting(&self) -> String {
+        self.greeting.clone()
+    }
+
+    // Change call: needs a signed transaction from the owner.
+    pub fn set_greeting(&mut self, greeting: String) {
+        assert_eq!(env::predecessor_account_id(), self.owner, "Only the owner can change the greeting");
+        assert!(greeting.len() <= 140, "Keep it under 140 bytes");
+        log!("greeting set to {}", greeting);
+        self.greeting = greeting;
+    }
+}
+```
+
+The full version with unit tests is in the repo at `contracts/hello-ship`. Run `cargo test` to check the owner rule before you deploy.
+
+## Step 3: build and deploy
+
+```bash
+cargo near build non-reproducible-wasm
+near deploy "$CONTRACT_ID" ./target/near/hello_ship.wasm \
+  --initFunction new --initArgs '{"greeting":"gm from a Retr0 Academy student"}' \
+  --networkId testnet
+```
+
+`--initFunction` runs `new` in the same transaction as the deploy, so nobody can initialize your contract before you do.
+
+## Step 4: call it
+
+```bash
+near view "$CONTRACT_ID" get_greeting '{}' --networkId testnet
+near call "$CONTRACT_ID" set_greeting '{"greeting":"shipped!"}' --accountId "$YOU" --networkId testnet
+```
+
+The first is a free view call. The second is a change call: your key signs it, you pay a tiny bit of gas, and the contract checks that you are the owner.
+
+## Step 5: check your deploy from the browser
+
+This page reads your contract with plain JSON-RPC, the same way the verify page does. Put in your contract id and press **Check**. Open it in the Playground to change it.
+
+<TryIt
+  codeE
+  title="Is my contract live?"
+  html={`<main>
+  <h1>Is my contract live?</h1>
+  <div class="row">
+    <input id="id" value="demo-learner.retr0school.testnet" spellcheck="false" aria-label="Contract account id" />
+    <button type="button" id="go">Check</button>
+  </div>
+  <pre id="out">Press Check.</pre>
+</main>`}
+  css={`body { margin: 0; background: #0d0b1a; color: #ece8ff; font-family: system-ui, sans-serif; }
+main { width: min(560px, calc(100% - 32px)); margin: 28px auto; }
+h1 { font-size: 26px; margin: 0 0 12px; }
+.row { display: flex; gap: 8px; }
+input { flex: 1; border: 2px solid #3a3466; background: #17132b; color: inherit; padding: 10px; font: 14px ui-monospace, monospace; }
+button { border: 2px solid #ece8ff; background: #ff3fa4; color: #1a0a14; padding: 10px 16px; font-weight: 700; cursor: pointer; }
+pre { margin-top: 14px; border: 1px solid #3a3466; background: #17132b; padding: 12px; white-space: pre-wrap; word-break: break-all; }`}
+  js={`const RPC = "https://rpc.testnet.fastnear.com";
+const EMPTY = "11111111111111111111111111111111";
+
+async function rpc(params) {
+  const res = await fetch(RPC, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: "r0", method: "query", params })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(json.error.cause?.name || json.error.message);
+  return json.result;
+}
+
+document.querySelector("#go").addEventListener("click", async () => {
+  const id = document.querySelector("#id").value.trim();
+  const out = document.querySelector("#out");
+  out.textContent = "Reading " + id + "…";
+  try {
+    const acct = await rpc({ request_type: "view_account", finality: "final", account_id: id });
+    const hasCode = acct.code_hash !== EMPTY;
+    let greeting = "(no get_greeting method)";
+    if (hasCode) {
+      try {
+        const r = await rpc({ request_type: "call_function", finality: "final", account_id: id, method_name: "get_greeting", args_base64: btoa("{}") });
+        greeting = JSON.parse(new TextDecoder().decode(new Uint8Array(r.result)));
+      } catch (e) {}
+    }
+    out.textContent = JSON.stringify({ account: id, has_code: hasCode, code_hash: acct.code_hash, storage_bytes: acct.storage_usage, greeting }, null, 2);
+  } catch (e) {
+    out.textContent = "Not found or RPC error: " + e.message;
+  }
+});`}
+/>
+
+## Step 6: submit it
+
+Enter your account and the contract account. The server reads the chain (no signature, no gas), checks the two rules above, and links the contract to your [verify page](/verify).
+
+<ShipSubmit />
+
+<Tip>
+
+Stuck on an error? Open **Ask AI** (bottom right). Paste the CLI output and Retr0 Tutor will explain it.
+
+</Tip>
+
+## How the link is stored
+
+The certificate contract is **not** changed, so existing certificates stay exactly as minted. The server keeps a small record signed with its key (`ships/<you>.json`), and the verify page re-checks your contract's `code_hash` on chain every time someone opens it. If you redeploy, it shows "redeployed since check"; submit again to refresh it.

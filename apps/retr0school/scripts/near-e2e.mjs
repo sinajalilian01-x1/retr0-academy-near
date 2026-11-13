@@ -108,6 +108,33 @@ await step("verify", async () => {
   ok("verify: negative case", true);
 });
 
+await step("verify a developer + ship", async () => {
+  await page.goto(R0 + "/verify/demo-learner.retr0school.testnet", { waitUntil: "networkidle" });
+  ok("verify page: certificate from nft_tokens_for_owner", (await page.getByTestId("diploma-card").count()) >= 1);
+  ok("verify page: shipped contract shown", (await page.getByTestId("verify-ship-contract").innerText()).includes("demo-learner.retr0school.testnet"));
+  await page.goto(R0 + "/verify/NOT VALID", { waitUntil: "networkidle" });
+  ok("verify page: invalid id state", await page.getByTestId("verify-invalid").isVisible());
+  const bad = await fetch(R0 + "/api/ship", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ student: "demo-learner.retr0school.testnet", contract: "diploma.retr0school.testnet" }) });
+  ok("ship: rejects a contract the student does not own", bad.status === 400);
+  await page.goto(R0 + "/dapp/ship-to-chain", { waitUntil: "networkidle" });
+  ok("ship-to-chain lesson: submit form", await page.getByTestId("ship-submit").isVisible());
+});
+
+await step("AI tutor + subject bar", async () => {
+  await page.goto(R0 + "/contracts/access-keys", { waitUntil: "networkidle" });
+  ok("subject bar: active subject", (await page.getByTestId("subject-contracts").getAttribute("aria-current")) === "page");
+  await page.getByTestId("tutor-open").click();
+  await page.getByTestId("tutor-input").fill("In one sentence: what is a function-call key?");
+  await page.getByTestId("tutor-send").click();
+  await page.getByTestId("tutor-sources").first().waitFor({ timeout: 60000 });
+  const answer = await page.getByTestId("tutor-answer").last().innerText();
+  ok("tutor: streamed grounded answer", answer.length > 40, answer.slice(0, 60).replace(/\s+/g, " "));
+  await page.goto(R0 + "/near/quiz", { waitUntil: "networkidle" });
+  ok("tutor: hidden on the final exam", (await page.getByTestId("tutor-open").count()) === 0);
+  const blocked = await fetch(R0 + "/api/tutor", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path: "/near/quiz", messages: [{ role: "user", content: "answers?" }] }) });
+  ok("tutor: API refuses the exam path", blocked.status === 403);
+});
+
 await step("leaderboard + share", async () => {
   await page.goto(R0 + "/leaderboard", { waitUntil: "networkidle" });
   const rows = await page.getByTestId("leaderboard-row").count();

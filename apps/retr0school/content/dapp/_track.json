@@ -1,7 +1,7 @@
 {
   "title": "Build a NEAR dApp",
   "description": "Read contract state, connect a wallet with NEAR Connect and near-api-js, send function calls, and put it together as a mini diploma-checker app.",
-  "icon": "\ud83d\udda5\ufe0f",
+  "icon": "🖥️",
   "color": "#6FF6FF",
   "group": "web3",
   "listed": true,
@@ -11,6 +11,6 @@
     "JavaScript enough to read async functions. The Foundations JavaScript course is enough.",
     "NEAR Smart Contracts helps you know what you are calling, but you can start this course after Fundamentals if you only call existing contracts."
   ],
-  "youWillBuild": "A small diploma-checker front end you can run in the Playground: look up any testnet account, call verify_diploma, and show the result. The last lesson walks through adding NEAR Connect for signed calls.",
+  "youWillBuild": "A small diploma-checker front end you can run in the Playground, then the final project: deploy your own contract to testnet and get it verified on chain as \"Shipped\" on your public verify page.",
   "overview": "This course is the frontend half of NEAR development. You will learn view versus change calls, connect a wallet the way current docs recommend (NEAR Connect + near-api-js), send function calls, and ship a mini project that talks to the live diploma contract."
 }

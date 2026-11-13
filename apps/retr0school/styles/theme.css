@@ -30,6 +30,8 @@
   --w3h-tracking-eyebrow: 0.14em;
 
   --w3h-header-h: 4rem;
+  --w3h-subjectbar-h: 2.75rem;
+  --w3h-sticky-top: calc(var(--w3h-header-h) + var(--w3h-subjectbar-h));
   --w3h-page: 72rem;
   --w3h-measure: 44rem;
   --w3h-sidebar: 17rem;
@@ -238,7 +240,7 @@
 }
 
 @utility top-header {
-  top: var(--w3h-header-h);
+  top: var(--w3h-sticky-top);
 }
 
 @utility w-drawer {
@@ -262,8 +264,8 @@
 
 @utility lesson-sidebar {
   position: sticky;
-  top: var(--w3h-header-h);
-  max-height: calc(100dvh - var(--w3h-header-h));
+  top: var(--w3h-sticky-top);
+  max-height: calc(100dvh - var(--w3h-sticky-top));
   overflow: auto;
 }
 
@@ -285,4 +287,15 @@
 
 @utility text-syn-function {
   color: var(--w3h-syn-function);
+}
+
+@utility h-subjectbar {
+  height: var(--w3h-subjectbar-h);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

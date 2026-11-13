@@ -81,6 +81,9 @@ export function VerifyForm() {
             <DiplomaCard diploma={state.diploma} />
             <p className="mt-4 flex flex-wrap items-center gap-4 text-sm">
               <ShareButton accountId={state.diploma.owner_id} score={state.diploma.score} maxScore={state.diploma.max_score} />
+              <a className="font-medium text-info underline underline-offset-4" href={`/verify/${encodeURIComponent(state.diploma.owner_id)}`} data-testid="verify-profile-link">
+                Verify page (shareable) →
+              </a>
               <a className="font-medium text-info underline underline-offset-4" href={explorerToken(state.diploma.token_id)} target="_blank" rel="noopener">
                 Token on explorer ↗
               </a>

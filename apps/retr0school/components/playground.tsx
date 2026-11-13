@@ -11,6 +11,7 @@ import { w3hEditorTheme, w3hSyntax } from "@/lib/editor-theme";
 import { buildSrcDoc } from "@/lib/srcdoc";
 import { codeELink } from "@/lib/code-e";
 import type { PlaygroundExample } from "@/lib/playground-starters";
+import { openTutor } from "@/components/tutor/tutor-launcher";
 
 type PaneId = "html" | "css" | "js";
 
@@ -72,6 +73,19 @@ export function Playground({
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
   }, []);
+
+  // Share the current code and console with Retr0 Tutor (read only when the tutor is asked something here).
+  useEffect(() => {
+    window.__r0Playground = {
+      ...code,
+      errors: logs.filter((log) => log.level !== "log").map((log) => `${log.level}: ${log.message}`).join("\n"),
+    };
+    return () => {
+      window.__r0Playground = undefined;
+    };
+  }, [code, logs]);
+
+  const hasError = logs.some((log) => log.level === "error");
 
   function runWith(next: { html: string; css: string; js: string }) {
     setLogs([]);
@@ -139,6 +153,23 @@ export function Playground({
             >
               Open in Code E ↗
             </a>
+          ) : null}
+          {showCodeE ? (
+          <Button
+            type="button"
+            variant="outline"
+            data-testid="ask-tutor"
+            className={hasError ? "border-accent text-accent-text" : undefined}
+            onClick={() =>
+              openTutor(
+                hasError
+                  ? { prompt: "Explain my error and how to fix it.", withPlayground: true, autoSend: true }
+                  : { prompt: "Review my code: what does it do, and what is one thing I could improve?", withPlayground: true, autoSend: true },
+              )
+            }
+          >
+            {hasError ? "Explain my error" : "Ask AI"}
+          </Button>
           ) : null}
           <Button type="button" variant="outline" data-testid="tryit-reset" onClick={reset}>
             Reset

@@ -107,6 +107,32 @@ export async function listDiplomas(limit = 500): Promise<Verification[]> {
   return out;
 }
 
+function toVerification(t: NftToken): Verification | null {
+  try {
+    const x = JSON.parse(t.metadata?.extra ?? "{}");
+    return {
+      valid: true,
+      token_id: t.token_id,
+      owner_id: t.owner_id,
+      track: x.track,
+      track_title: (t.metadata?.title ?? "").replace(/^.*?Diploma:\s*/, ""),
+      score: x.score,
+      max_score: x.max_score,
+      issued_at_ms: x.issued_at_ms,
+      date: x.date,
+      grade: x.grade ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Every certificate an account holds, read live with NEP-181 nft_tokens_for_owner. */
+export async function tokensForOwner(accountId: string): Promise<Verification[]> {
+  const page = await viewCall<NftToken[]>(DIPLOMA_CONTRACT, "nft_tokens_for_owner", { account_id: accountId, from_index: "0", limit: 20 });
+  return page.map(toVerification).filter((v): v is Verification => !!v);
+}
+
 export function verifyDiploma(accountId: string, track = NEAR_TRACK) {
   return viewCall<Verification | null>(DIPLOMA_CONTRACT, "verify_diploma", { account_id: accountId, track });
 }

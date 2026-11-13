@@ -4,6 +4,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { SiteProvider } from "@/components/site-provider";
 import { NearWalletProvider } from "@/components/near/wallet-provider";
+import { TutorLauncher } from "@/components/tutor/tutor-launcher";
 import { getSearchIndex, getListedTracks } from "@/lib/content";
 import "@/styles/wallet-selector.css";
 import "./globals.css";
@@ -58,7 +59,6 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-192.png", sizes: "192x192", type: "image/png" },
     ],
@@ -88,6 +88,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Header />
             {children}
             <Footer tracks={tracks} />
+            <TutorLauncher />
           </NearWalletProvider>
         </SiteProvider>
       </body>
