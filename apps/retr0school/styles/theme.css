@@ -23,7 +23,7 @@
   --w3h-radius-xl: 4px;
   --w3h-radius-full: 999px;
 
-  --w3h-text-hero: clamp(0.95rem, 2.5vw, 1.55rem);
+  --w3h-text-hero: clamp(1.2rem, 0.45rem + 3.06vw, 2.9rem);
   --w3h-text-title: clamp(1.05rem, 2.2vw, 1.55rem);
   --w3h-text-lead: 1.125rem;
   --w3h-tracking-display: -0.03em;
@@ -176,7 +176,7 @@
   --shadow-lg: var(--w3h-shadow-lg);
 
   --text-hero: var(--w3h-text-hero);
-  --text-hero--line-height: 1.45;
+  --text-hero--line-height: 1.4;
   --text-title: var(--w3h-text-title);
   --text-title--line-height: 1.5;
   --text-lead: var(--w3h-text-lead);

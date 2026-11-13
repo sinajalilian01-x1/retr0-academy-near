@@ -23,24 +23,25 @@ export default function HomePage() {
 
   return (
     <main id="content">
-      <section className="mx-auto grid max-w-page items-start gap-12 px-5 py-12 md:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.8fr)] lg:gap-16 lg:py-24">
-        <HomeHero />
-        <div id="courses" className="lg:pt-4">
-          <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">Web3 courses</p>
-          <TrackGrid tracks={featured} />
-          <Link
-            href="/advanced"
-            data-testid="track-card-advanced"
-            className="mt-3 flex items-center gap-3 border-2 border-line bg-elevated px-4 py-3.5 text-ink shadow-sm hover:border-accent"
-          >
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent" aria-hidden />
-            <span className="flex-1 font-semibold">Advanced NEAR</span>
-            <span className="text-sm font-medium text-highlight">Holders</span>
-            <ArrowRight className="h-4 w-4 text-accent-text" aria-hidden />
-          </Link>
-          <p className="mt-8 mb-3 text-sm font-medium tracking-eyebrow text-muted uppercase">Foundations</p>
-          <TrackGrid tracks={foundations} compact />
-        </div>
+      <section className="mx-auto max-w-page px-5 py-12 md:px-8 lg:py-20">
+        <HomeHero>
+          <div id="courses">
+            <p className="mb-4 text-sm font-medium tracking-eyebrow text-highlight uppercase">Web3 courses</p>
+            <TrackGrid tracks={featured} />
+            <Link
+              href="/advanced"
+              data-testid="track-card-advanced"
+              className="mt-3 flex items-center gap-3 border-2 border-line bg-elevated px-4 py-3.5 text-ink shadow-sm hover:border-accent"
+            >
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent" aria-hidden />
+              <span className="flex-1 font-semibold">Advanced NEAR</span>
+              <span className="text-sm font-medium text-highlight">Holders</span>
+              <ArrowRight className="h-4 w-4 text-accent-text" aria-hidden />
+            </Link>
+            <p className="mt-8 mb-3 text-sm font-medium tracking-eyebrow text-muted uppercase">Foundations</p>
+            <TrackGrid tracks={foundations} compact />
+          </div>
+        </HomeHero>
       </section>
       <section id="about" className="border-t border-line">
         <div className="mx-auto grid max-w-page gap-8 px-5 py-16 md:px-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)]">

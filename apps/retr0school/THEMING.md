@@ -46,7 +46,7 @@ Light surfaces are `#f4f1ff` canvas, white bar and cards, `#1a1633` text, `#3d37
 ## Type, shape, shadow
 
 - `Press Start 2P` is loaded with `next/font/google` as `--font-pixel`. Use `font-pixel` for the logo and large headings only. Body, navigation, lessons, and progress use Inter. Code uses JetBrains Mono.
-- Hero size is `clamp(1.15rem, 3.5vw, 2.35rem)` with a 1.45 line-height. Page titles use `clamp(1.05rem, 2.2vw, 1.55rem)`. The home headline breaks after “Build for” so Press Start 2P wraps on a phone.
+- Hero size is `clamp(1.2rem, 0.45rem + 3.06vw, 2.9rem)` with a 1.4 line-height, so the homepage title is dominant on desktop and scales down on a phone. Page titles use `clamp(1.05rem, 2.2vw, 1.55rem)`.
 - Corners are 0–4px, except the accent dot, which stays a circle.
 - Shadows are hard offsets: `3px 3px 0 #000` and `6px 6px 0 #000`. There is no glow and no gradient. The page dot grid is a 1px radial dot, not a fade.
 
