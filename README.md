@@ -11,17 +11,17 @@ Built at **NEAR HACKATHON** (Nov 2026). Tracks: **NFTs That Do Something** (`nft
 
 | | |
 | --- | --- |
-| Live site | https://retr0school-near.vercel.app |
+| Live site | https://retr0-academy.vercel.app (earlier build still at retr0school-near.vercel.app) |
 | Code E (full playground) | https://code-e-near.vercel.app |
 | **Certificate contract (mainnet)** | [`diploma.hlpok1lad.tg`](https://nearblocks.io/address/diploma.hlpok1lad.tg) (code hash `HqMRoXpT…xmpFVq`, same audited Wasm as the beta) |
 | Mainnet deploy + init | [`7rDfYmYFKHi2fZKzorCR849FK8Uym1vvHEGAZNQHX1nE`](https://nearblocks.io/txns/7rDfYmYFKHi2fZKzorCR849FK8Uym1vvHEGAZNQHX1nE), track + grader key [`AKxNJeci…cKRq`](https://nearblocks.io/txns/AKxNJecismXPh8JcY8wXKsksGPNTmKMVxvdsy1RrcKRq) |
-| **Mainnet certificate** minted from a passed final exam (40/40, A+) | token `near:hlpok1lad.tg`, tx [`FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU`](https://nearblocks.io/txns/FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU) · [verify page](https://retr0school-near.vercel.app/verify/hlpok1lad.tg) |
+| **Mainnet certificate** minted from a passed final exam (40/40, A+) | token `near:hlpok1lad.tg`, tx [`FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU`](https://nearblocks.io/txns/FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU) · [verify page](https://retr0-academy.vercel.app/verify/hlpok1lad.tg) |
 | Beta contract (testnet, still verifiable) | [`diploma.retr0school.testnet`](https://testnet.nearblocks.io/address/diploma.retr0school.testnet), example mint [`MoTocnN8…3Ce`](https://testnet.nearblocks.io/txns/MoTocnN8iUHtDVSujzBxm2JPNShC5owBpc5y1Zuo3Ce), upgrade [`AokmCfpN…gtNq`](https://testnet.nearblocks.io/txns/AokmCfpNTvEV42QcptTr6cE9j3NRihwehPJn54oNgtNq) |
-| Final exam | https://retr0school-near.vercel.app/near/quiz |
-| Verify a developer (certificate + shipped contract) | https://retr0school-near.vercel.app/verify/hlpok1lad.tg (mainnet) · [beta example](https://retr0school-near.vercel.app/verify/demo-learner.retr0school.testnet) |
-| Ship-to-chain final project | https://retr0school-near.vercel.app/dapp/ship-to-chain |
+| Final exam | https://retr0-academy.vercel.app/near/quiz |
+| Verify a developer (certificate + shipped contract) | https://retr0-academy.vercel.app/verify/hlpok1lad.tg (mainnet) · [beta example](https://retr0-academy.vercel.app/verify/demo-learner.retr0school.testnet) |
+| Ship-to-chain final project | https://retr0-academy.vercel.app/dapp/ship-to-chain |
 | AI tutor | the **Ask AI** button on every page (off during the final exam) |
-| Leaderboard | https://retr0school-near.vercel.app/leaderboard |
+| Leaderboard | https://retr0-academy.vercel.app/leaderboard |
 
 <p>
 <img src="artifacts/70-verify-mainnet.png" width="49%" alt="Verify page showing the mainnet certificate">
@@ -98,17 +98,17 @@ The grader keys live only in Vercel env vars (`NEAR_ATTESTOR_SEED_MAINNET` for m
 
 No install needed. Certificates are on **NEAR mainnet**; lesson examples use testnet so learners can practise for free.
 
-1. Open https://retr0school-near.vercel.app → the hero "Learn Web3 with Retr0 Academy" with the 3D low-poly CRT robot (it follows your cursor, blinks; click it to open the AI tutor), the search bar, then the numbered **NEAR Developer path**, **Final exam → NEAR Developer Certificate**, **Advanced NEAR**, and **Foundations**.
+1. Open https://retr0-academy.vercel.app → the hero "Learn Web3 with Retr0 Academy" with the 3D low-poly CRT robot (it follows your cursor, blinks; click it to open the AI tutor), the search bar, then the numbered **NEAR Developer path**, **Final exam → NEAR Developer Certificate**, **Advanced NEAR**, and **Foundations**.
 2. Use the **subject bar** under the header, ordered as a learning path in three groups: HTML · CSS · JavaScript · Advanced HTML · Advanced CSS · Advanced JavaScript | Web3 Fundamentals · Smart Contracts · Tokens & NFTs · Build a dApp · Advanced NEAR · Perps on NEAR | Playground · Exam · Verify · Certificate · Leaderboard, plus Search. Each subject opens its course; on lesson pages the left sidebar lists that course's lessons. Drag it with the mouse, use the ◀ ▶ edge buttons, swipe on touch, or Tab/arrow keys; the active subject is scrolled into view.
-3. Open https://retr0school-near.vercel.app/contracts/promises-and-callbacks → an animated cross-contract diagram plays above the lesson text.
-4. Open https://retr0school-near.vercel.app/js-advanced/mini-app-near-explorer → the example queries NEAR testnet live and shows `hackathon-judge.retr0school.testnet` with its certificate. Press **Open in Playground**, then **Open in Code E**.
-5. Open https://retr0school-near.vercel.app/near/quiz → the rules and the prerequisite checklist. No wallet and no time? Press **Try a practice paper** → a 5-question paper with the 3 coding tasks, graded by the same server code (it cannot earn a certificate). Pass the four course quizzes (`/fundamentals/quiz`, `/contracts/quiz`, `/tokens/quiz`, `/dapp/quiz`) with 70%+ → **Start the final exam** → a 40:00 timer, 25 questions with code snippets, 3 coding tasks with **Run visible tests**.
+3. Open https://retr0-academy.vercel.app/contracts/promises-and-callbacks → an animated cross-contract diagram plays above the lesson text.
+4. Open https://retr0-academy.vercel.app/js-advanced/mini-app-near-explorer → the example queries NEAR testnet live and shows `hackathon-judge.retr0school.testnet` with its certificate. Press **Open in Playground**, then **Open in Code E**.
+5. Open https://retr0-academy.vercel.app/near/quiz → the rules and the prerequisite checklist. No wallet and no time? Press **Try a practice paper** → a 5-question paper with the 3 coding tasks, graded by the same server code (it cannot earn a certificate). Pass the four course quizzes (`/fundamentals/quiz`, `/contracts/quiz`, `/tokens/quiz`, `/dapp/quiz`) with 70%+ → **Start the final exam** → a 40:00 timer, 25 questions with code snippets, 3 coding tasks with **Run visible tests**.
 6. Submit → the server returns your score, percent, grade, per-topic bars, per-question marks and per-test results. View the page source or network tab: no answers or hidden tests are ever sent. Fail → a 30-minute cooldown starts.
 7. Pass → **Connect wallet** (a NEAR **mainnet** wallet: MyNearWallet or Meteor) → **Mint** → approve `mint_diploma` (0.02 NEAR deposit, unused part refunded, plus a little gas) → the certificate card shows score and grade; `/verify/<you>` shows it to anyone.
-8. Open https://retr0school-near.vercel.app/advanced/testing-contracts without a holder session → a locked teaser; the lesson body is not in the HTML (`curl -s …/advanced/testing-contracts | grep mint_end_to_end` → nothing). With a holder wallet press **Unlock with signature** → sign the free NEP-413 message → the server renders the lesson.
-9. Press **Ask AI** (bottom right) on https://retr0school-near.vercel.app/contracts/access-keys → ask "What is a function-call key?" → a streamed answer with `S1` citation chips and "From the lessons" links. Open `/playground`, break the JS (e.g. `consol.log(1)`) → **Explain my error** → the tutor reads your code and console. Ask it for final exam answers → it refuses and teaches the concept. Open `/near/quiz` → the tutor button is gone.
-10. Open https://retr0school-near.vercel.app/verify/hlpok1lad.tg → the **NEAR mainnet** certificate (40/40, A+, token `near:hlpok1lad.tg`, nearblocks link). Open https://retr0school-near.vercel.app/verify/demo-learner.retr0school.testnet → a **testnet (beta)** certificate and **Shipped: demo-learner.retr0school.testnet** with its live `get_greeting()` result. Try `nobody-here-123.near` → a clear "no certificate" state.
-11. Open https://retr0school-near.vercel.app/dapp/ship-to-chain → six guided steps (sub-account, Rust contract, build/deploy with init, call, browser check, submit) → enter an account + contract → **Verify on chain** → the server checks the chain and it appears on `/verify/<you>`.
+8. Open https://retr0-academy.vercel.app/advanced/testing-contracts without a holder session → a locked teaser; the lesson body is not in the HTML (`curl -s …/advanced/testing-contracts | grep mint_end_to_end` → nothing). With a holder wallet press **Unlock with signature** → sign the free NEP-413 message → the server renders the lesson.
+9. Press **Ask AI** (bottom right) on https://retr0-academy.vercel.app/contracts/access-keys → ask "What is a function-call key?" → a streamed answer with `S1` citation chips and "From the lessons" links. Open `/playground`, break the JS (e.g. `consol.log(1)`) → **Explain my error** → the tutor reads your code and console. Ask it for final exam answers → it refuses and teaches the concept. Open `/near/quiz` → the tutor button is gone.
+10. Open https://retr0-academy.vercel.app/verify/hlpok1lad.tg → the **NEAR mainnet** certificate (40/40, A+, token `near:hlpok1lad.tg`, nearblocks link). Open https://retr0-academy.vercel.app/verify/demo-learner.retr0school.testnet → a **testnet (beta)** certificate and **Shipped: demo-learner.retr0school.testnet** with its live `get_greeting()` result. Try `nobody-here-123.near` → a clear "no certificate" state.
+11. Open https://retr0-academy.vercel.app/dapp/ship-to-chain → six guided steps (sub-account, Rust contract, build/deploy with init, call, browser check, submit) → enter an account + contract → **Verify on chain** → the server checks the chain and it appears on `/verify/<you>`.
 
 CLI checks:
 
@@ -120,7 +120,7 @@ near contract call-function as-read-only diploma.hlpok1lad.tg get_tracks json-ar
 # -> [{"id":"near","title":"NEAR Developer Certificate","questions":40,"pass_score":32}]
 
 # start an exam (returns questions without answers, and a sealed session token)
-curl -s -X POST https://retr0school-near.vercel.app/api/exam/start | head -c 600
+curl -s -X POST https://retr0-academy.vercel.app/api/exam/start | head -c 600
 ```
 
 ## AI Tutor (Retr0 Tutor)
@@ -137,7 +137,7 @@ An AI tutor that lives on every page, in the same retro look (pixel font, hard s
 - **Perps on NEAR guide** (`/guides/perps-on-near`, `content-guides/perps-on-near.mdx`): a sourced background guide covering perpetual futures basics (long/short, leverage, margin, liquidation, funding, mark vs index price, oracles, risks) and how perps exist around NEAR (Orderly Network, RHEA Finance (formerly Ref Finance), near.com perps through NEAR Intents, Pyth's `pyth-oracle.near`). The tutor retrieves it for perps questions, never recommends trades, and ends those answers with "Educational only, not financial advice." Facts were checked against the linked sources on 13 Nov 2026.
 
 ```bash
-curl -N https://retr0school-near.vercel.app/api/tutor -H 'content-type: application/json' \
+curl -N https://retr0-academy.vercel.app/api/tutor -H 'content-type: application/json' \
   -d '{"path":"/contracts/access-keys","messages":[{"role":"user","content":"What is a function-call key?"}]}'
 # -> streamed plain text; headers x-tutor-model and x-tutor-sources (lessons used)
 ```

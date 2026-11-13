@@ -27,7 +27,7 @@ export const NEAR_TRACK = "near";
 export const NEAR_PASS_SCORE = 32;
 export const RPC_URLS = process.env.NEXT_PUBLIC_NEAR_RPC ? [process.env.NEXT_PUBLIC_NEAR_RPC, ...NETWORKS[NEAR_NETWORK].rpc] : NETWORKS[NEAR_NETWORK].rpc;
 export const rpcUrls = (net: NearNetwork = NEAR_NETWORK) => (net === NEAR_NETWORK ? RPC_URLS : NETWORKS[net].rpc);
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app").replace(/\/+$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://retr0-academy.vercel.app").replace(/\/+$/, "");
 export const CODE_E_URL = (process.env.NEXT_PUBLIC_CODE_E_URL || "https://code-e-near.vercel.app").replace(/\/+$/, "");
 export const MINT_DEPOSIT_YOCTO = BigInt("20000000000000000000000"); // 0.02 NEAR, unused part is refunded
 export const MINT_GAS = BigInt("100000000000000"); // 100 Tgas

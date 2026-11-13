@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getLessons, getListedTracks } from "@/lib/content";
 import { getGuides } from "@/lib/guides";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0-academy.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const tracks = getListedTracks();

@@ -24,11 +24,11 @@ NFTs That Do Something (primary), Open Innovation
 https://github.com/sinajalilian01-x1/retr0-academy-near
 
 **Live demo**
-https://retr0school-near.vercel.app (playground: https://code-e-near.vercel.app)
+https://retr0-academy.vercel.app (playground: https://code-e-near.vercel.app)
 
 **Mainnet contract**
 `diploma.hlpok1lad.tg`: https://nearblocks.io/address/diploma.hlpok1lad.tg
-Example mainnet certificate (40/40, A+), token `near:hlpok1lad.tg`: https://nearblocks.io/txns/FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU, verify page https://retr0school-near.vercel.app/verify/hlpok1lad.tg
+Example mainnet certificate (40/40, A+), token `near:hlpok1lad.tg`: https://nearblocks.io/txns/FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU, verify page https://retr0-academy.vercel.app/verify/hlpok1lad.tg
 
 **Why NEAR**
 Readable accounts (`you.near`) make a certificate easy to look up. Sub-accounts prove who deployed a contract. The contract can check an ed25519 signature itself, so only a server-graded pass can mint. Learners pay a tiny storage deposit, and anyone can verify a certificate with one free view call. NEP-413 signed messages let the server unlock content for real holders without a password.
@@ -107,7 +107,7 @@ Recording tips: a NEAR mainnet account with a short name and about 0.05 NEAR (0.
 >
 > Built at NEAR HACKATHON @NEARProtocol #NEARHackathon
 >
-> Try it: https://retr0school-near.vercel.app
+> Try it: https://retr0-academy.vercel.app
 > Code: <public GitHub repo link>
 >
 > What should the next advanced lesson cover: Intents or Chain Signatures?
