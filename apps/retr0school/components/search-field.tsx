@@ -13,6 +13,7 @@ export function SearchField({
   testId,
   placeholder = "Search lessons",
   large = false,
+  hero = false,
   withButton = false,
   autoFocus = false,
   inputRef,
@@ -21,6 +22,8 @@ export function SearchField({
   testId: string;
   placeholder?: string;
   large?: boolean;
+  /** Bigger variant for the homepage hero. */
+  hero?: boolean;
   withButton?: boolean;
   autoFocus?: boolean;
   inputRef?: RefObject<HTMLInputElement | null>;
@@ -70,6 +73,7 @@ export function SearchField({
         spellCheck={false}
         className={cn(
           withButton ? "h-14 rounded-none border-0 bg-transparent pl-4" : "pl-10",
+          hero && withButton && "h-16 pl-5 text-lg md:text-xl",
           large && !withButton && "h-14 rounded-xl text-base",
         )}
         onFocus={() => setOpen(true)}
@@ -94,7 +98,7 @@ export function SearchField({
           <button
             type="button"
             aria-label="Search"
-            className="inline-flex w-14 shrink-0 items-center justify-center border-l-2 border-ink bg-accent text-accent-ink"
+            className={cn("inline-flex shrink-0 items-center justify-center border-l-2 border-ink bg-accent text-accent-ink", hero ? "w-16" : "w-14")}
             onClick={() => {
               if (results[0]) {
                 router.push(results[0].href);
@@ -103,7 +107,7 @@ export function SearchField({
               }
             }}
           >
-            <Search className="h-5 w-5" aria-hidden />
+            <Search className={hero ? "h-6 w-6" : "h-5 w-5"} aria-hidden />
           </button>
         ) : null}
       </div>

@@ -8,8 +8,11 @@ export function HomeHero() {
       <h1 className="max-w-full font-pixel text-hero text-ink">
         Learn Web3 with Retr0 Academy
       </h1>
-      <div className="mt-8 max-w-3xl">
-        <SearchField testId="search-input" withButton placeholder="Search tutorials" />
+      <p className="mt-5 max-w-full text-lead text-muted lg:whitespace-nowrap">
+        Write real code, ship it to NEAR, and earn a certificate you actually have to pass for.
+      </p>
+      <div className="mt-8 w-full max-w-[44rem]">
+        <SearchField testId="search-input" withButton hero placeholder="Search tutorials" />
       </div>
     </div>
   );
