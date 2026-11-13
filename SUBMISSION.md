@@ -2,34 +2,54 @@
 
 Everything here is a draft for Sina to review. Nothing has been posted or submitted.
 
-## Demo video script (about 80 seconds)
+## How judging works (from nearhackathon.com and HACKATHON.md)
+
+- Claude Code and Codex screen every project first: does it run, and does it do what the README says? They write a report and a preliminary score. Human judges decide.
+- Previous NEAR hackathons judged **technical implementation, design, impact, originality and sustainability**.
+- Required: a public repo (with a LICENSE and a reproducible README), and a public X post saying it was built at NEAR HACKATHON, tagging @NEARProtocol and #NEARHackathon, with a demo video. A hosted demo is a plus; keep it up until at least 2026-11-18, ideally 2026-11-25.
+- Track fit: **NFTs That Do Something** ("NFTs that carry credentials, memberships or access rights", NEP-171) is the primary track. **Open Innovation** is secondary.
+
+## Criteria → what we did
+
+| Criterion | What judges will see |
+| --- | --- |
+| Runs and matches the README (AI screen) | Live site and Code E, step-by-step "do X → see Y" checks, CLI view calls, a testnet mint from a passed exam linked in the README, `cargo test` (26 tests) and `npm run build` pass, no secrets needed to run locally (practice bank) |
+| Technical implementation | Rust NEP-171/177/181 contract with ed25519 attestations, soulbound transfers, in-place upgrade + `rebrand` data fix; server-graded exam with a sealed session, option shuffles, server timer, replay guard, QuickJS sandbox with hidden tests, encrypted bank; NEP-413 + `view_access_key` server-side holder lock; rate limits via Runtime Cache |
+| Design | Original retro look kept; 22 original animated diagrams; numbered NEAR Developer path; fewer tabs; mobile checked on 7 main pages |
+| Impact | A free, complete NEAR developer curriculum (24 NEAR lessons including 7 advanced, plus 37 supporting web lessons) whose certificate means something: hard exam, verifiable by anyone with one view call, usable by other dApps for gating |
+| Originality | The NFT is earned by a proctor-free but cheat-resistant exam, carries a grade on chain, and unlocks content only through a wallet signature that the server verifies, not a client check |
+| Sustainability | Learners pay their own storage; content is MDX anyone can extend; exam bank format and encryption script documented; contract upgradeable with a tested migration path; MIT license |
+| NFTs That Do Something | Credential (score + grade in metadata), soulbound, access right (Advanced NEAR), verifiable (verify page, leaderboard, share card) |
+
+## Demo video script (about 100 seconds)
 
 | Time | Screen | Voice-over |
 | --- | --- | --- |
-| 0:00-0:08 | Retr0 Academy home, hero "Learn Web3 with Retr0 Academy" | "Online course certificates prove nothing. Anyone can fake a PDF. So we made Retr0 Academy on NEAR, where your diploma lives on chain." |
-| 0:08-0:18 | `/near` track, open "View vs Change Calls", press **Verify** in the example | "Nine short lessons. Every example runs live against NEAR testnet. This one calls our diploma contract with a free view call." |
-| 0:18-0:26 | Click **Open in Code E**, Code E opens with the same code, press Run | "One click sends the example to Code E, our playground, so you can break it and rebuild it." |
-| 0:26-0:36 | `/near/quiz`, answer, **Score my quiz**, green "Passed" box | "The answer key never leaves our server. It grades you and signs the result, and the smart contract only accepts a grade with a valid signature for your account." |
-| 0:36-0:50 | `/diploma`, **Connect wallet** (MyNearWallet), **Mint diploma**, approve, neon diploma art appears | "Connect any NEAR wallet, mint, and you get a soulbound NEP-171 NFT with this neon diploma as its art. One per account, it can never be sold." |
-| 0:50-0:58 | Header shows **Holder**; open `/advanced`, then a lesson | "The NFT does something: holders get a badge and unlock the Advanced NEAR track: cross-contract calls, Chain Signatures, Intents." |
-| 0:58-1:06 | Press **Share my diploma** → X compose window with the card preview | "Share it on X in one click. The link card is your diploma." |
-| 1:06-1:14 | `/leaderboard`, then **View mint transaction** → NearBlocks | "The leaderboard reads every holder straight from the contract, and every mint is on the explorer." |
-| 1:14-1:20 | Verify page with the card | "Retr0 Academy and Code E. Learn NEAR, prove it on NEAR. Built at NEAR HACKATHON." |
+| 0:00-0:08 | Home page, hero, right column with the numbered NEAR Developer path | "Online certificates prove nothing. Retr0 Academy on NEAR gives you one that does." |
+| 0:08-0:20 | Open Learn → Web3 Fundamentals → Transactions lesson; the animated transaction diagram plays; scroll to a cross-contract lesson | "A full NEAR developer path, with animated diagrams for the hard parts: transactions, cross-contract calls, storage staking." |
+| 0:20-0:30 | Advanced JavaScript → Mini app: live NEAR account lookup; click **Open in Playground** → **Open in Code E** | "Every example runs. This one reads live testnet data, and one click takes it into Code E." |
+| 0:30-0:50 | `/near/quiz`: prerequisites checked → **Start** → timer 40:00, a predict-the-output question, a coding task, **Run visible tests** | "The certificate needs a real final exam: 25 random questions from a 67-question bank, three coding tasks, 40 minutes, 80% to pass. Answers and hidden tests never leave the server." |
+| 0:50-1:00 | Submit → results: score, grade, per-topic bars, test results | "The server grades it, runs your code in a sandbox, and shows exactly where you stand." |
+| 1:00-1:15 | **Connect wallet** → **Mint** → approve → certificate card with grade | "Pass, and the server signs your score for your account only. The NEAR contract checks that signature and the pass mark, then mints a soulbound NFT with your grade in it." |
+| 1:15-1:30 | `/advanced/testing-contracts` locked → **Unlock with signature** → sign → lesson opens | "The NFT does something. Advanced NEAR unlocks only after your wallet signs a message and our server checks the key and the certificate on chain." |
+| 1:30-1:40 | `/verify?account=…`, then the NearBlocks mint transaction | "Anyone can verify it with one free view call. Built at NEAR HACKATHON." |
 
-Recording tips: use a fresh testnet account with a short name, dark theme, 1280×800 browser, and zoom to 110%.
+Recording tips: fresh testnet account with a short name, dark theme, 1280×800 window at 110% zoom. Pass the four course quizzes before recording. To show a pass in the video, either take the exam for real or cut to the results screen after submitting.
 
 ## Draft X post
 
 > Online course certificates prove nothing. So I built Retr0 Academy on NEAR 🎓
 >
-> Learn NEAR in Retr0 Academy → run every example in Code E → pass a quiz (server-signed grade, verified on chain) → mint a soulbound NEP-171 diploma with neon art → unlock Advanced NEAR and climb the leaderboard. Anyone can verify it with one view call.
+> Learn NEAR with animated, runnable lessons → pass a hard final exam (25 random questions + 3 coding tasks, graded on the server) → mint a soulbound NEAR Developer Certificate with your grade on chain → it unlocks Advanced NEAR through a wallet signature the server verifies.
+>
+> NEAR makes it work: the contract verifies the grader's ed25519 signature, the NFT is NEP-171, and anyone can check it with one free view call.
 >
 > Built at NEAR HACKATHON @NEARProtocol #NEARHackathon
 >
 > Try it: https://retr0school-near.vercel.app
 > Code: <public GitHub repo link>
 >
-> What should the next track be: Intents or Chain Signatures?
+> What should the next advanced lesson cover: Intents or Chain Signatures?
 
 (Optional extra tags: @NearLegion @NearBuilders. Attach the demo video.)
 
@@ -37,11 +57,11 @@ Recording tips: use a fresh testnet account with a short name, dark theme, 1280�
 
 | Field | Suggested / status |
 | --- | --- |
-| projectName | Retr0 Academy × Code E (Sina to confirm) |
+| projectName | Retr0 Academy on NEAR (Sina to confirm) |
 | leadName | Sina to provide |
 | email | Sina to provide (max 2 projects per email) |
 | size | Sina to provide |
-| tracks | `nfts` (primary), optionally `open` |
+| tracks | `nfts` (primary), `open` |
 | nearAddress | Sina's own **mainnet** account for the payout (never the testnet accounts in this repo) |
 | projectUrl | public GitHub repo, once pushed |
 | demoUrl | the X post link |
@@ -50,12 +70,12 @@ Recording tips: use a fresh testnet account with a short name, dark theme, 1280�
 
 Draft `idea` (under 2000 characters):
 
-> Online course certificates are easy to fake, can't be checked without trusting the issuer, and teach nothing about the chain they claim to cover. Retr0 Academy × Code E is a retro academy for learning NEAR: 9 short NEAR lessons (accounts, access keys, gas and storage, view vs change calls, Wallet Selector, NEP-141, NEP-171, a first Rust contract, Intents and Chain Signatures) whose live examples call NEAR testnet, with one-click "Open in Code E" into a browser playground that also ships a NEAR starter. An 8-question quiz is graded on our server, whose answer key stays secret; it returns an ed25519-signed grade bound to the learner's account. The learner connects through NEAR Wallet Selector (MyNearWallet, Meteor) and calls mint_diploma; our Rust contract checks the signature with env::ed25519_verify, the expiry and the pass mark, then mints a soulbound NEP-171 NFT, one per account per track. Its media is a neon retro diploma rendered live from chain data. The NFT does something: holders get a badge and unlock an Advanced NEAR track (cross-contract calls, storage staking, Chain Signatures, Intents), can share their diploma on X with a card that shows the art, and appear on a public leaderboard read from the contract's NEP-181 enumeration. Anyone can verify a credential with one view call, no wallet needed. NEAR fits because named accounts make the credential human-readable, NEP-171 makes it a standard asset explorers show, view calls make verification free, and storage staking lets learners pay for their own record. Retr0 Academy and Code E existed before the hackathon as off-chain apps; all NEAR work is new and separated by the pre-hackathon-baseline tag.
+> Online course certificates are easy to fake, impossible to verify without trusting the issuer, and usually earned by guessing through a basic quiz. Retr0 Academy on NEAR is a Web3 developer school with a certificate that means something. Learners follow a NEAR Developer path (Web3 Fundamentals, NEAR Smart Contracts in Rust, Tokens & NFTs, Build a NEAR dApp) with 22 original animated diagrams and runnable examples that open in a Playground and in Code E; supporting courses cover HTML, CSS and JavaScript up to advanced level. The certificate requires a hard final exam: 25 questions drawn from a 67-question bank of code-reading, predict-the-output and debugging items, plus three coding tasks auto-graded on the server against hidden tests in a QuickJS WebAssembly sandbox, with a 40-minute server-enforced timer, an 80% pass mark and a cooldown. The bank is encrypted in the repo and answers never reach the browser. On a pass, the server signs an ed25519 attestation bound to the learner's account; our Rust NEP-171 contract verifies it with env::ed25519_verify, checks expiry and the on-chain pass mark, and mints a soulbound certificate with the score and letter grade in its metadata. The NFT does something: Advanced NEAR (cross-contract calls, storage staking, Chain Signatures, Intents, testing, near-api-js, mainnet deploys) is rendered only after the learner signs a NEP-413 message, which the server checks against the account's full-access key and verify_diploma. Anyone can verify a certificate with one free view call, on a public verify page or leaderboard. NEAR fits because named accounts make credentials readable, NEP-171 makes them standard assets, view calls make verification free, and storage staking lets learners pay for their own record. Retr0 Academy and Code E existed as off-chain apps before the hackathon; all NEAR work is new and separated by the pre-hackathon-baseline tag.
 
 ## Before submitting
 
 - [ ] Push this repo to Sina's own GitHub account and make it public (not Yura's KhomDev account).
-- [ ] Tag the final commit `hackathon-submission` and push tags (`git push --tags`).
-- [ ] Mint once from Sina's own testnet wallet on the live site so the demo uses a real wallet flow.
-- [ ] Record the video, post on X, then submit at https://nearhackathon.com/#apply before **2026-11-14 23:59 UTC** (Sunday 00:59 Budapest time).
+- [ ] Tag the final commit `hackathon-submission` and push tags.
+- [ ] Mint from Sina's own testnet wallet on the live site for the video.
+- [ ] Record the video, post on X, then submit at https://nearhackathon.com/#apply before **2026-11-14 23:59 UTC** (Sunday 15 Nov, 00:59 Prague time).
 - [ ] Keep both Vercel deployments up until at least 2026-11-25.
