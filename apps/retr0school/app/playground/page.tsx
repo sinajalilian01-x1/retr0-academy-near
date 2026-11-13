@@ -1,10 +1,8 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import { PlaygroundStudio } from "@/components/playground-studio";
 
-export const metadata: Metadata = {
-  title: "Playground",
-  description: "A simple HTML, CSS, and JavaScript playground on Retr0 Academy, with a live preview and an Open in Code E button.",
-};
+export const metadata: Metadata = pageMeta("/playground", "Playground", "A simple HTML, CSS, and JavaScript playground on Retr0 Academy, with a live preview and an Open in Code E button.");
 
 export default function PlaygroundPage() {
   return (

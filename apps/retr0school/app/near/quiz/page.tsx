@@ -1,12 +1,9 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FinalExam } from "@/components/exam/final-exam";
 
-export const metadata: Metadata = {
-  title: "NEAR Developer final exam",
-  description:
-    "A timed, server-graded final exam: 25 questions from a 60+ question bank plus 3 auto-graded coding tasks. Pass with 80% to mint a soulbound NEAR Developer Certificate.",
-};
+export const metadata: Metadata = pageMeta("/near/quiz", "NEAR Developer final exam", "A timed, server-graded final exam: 25 questions from a 60+ question bank plus 3 auto-graded coding tasks. Pass with 80% to mint a soulbound NEAR Developer Certificate.");
 
 export default function NearExamPage() {
   return (

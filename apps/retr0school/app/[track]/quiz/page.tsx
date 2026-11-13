@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { track: slug } = await params;
   const track = getTrack(slug);
   if (!track) return { title: "Not found" };
-  return { title: `${track.title} quiz`, description: `Check what you remember from the ${track.title} track.` };
+  return pageMeta(`/${slug}/quiz`, `${track.title} quiz`, `Check what you remember from the ${track.title} track.`);
 }
 
 export default async function QuizPage({ params }: Props) {

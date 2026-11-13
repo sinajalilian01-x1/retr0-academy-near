@@ -41,7 +41,6 @@ export const metadata: Metadata = {
   },
   description: siteDescription,
   applicationName: "Retr0 Academy",
-  alternates: { canonical: "/" },
   openGraph: {
     title: "Learn Web3 with Retr0 Academy",
     description: siteDescription,

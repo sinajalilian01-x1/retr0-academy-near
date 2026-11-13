@@ -1,12 +1,10 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { VerifyForm } from "@/components/near/verify-form";
 import { DIPLOMA_CONTRACT } from "@/lib/near";
 
-export const metadata: Metadata = {
-  title: "Verify a certificate",
-  description: "Check any NEAR account for a NEAR Developer Certificate (Retr0 Academy diploma NFT), straight from the smart contract.",
-};
+export const metadata: Metadata = pageMeta("/verify", "Verify a certificate", "Check any NEAR account for a NEAR Developer Certificate (Retr0 Academy diploma NFT), straight from the smart contract.");
 
 export default function VerifyPage() {
   return (

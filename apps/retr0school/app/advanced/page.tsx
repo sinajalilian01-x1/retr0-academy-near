@@ -1,12 +1,10 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { getAdvancedLessons } from "@/lib/advanced";
 
-export const metadata: Metadata = {
-  title: "Advanced NEAR",
-  description: "Holder-only deep dives: cross-contract calls, storage staking, Chain Signatures, Intents, testing, near-api-js and mainnet deploys.",
-};
+export const metadata: Metadata = pageMeta("/advanced", "Advanced NEAR", "Holder-only deep dives: cross-contract calls, storage staking, Chain Signatures, Intents, testing, near-api-js and mainnet deploys.");
 
 export default function AdvancedPage() {
   const lessons = getAdvancedLessons().filter((l) => l.locked);

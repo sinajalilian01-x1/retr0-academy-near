@@ -1,10 +1,8 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DiplomaHub } from "@/components/near/diploma-hub";
 
-export const metadata: Metadata = {
-  title: "NEAR Developer Certificate",
-  description: "Pass the final exam, connect a testnet wallet, and mint a soulbound NEAR Developer Certificate NFT.",
-};
+export const metadata: Metadata = pageMeta("/diploma", "NEAR Developer Certificate", "Pass the final exam, connect a testnet wallet, and mint a soulbound NEAR Developer Certificate NFT.");
 
 export default function DiplomaPage() {
   return (

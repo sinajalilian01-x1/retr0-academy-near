@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { track: slug } = await params;
   const track = getTrack(slug);
   if (!track || !track.listed) return { title: "Not found" };
-  return { title: track.title, description: track.description };
+  return pageMeta(`/${slug}`, track.title, track.description);
 }
 
 export default async function TrackPage({ params }: Props) {

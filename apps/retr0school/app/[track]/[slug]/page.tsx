@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LessonShell } from "@/components/lesson-shell";
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { track: trackSlug, slug } = await params;
   const lesson = getLesson(trackSlug, slug);
   if (!lesson) return { title: "Not found" };
-  return { title: lesson.title, description: lesson.description };
+  return pageMeta(`/${trackSlug}/${slug}`, lesson.title, lesson.description);
 }
 
 export default async function LessonPage({ params }: Props) {

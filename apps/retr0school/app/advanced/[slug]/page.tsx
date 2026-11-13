@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const l = getAdvancedLessons().find((x) => x.slug === slug);
-  return l ? { title: `${l.title} · Advanced NEAR`, description: l.description } : { title: "Not found" };
+  return l ? pageMeta(`/advanced/${slug}`, `${l.title} · Advanced NEAR`, l.description) : { title: "Not found" };
 }
 
 export default async function AdvancedLessonPage({ params }: Props) {

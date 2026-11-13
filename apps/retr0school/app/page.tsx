@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { HomeHero } from "@/components/home-hero";
 import { TrackGrid, type TrackCardData } from "@/components/track-grid";
 import { getFoundationTracks, getCourseTracks, getLessons } from "@/lib/content";
@@ -16,6 +17,8 @@ function toCard(track: { slug: string; title: string; description: string; icon:
     slugs: lessons.map((lesson) => lesson.slug),
   };
 }
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const HOW = [
   { title: "Learn the NEAR path", body: "Four courses with animated diagrams and examples that run live against NEAR testnet." },

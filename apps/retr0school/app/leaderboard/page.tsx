@@ -1,11 +1,9 @@
+import { pageMeta } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DIPLOMA_CONTRACT, explorerAccount, explorerToken, listDiplomas, type Verification } from "@/lib/near";
 
-export const metadata: Metadata = {
-  title: "Leaderboard",
-  description: "Every NEAR Developer Certificate holder, read live from the NEAR contract.",
-};
+export const metadata: Metadata = pageMeta("/leaderboard", "Leaderboard", "Every NEAR Developer Certificate holder, read live from the NEAR contract.");
 
 export const dynamic = "force-dynamic";
 
