@@ -14,7 +14,7 @@ export async function GET() {
 
 /** POST a NEP-413 signature { accountId, publicKey, signature, nonce, callbackUrl? } to unlock Advanced NEAR. */
 export async function POST(request: Request) {
-  const limit = rateLimit(`holder:${clientIp(request)}`, 10, 10 * 60 * 1000);
+  const limit = await rateLimit(`holder:${clientIp(request)}`, 10, 10 * 60 * 1000);
   if (!limit.ok) return NextResponse.json({ error: "Too many attempts" }, { status: 429 });
   let body: Record<string, unknown>;
   try {

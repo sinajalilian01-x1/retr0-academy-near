@@ -5,13 +5,13 @@ import { loadBank } from "@/lib/exam/bank";
 import { EXAM, letterGrade } from "@/lib/exam/config";
 import { runTask } from "@/lib/exam/runner";
 import type { ExamPaper, ExamResult, ExamTopic, PublicQuestion, PublicTask } from "@/lib/exam/types";
+import { kvGet, kvSet } from "@/lib/rate-limit";
 import { openToken, sealToken, signToken, verifyToken } from "@/lib/server-secret";
 
 /** Sealed (encrypted) so the client cannot see which shuffled option is correct. */
 type ExamSession = { v: 1; n: string; q: string[]; p: number[][]; t: string[]; s: number; e: number; practice: boolean };
 export type PassClaim = { v: 1; score: number; max: number; grade: string; iat: number; exp: number; n: string };
 
-const usedNonces = new Map<string, number>();
 
 function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice();
@@ -82,9 +82,8 @@ export async function gradeExam(token: unknown, answers: unknown, code: unknown)
   if (!session || session.v !== 1) throw new ExamError("Invalid or tampered exam session. Start a new attempt.");
   const now = Date.now();
   if (now > session.e + EXAM.graceMs) throw new ExamError("Time is up: this attempt expired. Start a new attempt.", 410);
-  for (const [n, exp] of usedNonces) if (exp < now) usedNonces.delete(n);
-  if (usedNonces.has(session.n)) throw new ExamError("This attempt was already submitted.", 409);
-  usedNonces.set(session.n, session.e + EXAM.graceMs);
+  if (await kvGet(`used:${session.n}`)) throw new ExamError("This attempt was already submitted.", 409);
+  await kvSet(`used:${session.n}`, 1, Math.ceil((session.e + EXAM.graceMs - now) / 1000) + 60);
 
   const bank = loadBank();
   const byId = new Map(bank.questions.map((q) => [q.id, q]));
