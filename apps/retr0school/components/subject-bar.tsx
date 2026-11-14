@@ -49,6 +49,15 @@ export function SubjectBar({ onSearch }: { onSearch: () => void }) {
     const left = box.scrollLeft > 2;
     const right = box.scrollLeft + box.clientWidth < box.scrollWidth - 2;
     setEdges((e) => (e.left === left && e.right === right ? e : { left, right }));
+    const sr = box.getBoundingClientRect();
+    box.querySelectorAll<HTMLElement>("a").forEach((a) => {
+      const r = a.getBoundingClientRect();
+      const slop = 2;
+      const fullyIn = r.left >= sr.left - slop && r.right <= sr.right + slop;
+      const fullyOut = r.right <= sr.left + slop || r.left >= sr.right - slop;
+      if (fullyIn || fullyOut) a.removeAttribute("data-clipped");
+      else a.setAttribute("data-clipped", "true");
+    });
   }, []);
 
   // Keep the active subject in view (centered) whenever the route changes.
@@ -203,7 +212,7 @@ export function SubjectBar({ onSearch }: { onSearch: () => void }) {
             onDragStart={(event) => event.preventDefault()}
             data-dragging={dragging ? "true" : undefined}
             className={cn(
-              "no-scrollbar flex h-full items-stretch overflow-x-auto select-none",
+              "no-scrollbar flex h-full items-stretch overflow-x-auto select-none [&_a[data-clipped]]:invisible",
               edges.left || edges.right ? (dragging ? "cursor-grabbing" : "cursor-grab") : "",
               dragging && "[&_a]:pointer-events-none",
             )}

@@ -77,7 +77,7 @@ export function TutorLauncher() {
           className="fixed right-4 bottom-4 z-50 flex items-center gap-2 border-2 border-ink bg-accent px-3 py-2.5 text-accent-ink shadow-md transition-transform hover:-translate-y-0.5 hover:bg-accent-hover md:right-5 md:bottom-5"
         >
           <TutorIcon className="-my-1 h-9 w-9" size={128} />
-          <span className="font-pixel text-[0.6rem] leading-none">Ask AI</span>
+          <span className="hidden font-pixel text-[0.6rem] leading-none md:inline">Ask AI</span>
         </button>
       ) : null}
       {Panel && open ? <Panel pathname={pathname} request={pending} onClose={() => setOpen(false)} /> : null}
