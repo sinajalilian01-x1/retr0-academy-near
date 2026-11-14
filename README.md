@@ -371,7 +371,7 @@ Known limitations, stated plainly: the exam is unproctored (it is a learning cre
 Hackathon submitter (this project and [Muse Swarm](https://github.com/sinajalilian01-x1/muse-swarm)):
 
 - **Sina J (Sina Jalilian)** — team lead · GitHub [@sinajalilian01-x1](https://github.com/sinajalilian01-x1)
-- **Email:** _to be added — the submitter has not provided a submission email yet._ <!-- SUBMISSION_EMAIL: replace this placeholder with Sina's email when he provides it. Do not invent an address. -->
+- **Email:** _to be added — the submitter has not provided a submission email yet._ <!-- sinajalilian01@gmail.com: replace this placeholder with Sina's email when he provides it. Do not invent an address. -->
 
 ## License
 
