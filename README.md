@@ -91,7 +91,11 @@ Mobile homepage (390×844).
 
 ## Promo video
 
-Coming soon.
+<!-- PROMO_VIDEO_SLOT: keep this heading. Replace the placeholder line below with a 16:9 embed (or a link to the file) when the final render is ready. The 9:16 cut is for the X submission post. Do not delete these markers. -->
+
+_Official 16:9 demo video will be embedded here._
+
+<!-- /PROMO_VIDEO_SLOT -->
 
 ## The problem
 
@@ -361,6 +365,13 @@ vercel deploy --prod \
 | `nft_transfer`, `nft_transfer_call` | change | always panic (soulbound) |
 
 Known limitations, stated plainly: the exam is unproctored (it is a learning credential, not an identity-verified one); course-quiz prerequisites are tracked in the browser; rate limits and cooldowns are per client IP and per region, so someone with many IPs can retry sooner, but every attempt still faces a fresh random paper, re-shuffled options and hidden tests; two beta diplomas on testnet minted before the final exam existed keep their original 7/8 and 8/8 scores. The mainnet contract's owner is the contract account itself; its key is held by the builder.
+
+## Team
+
+Hackathon submitter (this project and [Muse Swarm](https://github.com/sinajalilian01-x1/muse-swarm)):
+
+- **Sina J (Sina Jalilian)** — team lead · GitHub [@sinajalilian01-x1](https://github.com/sinajalilian01-x1)
+- **Email:** _to be added — the submitter has not provided a submission email yet._ <!-- SUBMISSION_EMAIL: replace this placeholder with Sina's email when he provides it. Do not invent an address. -->
 
 ## License
 
