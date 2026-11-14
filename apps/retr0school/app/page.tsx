@@ -35,7 +35,7 @@ export default function HomePage() {
     <main id="content">
       <section className="mx-auto max-w-page px-5 py-12 md:px-8 lg:py-20">
         <HomeHero />
-        <div id="courses" className="mt-12 grid items-start gap-10 md:grid-cols-2 md:pr-28 lg:mt-16 lg:gap-12">
+        <div id="courses" className="mt-12 grid items-start gap-10 pr-20 md:grid-cols-2 md:pr-28 lg:mt-16 lg:gap-12">
           <div>
           <p className="mb-4 text-sm font-medium tracking-eyebrow text-muted uppercase">1 · Foundations: HTML, CSS &amp; JavaScript, then advanced</p>
           <TrackGrid tracks={foundations} />
