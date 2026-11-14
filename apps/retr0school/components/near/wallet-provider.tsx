@@ -36,11 +36,50 @@ type WalletContextValue = {
   refreshDiploma: () => Promise<Verification | null>;
   /** NEP-413: sign an off-chain message so the server can verify account ownership, then set the holder cookie. */
   unlockAdvanced: () => Promise<string | null>;
+  /** NEP-413 proof of account control for another server action. Null means a redirect wallet took over. */
+  signProof: (message: string, kind: string, extra?: Record<string, string>) => Promise<SignedProof | null>;
 };
 
+export type SignedProof = { accountId: string; publicKey: string; signature: string; nonce: string; recipient: string; callbackUrl: string };
+
 const NEP413_MESSAGE = "Unlock Advanced NEAR on Retr0 Academy";
-const NEP413_RECIPIENT = "retr0-academy";
 const PENDING_NONCE = "r0-nep413-nonce";
+const PENDING_PROOF = "r0-nep413-proof";
+
+/** Signatures name this site's host as recipient, so they can't be replayed on another site (R1 C-07). */
+function siteRecipient() {
+  return window.location.host;
+}
+
+/** Ship-to-chain proof message: binds the signature to the exact student and contract (R1 C-05). */
+export function shipProofMessage(student: string, contract: string) {
+  return `Link ${contract} to ${student} on Retr0 Academy`;
+}
+
+/** After a redirect wallet returns: the signed proof for `kind`, if one is pending on this page. */
+export function takeRedirectProof(kind: string): (SignedProof & { extra: Record<string, string> }) | null {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const signature = params.get("signature");
+  let pending: { kind: string; nonce: string; recipient: string; callbackUrl: string; extra: Record<string, string> } | null = null;
+  try {
+    pending = JSON.parse(sessionStorage.getItem(PENDING_PROOF) || "null");
+  } catch {
+    pending = null;
+  }
+  if (!signature || !pending || pending.kind !== kind) return null;
+  sessionStorage.removeItem(PENDING_PROOF);
+  history.replaceState(null, "", window.location.pathname + window.location.search);
+  return {
+    accountId: params.get("accountId") ?? "",
+    publicKey: params.get("publicKey") ?? "",
+    signature,
+    nonce: pending.nonce,
+    recipient: pending.recipient,
+    callbackUrl: pending.callbackUrl,
+    extra: pending.extra ?? {},
+  };
+}
 
 function toB64(bytes: Uint8Array) {
   let bin = "";
@@ -76,6 +115,7 @@ export async function completeRedirectUnlock(): Promise<string | null> {
     publicKey: params.get("publicKey"),
     signature,
     nonce: pending,
+    recipient: siteRecipient(),
     callbackUrl: window.location.origin + window.location.pathname,
   });
 }
@@ -237,10 +277,11 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
     }
     const nonce = makeNonce();
     const callbackUrl = window.location.origin + window.location.pathname;
+    const recipient = siteRecipient();
     sessionStorage.setItem(PENDING_NONCE, toB64(nonce));
     const signed = await wallet.signMessage({
       message: NEP413_MESSAGE,
-      recipient: NEP413_RECIPIENT,
+      recipient,
       nonce: nonce as unknown as Buffer,
       callbackUrl,
     });
@@ -251,8 +292,29 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       publicKey: signed.publicKey,
       signature: signed.signature,
       nonce: toB64(nonce),
+      recipient,
+      callbackUrl,
     });
   }, [selector]);
+
+  const signProof = useCallback(
+    async (message: string, kind: string, extra: Record<string, string> = {}): Promise<SignedProof | null> => {
+      if (!selector) throw new Error("Wallet is still loading.");
+      const wallet = await selector.wallet();
+      if (!("signMessage" in wallet) || typeof wallet.signMessage !== "function") {
+        throw new Error("This wallet cannot sign messages (NEP-413). Try MyNearWallet or Meteor.");
+      }
+      const nonce = makeNonce();
+      const callbackUrl = window.location.origin + window.location.pathname;
+      const recipient = siteRecipient();
+      sessionStorage.setItem(PENDING_PROOF, JSON.stringify({ kind, nonce: toB64(nonce), recipient, callbackUrl, extra }));
+      const signed = await wallet.signMessage({ message, recipient, nonce: nonce as unknown as Buffer, callbackUrl });
+      if (!signed) return null;
+      sessionStorage.removeItem(PENDING_PROOF);
+      return { accountId: signed.accountId, publicKey: signed.publicKey, signature: signed.signature, nonce: toB64(nonce), recipient, callbackUrl };
+    },
+    [selector],
+  );
 
   const value = useMemo(
     () => ({
@@ -265,8 +327,9 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
       holderChecked,
       refreshDiploma,
       unlockAdvanced,
+      signProof,
     }),
-    [selector, modal, accountId, connect, disconnect, mintDiploma, diploma, holderChecked, refreshDiploma, unlockAdvanced],
+    [selector, modal, accountId, connect, disconnect, mintDiploma, diploma, holderChecked, refreshDiploma, unlockAdvanced, signProof],
   );
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;

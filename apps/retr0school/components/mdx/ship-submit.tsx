@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useNearWallet } from "@/components/near/wallet-provider";
+import { shipProofMessage, takeRedirectProof, useNearWallet, type SignedProof } from "@/components/near/wallet-provider";
 
 type Ship = { student: string; contract: string; code_hash: string; greeting: string | null; verified_at: string; network?: "mainnet" | "testnet" };
 
@@ -17,18 +17,44 @@ export function ShipSubmit() {
   const [state, setState] = useState<{ kind: "idle" | "busy" } | { kind: "ok"; ship: Ship } | { kind: "error"; message: string }>({ kind: "idle" });
   const me = student || wallet.accountId || "";
 
+  async function post(studentId: string, contractId: string, proof: SignedProof | null) {
+    const res = await fetch("/api/ship", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ student: studentId, contract: contractId, ...(proof ? { proof } : {}) }),
+    });
+    const data = (await res.json()) as { ship?: Ship; error?: string };
+    if (!res.ok || !data.ship) throw new Error(data.error || "Verification failed");
+    setState({ kind: "ok", ship: data.ship });
+  }
+
+  // Redirect wallets (MyNearWallet) come back here with the signature in the URL hash.
+  useEffect(() => {
+    const back = takeRedirectProof("ship");
+    if (!back) return;
+    setState({ kind: "busy" });
+    const { extra, ...proof } = back;
+    post(extra.student ?? "", extra.contract ?? "", proof).catch((e) => setState({ kind: "error", message: e instanceof Error ? e.message : String(e) }));
+  }, []);
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    const studentId = me.trim().toLowerCase();
+    const contractId = (contract || me).trim().toLowerCase();
     setState({ kind: "busy" });
     try {
-      const res = await fetch("/api/ship", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ student: me, contract: contract || me }),
-      });
-      const data = (await res.json()) as { ship?: Ship; error?: string };
-      if (!res.ok || !data.ship) throw new Error(data.error || "Verification failed");
-      setState({ kind: "ok", ship: data.ship });
+      let proof: SignedProof | null = null;
+      // Mainnet ships must be signed by the student's own wallet so nobody can attach a contract to someone else's page.
+      if (!studentId.endsWith(".testnet")) {
+        if (!wallet.accountId) {
+          wallet.connect();
+          throw new Error("Connect the wallet of " + studentId + " first, then press Verify again.");
+        }
+        if (wallet.accountId !== studentId) throw new Error(`Your connected wallet is ${wallet.accountId}. Connect ${studentId} to submit for it.`);
+        proof = await wallet.signProof(shipProofMessage(studentId, contractId), "ship", { student: studentId, contract: contractId });
+        if (!proof) return; // redirect wallet: finishes when it comes back
+      }
+      await post(studentId, contractId, proof);
     } catch (e) {
       setState({ kind: "error", message: e instanceof Error ? e.message : String(e) });
     }
@@ -66,7 +92,7 @@ export function ShipSubmit() {
           <Button type="submit" data-testid="ship-verify" disabled={!me || state.kind === "busy"}>
             {state.kind === "busy" ? "Checking the chain…" : "Verify on chain"}
           </Button>
-          <span className="text-xs text-faint">Free, no wallet signature needed: we only read the chain.</span>
+          <span className="text-xs text-faint">Free. Mainnet ships ask for a gasless wallet signature to prove the account is yours; testnet practice just reads the chain.</span>
         </div>
       </form>
       <div aria-live="polite">

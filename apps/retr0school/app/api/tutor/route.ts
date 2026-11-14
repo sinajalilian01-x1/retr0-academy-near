@@ -1,4 +1,5 @@
-import { clientIp, kvGet, kvSet, rateLimit } from "@/lib/rate-limit";
+import { clientIp, incrementCounter, rateLimit } from "@/lib/rate-limit";
+import { isAllowedOrigin, positiveInt } from "@/lib/security/origin";
 import { lessonAt, retrieve } from "@/lib/tutor/knowledge";
 import { TUTOR_LIMITS, isExamPath, systemPrompt } from "@/lib/tutor/prompt";
 
@@ -13,7 +14,7 @@ export const maxDuration = 60;
  */
 const NEAR_AI_URL = (process.env.NEAR_AI_BASE_URL || "https://cloud-api.near.ai/v1").replace(/\/+$/, "");
 const MODELS = (process.env.TUTOR_MODELS || "anthropic/claude-haiku-5-5,openai/gpt-6-luna").split(",").map((m) => m.trim()).filter(Boolean);
-const DAILY_GLOBAL_CAP = Number(process.env.TUTOR_DAILY_CAP || 5000);
+const DAILY_GLOBAL_CAP = positiveInt(process.env.TUTOR_DAILY_CAP, 5000); // R1 C-04: NaN can no longer disable the cap
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -28,10 +29,10 @@ export async function POST(request: Request) {
   const key = process.env.NEAR_AI_API_KEY || process.env.NEARAI_API_KEY;
   if (!key) return json(503, { error: "The tutor is offline right now." });
 
-  const origin = request.headers.get("origin");
-  if (origin && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) && !/\.vercel\.app$/.test(new URL(origin).hostname)) {
-    return json(403, { error: "Forbidden" });
-  }
+  // R1 C-04: exact same-site Origin only (no missing Origin, no other *.vercel.app, malformed -> 403, never 500).
+  if (!isAllowedOrigin(request.headers.get("origin"))) return json(403, { error: "Forbidden" });
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin") return json(403, { error: "Forbidden" });
 
   let body: Record<string, unknown>;
   try {
@@ -41,7 +42,15 @@ export async function POST(request: Request) {
   }
 
   const path = typeof body.path === "string" && body.path.startsWith("/") ? body.path.slice(0, 200).split(/[?#]/)[0] : null;
-  if (isExamPath(path)) return json(403, { error: "Retr0 Tutor is switched off during the final exam. Good luck!" });
+  // R1 C-11: also honour the browser-set Referer, so omitting `path` from the body doesn't switch the tutor on during the exam.
+  let refPath: string | null = null;
+  try {
+    const ref = request.headers.get("referer");
+    if (ref) refPath = new URL(ref).pathname;
+  } catch {
+    refPath = null;
+  }
+  if (isExamPath(path) || isExamPath(refPath)) return json(403, { error: "Retr0 Tutor is switched off during the final exam. Good luck!" });
 
   const raw = Array.isArray(body.messages) ? body.messages : [];
   const messages: Msg[] = raw
@@ -62,9 +71,8 @@ export async function POST(request: Request) {
   const daily = await rateLimit(`tutor-day:${ip}`, 80, 24 * 60 * 60 * 1000);
   if (!daily.ok) return json(429, { error: "You've hit today's tutor limit. Come back tomorrow!" }, { "retry-after": String(daily.retryAfterSec) });
   const dayKey = `tutor-global:${new Date().toISOString().slice(0, 10)}`;
-  const used = (await kvGet<number>(dayKey)) ?? 0;
-  if (used >= DAILY_GLOBAL_CAP) return json(429, { error: "The tutor is resting for today. Try again tomorrow." });
-  await kvSet(dayKey, used + 1, 26 * 60 * 60);
+  const used = await incrementCounter(dayKey, 26 * 60 * 60);
+  if (used > DAILY_GLOBAL_CAP) return json(429, { error: "The tutor is resting for today. Try again tomorrow." });
 
 
   const tLimit = Date.now() - t0;

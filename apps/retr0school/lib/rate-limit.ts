@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getCache } from "@vercel/functions";
+import { getCache, ipAddress } from "@vercel/functions";
 
 /**
  * Sliding-window rate limiter and small shared state (used exam nonces, cooldowns).
@@ -48,17 +48,62 @@ export async function kvSet(key: string, value: unknown, ttlSec: number) {
   }
 }
 
+/**
+ * Client IP (R1 C-03). On Vercel `x-real-ip` is set by the edge from the TCP peer and cannot be supplied by
+ * the client (read via @vercel/functions ipAddress). Elsewhere the *last* x-forwarded-for hop is used: it is
+ * appended by the nearest proxy, while the first element is whatever the client sent.
+ */
 export function clientIp(request: Request): string {
+  const real = ipAddress(request);
+  if (real) return real.trim().slice(0, 64);
   const fwd = request.headers.get("x-forwarded-for");
-  return (fwd?.split(",")[0] || request.headers.get("x-real-ip") || "local").trim();
+  const last = fwd?.split(",").map((s) => s.trim()).filter(Boolean).pop();
+  return (last || "local").slice(0, 64);
 }
 
+/** Serialize read-modify-write per key inside this instance so concurrent requests can't all read the same window. */
+const locks = new Map<string, Promise<unknown>>();
+function serialized<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const prev = locks.get(key) ?? Promise.resolve();
+  const next = prev.then(fn, fn);
+  const tail = next.catch(() => undefined);
+  locks.set(key, tail);
+  void tail.then(() => {
+    if (locks.get(key) === tail) locks.delete(key);
+  });
+  return next;
+}
+
+/**
+ * Sliding-window limiter. Best-effort throughput control: per-key RMW is serialized within an instance and the
+ * window is merged with the local copy, so a burst against one instance can't exceed the limit. Cross-instance it
+ * is approximate (the Runtime Cache has no atomic increment). Security decisions that must be exact (single-use
+ * attempts, pass binding, nonce burning) do not rely on this; they use lib/once.ts.
+ */
 export async function rateLimit(key: string, limit: number, windowMs: number): Promise<{ ok: boolean; retryAfterSec: number; remaining: number }> {
-  const now = Date.now();
   const k = `rl:${key}`;
-  const hits = ((await kvGet<number[]>(k)) ?? []).filter((t) => now - t < windowMs);
-  if (hits.length >= limit) return { ok: false, retryAfterSec: Math.ceil((windowMs - (now - hits[0])) / 1000), remaining: 0 };
-  hits.push(now);
-  await kvSet(k, hits, windowMs / 1000);
-  return { ok: true, retryAfterSec: 0, remaining: limit - hits.length };
+  return serialized(k, async () => {
+    const now = Date.now();
+    const shared = (await kvGet<number[]>(k)) ?? [];
+    const local = (memory.get(k)?.value as number[] | undefined) ?? [];
+    const live = (xs: number[]) => (Array.isArray(xs) ? xs : []).filter((t) => typeof t === "number" && now - t < windowMs);
+    // The shared copy can be stale or lost (cache timeout); never count fewer hits than this instance has seen.
+    const [a, b] = [live(shared), live(local)];
+    const hits = (a.length >= b.length ? a : b).slice().sort((x, y) => x - y);
+    if (hits.length >= limit) return { ok: false, retryAfterSec: Math.ceil((windowMs - (now - hits[0])) / 1000), remaining: 0 };
+    hits.push(now);
+    await kvSet(k, hits, windowMs / 1000);
+    return { ok: true, retryAfterSec: 0, remaining: limit - hits.length };
+  });
+}
+
+/** Atomic-within-instance counter on the shared cache (used for the tutor's global daily cap). */
+export async function incrementCounter(key: string, ttlSec: number): Promise<number> {
+  return serialized(`ctr:${key}`, async () => {
+    const shared = (await kvGet<number>(key)) ?? 0;
+    const local = (memory.get(key)?.value as number | undefined) ?? 0;
+    const next = Math.max(shared, local) + 1;
+    await kvSet(key, next, ttlSec);
+    return next;
+  });
 }

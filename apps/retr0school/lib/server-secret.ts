@@ -5,16 +5,39 @@ import crypto from "node:crypto";
 let devSeed: Buffer | null = null;
 
 /**
- * Purpose-specific HMAC keys derived from the grader seed, so no extra secrets are needed.
- * Without NEAR_ATTESTOR_SEED (local clone, practice mode) a random per-process seed is used: sessions
- * and cookies still work and cannot be forged, but nothing can be attested for minting.
+ * Purpose-specific HMAC/AES keys for sessions, pass tokens, cookies and record signatures.
+ *
+ * Security (R1 C-06): the root is a dedicated R0_SESSION_SECRET (32-byte hex), separate from every ed25519
+ * attestor seed. A leaked testnet seed can no longer forge pass tokens that the server would exchange for
+ * mainnet attestations. In production a missing or malformed secret fails closed (no random per-process
+ * fallback that silently breaks sessions across instances); locally a random per-process root is used.
  */
+export class ServerSecretError extends Error {
+  status = 503;
+  constructor() {
+    super("Server is not configured");
+  }
+}
+
+function root(): Buffer {
+  const hex = process.env.R0_SESSION_SECRET;
+  if (hex && /^[0-9a-f]{64}$/i.test(hex)) return Buffer.from(hex, "hex");
+  if (process.env.VERCEL_ENV === "production" || process.env.R0_REQUIRE_SECRET === "1") throw new ServerSecretError();
+  return (devSeed ??= crypto.randomBytes(32));
+}
+
 export function deriveKey(label: string): Buffer {
+  return crypto.createHmac("sha256", root()).update(`retr0-academy|${label}`).digest();
+}
+
+/**
+ * Read-only key for records signed before R1 (ship records in Blob were HMAC'd under the old root).
+ * Only used to keep verifying existing records; nothing new is ever signed with it. Returns null when unset.
+ */
+export function legacyDeriveKey(label: string): Buffer | null {
   const hex = process.env.NEAR_ATTESTOR_SEED;
-  let seed: Buffer;
-  if (hex && /^[0-9a-f]{64}$/i.test(hex)) seed = Buffer.from(hex, "hex");
-  else seed = devSeed ??= crypto.randomBytes(32);
-  return crypto.createHmac("sha256", seed).update(`retr0-academy|${label}`).digest();
+  if (!hex || !/^[0-9a-f]{64}$/i.test(hex)) return null;
+  return crypto.createHmac("sha256", Buffer.from(hex, "hex")).update(`retr0-academy|${label}`).digest();
 }
 
 const b64u = (b: Buffer) => b.toString("base64url");
@@ -28,9 +51,12 @@ export function signToken(label: string, payload: unknown): string {
 
 export function verifyToken<T>(label: string, token: unknown): T | null {
   if (typeof token !== "string" || token.length > 20000) return null;
-  const [body, mac] = token.split(".");
+  const parts = token.split(".");
+  if (parts.length !== 2) return null;
+  const [body, mac] = parts;
   if (!body || !mac) return null;
   const expected = crypto.createHmac("sha256", deriveKey(label)).update(body).digest();
+  if (!/^[A-Za-z0-9_-]{43}$/.test(mac)) return null;
   const given = Buffer.from(mac, "base64url");
   if (given.length !== expected.length || !crypto.timingSafeEqual(given, expected)) return null;
   try {

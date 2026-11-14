@@ -2,12 +2,15 @@ import "server-only";
 
 import crypto from "node:crypto";
 import { ACCOUNT_RE, RPC_URLS, verifyDiploma } from "@/lib/near";
+import { claimOnce } from "@/lib/once";
+import { allowedHosts } from "@/lib/security/origin";
 import { signToken, verifyToken } from "@/lib/server-secret";
 
 export const HOLDER_COOKIE = "r0_holder";
 export const HOLDER_TTL_MS = 12 * 60 * 60 * 1000;
 export const NEP413_MESSAGE = "Unlock Advanced NEAR on Retr0 Academy";
-export const NEP413_RECIPIENT = "retr0-academy";
+/** Legacy recipient, no longer accepted (R1 C-07): signatures must name this site's host as recipient. */
+export const NEP413_LEGACY_RECIPIENT = "retr0-academy";
 const NONCE_MAX_AGE_MS = 10 * 60 * 1000;
 
 type HolderClaim = { a: string; exp: number };
@@ -58,8 +61,11 @@ export function nep413Hash(message: string, nonce: Buffer, recipient: string, ca
   return crypto.createHash("sha256").update(payload).digest();
 }
 
+/** ed25519:<base58 of 32 bytes> is 43-44 base58 chars; checked before any decoding (R1 C-18). */
+export const PUBLIC_KEY_RE = /^ed25519:[1-9A-HJ-NP-Za-km-z]{43,44}$/;
+
 function ed25519Verify(publicKey: string, data: Buffer, signature: Buffer) {
-  if (!publicKey.startsWith("ed25519:")) return false;
+  if (!PUBLIC_KEY_RE.test(publicKey)) return false;
   const raw = base58Decode(publicKey.slice(8));
   if (raw.length !== 32 || signature.length !== 64) return false;
   const key = crypto.createPublicKey({ key: Buffer.concat([Buffer.from("302a300506032b6570032100", "hex"), raw]), format: "der", type: "spki" });
@@ -97,22 +103,47 @@ export class HolderError extends Error {
   }
 }
 
-/** Verifies a NEP-413 signed message, key ownership, and on-chain diploma. Returns the account id. */
-export async function proveHolder(input: Record<string, unknown>): Promise<string> {
+/** The recipient a NEP-413 signature must name: this site's own host (R1 C-07). */
+export function recipientAllowed(recipient: string, env: Record<string, string | undefined> = process.env) {
+  if (allowedHosts(env).has(recipient.toLowerCase())) return true;
+  const dev = env.VERCEL_ENV !== "production" && env.VERCEL_ENV !== "preview";
+  return dev && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(recipient);
+}
+
+/**
+ * Verify that the caller controls `accountId`: a fresh NEP-413 signature over `message`, naming this site as
+ * recipient, made with a full-access key of the account on chain. The nonce is burned atomically so a captured
+ * signature cannot be replayed (R1 C-07). Returns the lowercased account id.
+ */
+export async function verifyAccountSignature(input: Record<string, unknown>, message: string): Promise<string> {
   const accountId = String(input.accountId ?? "").toLowerCase();
   const publicKey = String(input.publicKey ?? "");
-  const signature = Buffer.from(String(input.signature ?? ""), "base64");
-  const nonce = Buffer.from(String(input.nonce ?? ""), "base64");
-  const callbackUrl = typeof input.callbackUrl === "string" ? input.callbackUrl : null;
+  const sigB64 = String(input.signature ?? "");
+  const nonceB64 = String(input.nonce ?? "");
+  const recipient = String(input.recipient ?? "");
+  const callbackUrl = typeof input.callbackUrl === "string" && input.callbackUrl.length <= 500 ? input.callbackUrl : null;
   if (!ACCOUNT_RE.test(accountId)) throw new HolderError("Invalid account id");
+  if (!PUBLIC_KEY_RE.test(publicKey)) throw new HolderError("Invalid public key");
+  if (sigB64.length > 200 || nonceB64.length > 100) throw new HolderError("Bad signature");
+  if (!recipientAllowed(recipient)) throw new HolderError("Signature was made for a different site", 401);
+  const signature = Buffer.from(sigB64, "base64");
+  const nonce = Buffer.from(nonceB64, "base64");
   if (nonce.length !== 32) throw new HolderError("Nonce must be 32 bytes");
   const issuedAt = Number(nonce.readBigUInt64BE(0));
   if (!(Date.now() - issuedAt < NONCE_MAX_AGE_MS && issuedAt - Date.now() < 60_000)) throw new HolderError("Signature expired, try again");
 
-  const candidates = [nep413Hash(NEP413_MESSAGE, nonce, NEP413_RECIPIENT, null)];
-  if (callbackUrl) candidates.push(nep413Hash(NEP413_MESSAGE, nonce, NEP413_RECIPIENT, callbackUrl));
+  const candidates = [nep413Hash(message, nonce, recipient, null)];
+  if (callbackUrl) candidates.push(nep413Hash(message, nonce, recipient, callbackUrl));
   if (!candidates.some((h) => ed25519Verify(publicKey, h, signature))) throw new HolderError("Bad signature", 401);
   if (!(await isFullAccessKey(accountId, publicKey))) throw new HolderError("That key is not a full-access key of this account", 401);
+  const burned = await claimOnce(`nep413:${nonce.toString("hex")}`, accountId);
+  if (!burned.claimed) throw new HolderError("This signature was already used. Sign again.", 401);
+  return accountId;
+}
+
+/** Verifies a NEP-413 signed message, key ownership, and on-chain diploma. Returns the account id. */
+export async function proveHolder(input: Record<string, unknown>): Promise<string> {
+  const accountId = await verifyAccountSignature(input, NEP413_MESSAGE);
   const diploma = await verifyDiploma(accountId).catch(() => null);
   if (!diploma?.valid) throw new HolderError(`${accountId} does not hold a NEAR Developer Certificate`, 403);
   return accountId;

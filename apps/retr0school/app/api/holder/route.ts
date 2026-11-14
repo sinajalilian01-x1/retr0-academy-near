@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { HOLDER_COOKIE, HOLDER_TTL_MS, HolderError, holderCookieValue, proveHolder, readHolder } from "@/lib/holder";
+import { OnceUnavailableError } from "@/lib/once";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -12,7 +13,7 @@ export async function GET() {
   return NextResponse.json({ holder: readHolder(jar.get(HOLDER_COOKIE)?.value) }, { headers: { "cache-control": "no-store" } });
 }
 
-/** POST a NEP-413 signature { accountId, publicKey, signature, nonce, callbackUrl? } to unlock Advanced NEAR. */
+/** POST a NEP-413 signature { accountId, publicKey, signature, nonce, recipient, callbackUrl? } to unlock Advanced NEAR. */
 export async function POST(request: Request) {
   const limit = await rateLimit(`holder:${clientIp(request)}`, 10, 10 * 60 * 1000);
   if (!limit.ok) return NextResponse.json({ error: "Too many attempts" }, { status: 429 });
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Send JSON" }, { status: 400 });
   }
+  if (!body || typeof body !== "object") return NextResponse.json({ error: "Send JSON" }, { status: 400 });
   try {
     const accountId = await proveHolder(body);
     const res = NextResponse.json({ holder: accountId });
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
     });
     return res;
   } catch (error) {
-    if (error instanceof HolderError) return NextResponse.json({ error: error.message }, { status: error.status });
+    if (error instanceof HolderError || error instanceof OnceUnavailableError) return NextResponse.json({ error: error.message }, { status: error.status });
     console.error(error);
     return NextResponse.json({ error: "Could not verify right now" }, { status: 502 });
   }
