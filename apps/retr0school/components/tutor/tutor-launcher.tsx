@@ -74,7 +74,7 @@ export function TutorLauncher() {
           onClick={() => void load()}
           data-testid="tutor-open"
           aria-label="Ask Retr0 Tutor, the AI tutor"
-          className="fixed right-4 bottom-4 z-50 flex items-center gap-2 border-2 border-ink bg-accent px-3 py-2.5 text-accent-ink shadow-md transition-transform hover:-translate-y-0.5 hover:bg-accent-hover md:right-6 md:bottom-6"
+          className="fixed right-4 bottom-4 z-50 flex items-center gap-2 border-2 border-ink bg-accent px-3 py-2.5 text-accent-ink shadow-md transition-transform hover:-translate-y-0.5 hover:bg-accent-hover md:right-5 md:bottom-5"
         >
           <TutorIcon className="-my-1 h-9 w-9" size={128} />
           <span className="font-pixel text-[0.6rem] leading-none">Ask AI</span>

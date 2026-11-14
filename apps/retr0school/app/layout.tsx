@@ -86,8 +86,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteProvider entries={entries}>
           <NearWalletProvider>
             <Header />
-            {children}
-            <Footer tracks={tracks} />
+            <div className="pb-28">
+              {children}
+              <Footer tracks={tracks} />
+            </div>
             <TutorLauncher />
           </NearWalletProvider>
         </SiteProvider>
