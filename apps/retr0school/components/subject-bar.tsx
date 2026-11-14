@@ -192,6 +192,8 @@ export function SubjectBar({ onSearch }: { onSearch: () => void }) {
               <ChevronLeft className="h-4 w-4" aria-hidden />
             </button>
           ) : null}
+          {edges.left ? <div aria-hidden className="pointer-events-none absolute inset-y-0 left-8 z-[9] w-10 bg-gradient-to-r from-sunken to-transparent" /> : null}
+          {edges.right ? <div aria-hidden className="pointer-events-none absolute inset-y-0 right-8 z-[9] w-10 bg-gradient-to-l from-sunken to-transparent" /> : null}
           <div
             ref={scroller}
             onKeyDown={onKeyDown}
@@ -199,6 +201,8 @@ export function SubjectBar({ onSearch }: { onSearch: () => void }) {
             data-dragging={dragging ? "true" : undefined}
             className={cn(
               "no-scrollbar flex h-full items-stretch overflow-x-auto select-none",
+              edges.left && "pl-8",
+              edges.right && "pr-8",
               edges.left || edges.right ? (dragging ? "cursor-grabbing" : "cursor-grab") : "",
               dragging && "[&_a]:pointer-events-none",
             )}
