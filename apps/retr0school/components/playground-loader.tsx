@@ -16,6 +16,7 @@ export function PlaygroundLoader({
   activeExample,
   showCodeE = false,
   autoRun = false,
+  untrusted = false,
 }: {
   initialHtml: string;
   initialCss: string;
@@ -24,6 +25,7 @@ export function PlaygroundLoader({
   activeExample?: string;
   showCodeE?: boolean;
   autoRun?: boolean;
+  untrusted?: boolean;
 }) {
   return (
     <Playground
@@ -34,6 +36,7 @@ export function PlaygroundLoader({
       activeExample={activeExample}
       showCodeE={showCodeE}
       autoRun={autoRun}
+      untrusted={untrusted}
     />
   );
 }

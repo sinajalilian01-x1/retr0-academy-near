@@ -151,9 +151,24 @@ export function bootProject(): BootResult {
     const decoded = decodeShare(hash.slice('#code='.length))
     clearCodeHash()
     if (decoded) {
+      // R1 C-17: a share link must not silently destroy the learner's own work; keep a one-slot backup.
+      let backedUp = false
+      try {
+        const current = localStorage.getItem(STORAGE_KEY)
+        if (current) {
+          localStorage.setItem(`${STORAGE_KEY}:backup`, current)
+          backedUp = true
+        }
+      } catch {
+        backedUp = false
+      }
       const project = projectFromShare(stored, decoded)
       writeStorage(project)
-      return { project, source: 'import', error: null }
+      return {
+        project,
+        source: 'import',
+        error: backedUp ? 'Opened a shared project. Your previous project was backed up in this browser (localStorage key "' + STORAGE_KEY + ':backup").' : null,
+      }
     }
     const project = stored ?? starterProject()
     return {

@@ -37,6 +37,8 @@ const bridge = `(function () {
 export function buildSrcDoc(html: string, css: string, js: string) {
   const safeHtml = html.replace(/<\/(body|html)/gi, "<\\/$1");
   const safeJs = js.replace(/<\/script/gi, "<\\/script");
+  // R1 C-14: CSS can't close the <style> element and inject markup outside it.
+  const safeCss = css.replace(/<\/style/gi, "<\\/style");
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -44,7 +46,7 @@ export function buildSrcDoc(html: string, css: string, js: string) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
 html, body { margin: 0; }
-${css}
+${safeCss}
 </style>
 </head>
 <body>

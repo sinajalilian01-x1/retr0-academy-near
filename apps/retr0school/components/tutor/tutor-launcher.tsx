@@ -41,6 +41,7 @@ export function TutorLauncher() {
   }, [load]);
 
   // Handoff from Code E: /playground?tutor=explain&err=...
+  // R1 C-16: text that came from the URL is only prefilled; the learner reviews it and presses Send.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const mode = params.get("tutor");
@@ -53,7 +54,7 @@ export function TutorLauncher() {
     const t = window.setTimeout(() => {
       openTutor(
         mode === "explain"
-          ? { prompt: err ? `Explain my error and how to fix it:\n${err}` : "Explain what my code does and anything that looks wrong.", withPlayground: true, autoSend: true }
+          ? { prompt: err ? `Explain my error and how to fix it:\n${err}` : "Explain what my code does and anything that looks wrong.", withPlayground: true, autoSend: !err }
           : {},
       );
     }, 900);

@@ -1,3 +1,4 @@
+import { safeDecode } from "@/lib/utils";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeCheck, ExternalLink, Rocket, ShieldAlert } from "lucide-react";
@@ -19,7 +20,7 @@ type Loaded =
 
 async function load(params: Props["params"]): Promise<Loaded> {
   const { account: raw } = await params;
-  const account = decodeURIComponent(raw).trim().toLowerCase();
+  const account = safeDecode(raw).trim().toLowerCase();
   if (!ACCOUNT_RE.test(account)) return { kind: "invalid", account };
   try {
     // .testnet names are read from the testnet beta contract; every other account from mainnet.
@@ -34,7 +35,7 @@ async function load(params: Props["params"]): Promise<Loaded> {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { account: raw } = await params;
-  const account = decodeURIComponent(raw).toLowerCase();
+  const account = safeDecode(raw).toLowerCase();
   const title = `Verify ${account}`;
   const description = `Live on-chain check of ${account}: NEAR Developer Certificate and shipped contract from Retr0 Academy.`;
   const image = { url: `${SITE_URL}/api/diploma/near/${encodeURIComponent(account)}`, width: 1200, height: 630, alt: title };

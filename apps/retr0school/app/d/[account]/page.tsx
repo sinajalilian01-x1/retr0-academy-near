@@ -1,3 +1,4 @@
+import { safeDecode } from "@/lib/utils";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,7 +12,7 @@ type Props = { params: Promise<{ account: string }> };
 
 async function load(params: Props["params"]) {
   const { account: raw } = await params;
-  const account = decodeURIComponent(raw).toLowerCase();
+  const account = safeDecode(raw).toLowerCase();
   if (!ACCOUNT_RE.test(account)) notFound();
   const diploma = await verifyDiploma(account, NEAR_TRACK, networkOf(account)).catch(() => null);
   return { account, diploma };

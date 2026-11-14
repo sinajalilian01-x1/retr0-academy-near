@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { css } from "@codemirror/lang-css";
 import { html } from "@codemirror/lang-html";
@@ -46,6 +46,7 @@ export function Playground({
   activeExample,
   showCodeE = false,
   autoRun = false,
+  untrusted = false,
 }: {
   initialHtml: string;
   initialCss: string;
@@ -54,7 +55,10 @@ export function Playground({
   activeExample?: string;
   showCodeE?: boolean;
   autoRun?: boolean;
+  /** Code from a share link (someone else's): no form submission in the preview (R1 C-15). */
+  untrusted?: boolean;
 }) {
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
   const [code, setCode] = useState({ html: initialHtml, css: initialCss, js: initialJs });
   const [baseline, setBaseline] = useState({ html: initialHtml, css: initialCss, js: initialJs });
   const [pane, setPane] = useState<PaneId>("html");
@@ -65,6 +69,8 @@ export function Playground({
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
+      // R1 C-10: only the preview frame we created may write to the console panel.
+      if (!frameRef.current || event.source !== frameRef.current.contentWindow) return;
       const data = event.data as { source?: string; level?: string; message?: string } | null;
       if (!data || data.source !== "w3h-preview" || typeof data.message !== "string") return;
       const level: Log["level"] = data.level === "error" || data.level === "warn" ? data.level : "log";
@@ -226,9 +232,10 @@ export function Playground({
             {srcDoc ? (
               <iframe
                 key={runId}
+                ref={frameRef}
                 data-testid="tryit-preview"
                 title="Example preview"
-                sandbox="allow-scripts allow-forms allow-popups"
+                sandbox={untrusted ? "allow-scripts" : "allow-scripts allow-forms allow-popups"}
                 srcDoc={srcDoc}
                 className="absolute inset-0 h-full w-full border-0 bg-elevated"
               />
