@@ -109,4 +109,14 @@ All are owner- or signer-only. Fixing them in the contract means a code upgrade 
 ## Verification
 - Web: `npm run lint`, `npm run typecheck`, `npm test` (26 tests), `npm run build`, all passing.
 - Contract: `cargo test` 27/27.
-- Live checks after deploy are listed in the PR/commit notes and on `/proof`.
+- GitHub Actions CI (root workflow): web + contract jobs green on `main`.
+- Production checks on https://retr0school-near.vercel.app after deploy (14 Nov 2026):
+  - security headers present (`frame-ancestors 'none'`, `X-Frame-Options: DENY`, `Referrer-Policy`);
+  - `/api/grade` refuses an invalid or legacy pass token (403). A graded attempt submitted twice returns 409 on the second try, which shows the Blob single-use markers work in production;
+  - the exam result has no per-question correctness;
+  - `/api/tutor` refuses a foreign `*.vercel.app` origin, `Origin: null` and a missing Origin (403), answers same-origin requests, and refuses requests coming from the exam page (403);
+  - `/api/holder` rejects a 30 KB public key in about 90 ms (400);
+  - `/api/ship` asks for a wallet signature for mainnet students (401) and rejects single-label students (400);
+  - `/verify/%25` returns 200 (was 500);
+  - the course flow, Ask AI (browser), playground preview, wallet selector modal, `/verify/hlpok1lad.tg` and `/proof` (live chain + indexer) all work in a real browser with no console errors.
+- Code E redeployed to https://code-e-near.vercel.app with the share-link backup (C-17).
