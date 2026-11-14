@@ -22,6 +22,8 @@ Built at **NEAR HACKATHON** (Nov 2026). Tracks: **NFTs That Do Something** (`nft
 | Ship-to-chain final project | https://retr0school-near.vercel.app/dapp/ship-to-chain |
 | AI tutor | the **Ask AI** button on every page (off during the final exam) |
 | Leaderboard | https://retr0school-near.vercel.app/leaderboard |
+| **Mainnet proof (live)** | https://retr0school-near.vercel.app/proof · JSON: [/api/proof](https://retr0school-near.vercel.app/api/proof) |
+| Security | red-team round 1: all findings fixed and documented in [docs/security/retr0-academy-r1-fixes.md](docs/security/retr0-academy-r1-fixes.md) · [SECURITY.md](SECURITY.md) |
 
 <p>
 <img src="artifacts/70-verify-mainnet.png" width="49%" alt="Verify page showing the mainnet certificate">
@@ -34,6 +36,30 @@ Built at **NEAR HACKATHON** (Nov 2026). Tracks: **NFTs That Do Something** (`nft
 <img src="docs/media/tx-flow.gif" width="49%" alt="Animated diagram: life of a NEAR transaction">
 <img src="docs/media/cross-contract.gif" width="49%" alt="Animated diagram: cross-contract call with callback">
 </p>
+
+## Mainnet proof
+
+Everything below is on NEAR mainnet and checkable by anyone. The live page [retr0school-near.vercel.app/proof](https://retr0school-near.vercel.app/proof) reads it from public NEAR RPC and the NearBlocks indexer every 5 minutes. It re-checks each transaction's final status on an archival RPC node and falls back to a committed snapshot (`apps/retr0school/data/proof-snapshot.json`) if either source is down.
+
+| What | On chain |
+| --- | --- |
+| Certificate contract | [`diploma.hlpok1lad.tg`](https://nearblocks.io/address/diploma.hlpok1lad.tg), NEP-171/177/181, symbol `R0DIPLOMA`, code hash `HqMRoXpTbZWAnr7EhrKi4G3d7vLwfN1VXFX26NxpmFVq` |
+| Attestor key (`get_attestor`) | `ed25519:ALwa4U2nDdfMtYGfHBDwW9bgydB8eEdMbiNggP4z6XU6` |
+| Track (`get_tracks`) | `near`: NEAR Developer Certificate, 40 points, pass mark 32 |
+| Certificates minted (`nft_total_supply`, 14 Nov 2026) | **1**: `near:hlpok1lad.tg`, 40/40, grade A+, soulbound ([token](https://nearblocks.io/nft-token/diploma.hlpok1lad.tg/near%3Ahlpok1lad.tg), [live verify](https://retr0school-near.vercel.app/verify/hlpok1lad.tg)) |
+| Mint (`mint_diploma`, NEP-171 `nft_mint` event) | [`FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU`](https://nearblocks.io/txns/FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU): Success |
+| Track + attestor setup (`set_track`, `set_attestor`) | [`AKxNJecismXPh8JcY8wXKsksGPNTmKMVxvdsy1RrcKRq`](https://nearblocks.io/txns/AKxNJecismXPh8JcY8wXKsksGPNTmKMVxvdsy1RrcKRq): Success |
+| NEAR transfer to the contract (storage funding) | [`GseuxnfTTysWbyXSE863cbcisciaS6QHfZf6tpD2e7mS`](https://nearblocks.io/txns/GseuxnfTTysWbyXSE863cbcisciaS6QHfZf6tpD2e7mS): Success |
+| Create + deploy + `new` | [`7rDfYmYFKHi2fZKzorCR849FK8Uym1vvHEGAZNQHX1nE`](https://nearblocks.io/txns/7rDfYmYFKHi2fZKzorCR849FK8Uym1vvHEGAZNQHX1nE): Success |
+
+All 4 transactions to the contract were confirmed `SuccessValue` with no failed receipts via `EXPERIMENTAL_tx_status` on an archival mainnet RPC node (14 Nov 2026). Soulbound: `nft_transfer` and `nft_transfer_call` always panic (contract tests `soulbound_transfer`, `soulbound_transfer_call`).
+
+```bash
+near view diploma.hlpok1lad.tg nft_total_supply '{}' --networkId mainnet
+near view diploma.hlpok1lad.tg verify_diploma '{"account_id":"hlpok1lad.tg","track":"near"}' --networkId mainnet
+```
+
+<p align="center"><img src="docs/screenshots/proof.png" alt="Mainnet proof page: contract, certificate count, and every transaction with NearBlocks links" width="900"></p>
 
 ## Screenshots
 
@@ -82,10 +108,11 @@ Online course certificates prove nothing. A PDF or a database badge can be faked
    - **3 coding tasks** (yoctoNEAR formatting with BigInt, NEAR account-id validation, NEP-297 event log parsing) auto-graded on the server against visible and hidden tests in a **QuickJS WebAssembly sandbox** (no fs, network or process; memory cap; per-test deadline);
    - 40 points total, **pass mark 32/40 (80%)**, grade A+ / A / B; **40-minute timer** enforced by the server; **30-minute cooldown** after a failed attempt; replayed submissions are rejected;
    - the answer key and hidden tests never reach the browser. The bank is committed only **AES-256-GCM encrypted** (`apps/retr0school/exam/bank.enc.json`) and decrypted on the server with `EXAM_BANK_KEY`; the exam session is a sealed token, so the client cannot see the option shuffle;
-   - a full score breakdown per topic, per question (right/wrong) and per test.
+   - a score breakdown per topic and per test (per-question right/wrong is deliberately not shown, so repeated attempts can't map the answer key);
+   - a pass is bound to **one account**: the account connected at grading time, or the first account it is exchanged for. Visible tests only earn points together with hidden tests.
 5. **The certificate contract** (`contracts/diploma`, Rust, near-sdk 5): NEP-171 + 177 + 181 + NEP-297 events. `mint_diploma` verifies the grader's **ed25519 attestation** (`env::ed25519_verify`) over `contract|caller|track|score|max|expiry`, the expiry and the on-chain pass mark (32/40), then mints a **soulbound** token (transfers always panic), one per account. The token stores the score and the **letter grade** in `extra`, title and description.
 6. **The NFT does something:** Advanced NEAR is **locked on the server**. The learner signs a free NEP-413 message in their wallet; `/api/holder` verifies the signature, confirms with `view_access_key` that the key is a full-access key of that account, calls `verify_diploma`, and sets a signed HttpOnly cookie. Lesson bodies are only rendered for holders.
-7. **Abuse limits:** `/api/grade`, `/api/exam/start` and `/api/holder` are rate-limited per client IP, with state (rate windows, cooldowns, used exam ids) shared across instances through the Vercel Runtime Cache.
+7. **Abuse limits:** `/api/grade`, `/api/exam/start`, `/api/holder`, `/api/ship`, `/api/tutor` and the diploma image are rate-limited per client IP (Vercel's edge-set IP). Single-use decisions (exam attempt used, pass bound to an account, NEP-413 nonce burned) are atomic set-if-absent markers in Vercel Blob that fail closed. The tutor only answers this site's own origin.
 8. **Verify and share:** `/verify/<account>` (no wallet: certificates via `nft_tokens_for_owner` plus the shipped contract), `/leaderboard` (NEP-181 enumeration), `/d/<account>` share page whose X card is the certificate art (`/api/diploma/near/<account>`).
 
 ## NEAR technology used
@@ -177,10 +204,19 @@ curl -N https://retr0school-near.vercel.app/api/tutor -H 'content-type: applicat
 ## Ship to chain and Verify a developer
 
 - **Final project** `/dapp/ship-to-chain`: the learner creates `hello.<you>.testnet` (or `hello.<you>.near` on mainnet), writes a small Rust contract (`contracts/hello-ship`: greeting + owner check, with unit tests), deploys it with an init call, calls it, then submits it.
-- **Server check** (`POST /api/ship {student, contract}`, `lib/ship.ts`): the contract must be the student's account or a sub-account of it (on NEAR only the parent can create a sub-account, so the name proves authorship), and `view_account` must show Wasm deployed (`code_hash` ≠ `111…`). It also reads `get_greeting` if it exists. No signature or gas is needed because everything is checked on chain. Mainnet accounts are checked on mainnet ("Shipped on NEAR mainnet"); `.testnet` accounts on testnet, labelled "testnet practice".
+- **Server check** (`POST /api/ship {student, contract}`, `lib/ship.ts`): the contract must be the student's account or a sub-account of it (on NEAR only the parent can create a sub-account, so the name proves authorship), and `view_account` must show Wasm deployed (`code_hash` ≠ `111…`). It also reads `get_greeting` if it exists. Mainnet submissions also need a free NEP-413 wallet signature from the student (`Link <contract> to <student> on Retr0 Academy`), so nobody can attach a contract to someone else's page. Testnet practice needs no signature, but an existing record can't be replaced by someone else. Mainnet accounts are checked on mainnet ("Shipped on NEAR mainnet"); `.testnet` accounts on testnet, labelled "testnet practice".
 - **Storage:** the certificate contract is **not** changed, so every existing certificate stays as minted. The link is an HMAC-signed record in Vercel Blob (`ships/<account>.json`), and `/verify/<account>` re-checks the code hash live every time (live / redeployed / removed).
 - **Verify a developer** `/verify/<account>`: a shareable server-rendered page with account status, every certificate from `nft_tokens_for_owner` (score, grade, date, token id, explorer link, share), and the shipped contract. It handles invalid ids, accounts that don't exist, and accounts with no certificate. It's linked from the subject bar, footer, certificate pages and `/d/<account>`.
 - Live example: `demo-learner.retr0school.testnet` has `hello_ship.wasm` deployed and initialized (`get_greeting` → "gm from a Retr0 Academy graduate. Shipped to NEAR testnet!").
+
+## Security
+
+An independent red-team review (Nov 2026) found that the contract held up against every on-chain attack tried. The off-chain issuance layer had 2 Medium and 7 Low findings plus one composite High chain (an unbound pass token combined with an exam oracle). All are fixed, each with a regression test where feasible. The full log lists ID, severity, root cause, fix, commit and test: **[docs/security/retr0-academy-r1-fixes.md](docs/security/retr0-academy-r1-fixes.md)**. Reporting: [SECURITY.md](SECURITY.md).
+
+```bash
+cd apps/retr0school && npm test          # 26 unit tests: exam grading, pass binding, runner, secrets, limiter, NEP-413, ship
+cd contracts/diploma && cargo test       # 27 contract tests
+```
 
 ## Sister project
 
@@ -264,7 +300,9 @@ Server configuration:
 | Variable | Purpose |
 | --- | --- |
 | `NEAR_ATTESTOR_SEED_MAINNET` | 32-byte ed25519 seed (hex) of the **mainnet** grader; its public key is registered on `diploma.hlpok1lad.tg` with `set_attestor`. |
-| `NEAR_ATTESTOR_SEED` | 32-byte seed (hex): grader key of the testnet beta contract, and the root for the HMAC/AES keys of exam sessions, pass tokens, cooldowns, holder cookies and ship records. |
+| `NEAR_ATTESTOR_SEED` | 32-byte seed (hex): grader key of the testnet beta contract (signing only). |
+| `R0_SESSION_SECRET` | 32 random bytes (hex, `openssl rand -hex 32`): the only root for the HMAC/AES keys of exam sessions, pass tokens, cooldowns, holder cookies and ship records. **Required in production** (the server refuses to issue sessions without it). |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob: ship records and atomic single-use markers. Required in production. |
 | `EXAM_BANK_KEY` | 32-byte AES key (hex) that decrypts `exam/bank.enc.json` |
 | `NEXT_PUBLIC_NEAR_NETWORK` | `mainnet` (default) or `testnet` |
 | `NEXT_PUBLIC_DIPLOMA_CONTRACT` | default `diploma.hlpok1lad.tg` on mainnet, `diploma.retr0school.testnet` on testnet |
@@ -300,6 +338,7 @@ near contract call-function as-transaction my-diploma.testnet set_track \
 # 5. web apps on Vercel (set the two grader secrets first)
 cd apps/code-e && vercel deploy --prod --build-env VITE_RETR0SCHOOL_URL=https://<your-site>.vercel.app
 cd apps/retr0school && vercel env add NEAR_ATTESTOR_SEED production && vercel env add EXAM_BANK_KEY production
+openssl rand -hex 32 | vercel env add R0_SESSION_SECRET production --sensitive   # session/pass-token root, separate from grader keys
 vercel deploy --prod \
   --build-env NEXT_PUBLIC_CODE_E_URL=https://<your-code-e>.vercel.app \
   --build-env NEXT_PUBLIC_NEAR_NETWORK=testnet --build-env NEXT_PUBLIC_DIPLOMA_CONTRACT=my-diploma.testnet
