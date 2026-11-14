@@ -35,6 +35,38 @@ Built at **NEAR HACKATHON** (Nov 2026). Tracks: **NFTs That Do Something** (`nft
 <img src="docs/media/cross-contract.gif" width="49%" alt="Animated diagram: cross-contract call with callback">
 </p>
 
+## Screenshots
+
+Live site: [retr0-academy.vercel.app](https://retr0-academy.vercel.app) (also at [retr0school-near.vercel.app](https://retr0school-near.vercel.app)). Captured 14 Nov 2026 (Europe/Budapest).
+
+<p align="center"><img src="docs/screenshots/home.png" alt="Retr0 Academy homepage with the 3D hero robot and course lists" width="900"></p>
+
+Homepage: the 3D hero robot, foundations courses, and the NEAR Developer path.
+
+<p align="center"><img src="docs/screenshots/near-path.png" alt="NEAR Developer path with four courses and the final exam" width="900"></p>
+
+NEAR Developer path: four courses, then the server-graded final exam and certificate mint.
+
+<p align="center"><img src="docs/screenshots/verify-certificate.png" alt="Verify page showing a soulbound NEAR Developer Certificate for hlpok1lad.tg, grade A+" width="900"></p>
+
+Public verify page for `hlpok1lad.tg`: a soulbound NEAR Developer Certificate (40/40, A+) read from `diploma.hlpok1lad.tg` on mainnet.
+
+<p align="center"><img src="docs/screenshots/leaderboard.png" alt="Leaderboard of on-chain certificate holders" width="900"></p>
+
+Leaderboard of certificate holders, enumerated on-chain from the diploma contract.
+
+<p align="center"><img src="docs/screenshots/playground.png" alt="In-browser HTML, CSS, and JavaScript playground with a sandboxed preview" width="900"></p>
+
+In-browser playground: HTML, CSS, and JavaScript with a sandboxed preview, plus a handoff to Code E.
+
+<p align="center"><img src="docs/screenshots/home-mobile.png" alt="Retr0 Academy mobile homepage" width="390"></p>
+
+Mobile homepage (390×844).
+
+## Promo video
+
+Coming soon.
+
 ## The problem
 
 Online course certificates prove nothing. A PDF or a database badge can be faked, sold or shared, nobody can check it without trusting the issuer, and most "Web3 courses" end with a multiple-choice quiz you can pass by guessing. Beginners also juggle docs, an editor and a wallet with no clear path.
