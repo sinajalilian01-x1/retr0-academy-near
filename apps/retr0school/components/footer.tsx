@@ -52,6 +52,9 @@ export function Footer({ tracks }: { tracks: { slug: string; title: string }[] }
           <Link href="/leaderboard" className="text-muted hover:text-ink">
             Leaderboard
           </Link>
+          <Link href="/proof" className="text-muted hover:text-ink">
+            Mainnet proof
+          </Link>
           <Link href="/playground" className="text-muted hover:text-ink">
             Playground
           </Link>

@@ -1,0 +1,91 @@
+{
+ "captured_at": "2026-11-14T16:40:00Z",
+ "network": "mainnet",
+ "contract": "diploma.hlpok1lad.tg",
+ "owner": "hlpok1lad.tg",
+ "code_hash": "HqMRoXpTbZWAnr7EhrKi4G3d7vLwfN1VXFX26NxpmFVq",
+ "attestor": "ed25519:ALwa4U2nDdfMtYGfHBDwW9bgydB8eEdMbiNggP4z6XU6",
+ "metadata": {
+  "spec": "nft-1.0.0",
+  "name": "Retr0 Academy Diploma",
+  "symbol": "R0DIPLOMA"
+ },
+ "tracks": [
+  {
+   "id": "near",
+   "title": "NEAR Developer Certificate",
+   "questions": 40,
+   "pass_score": 32
+  }
+ ],
+ "total_supply": 1,
+ "certificates": [
+  {
+   "token_id": "near:hlpok1lad.tg",
+   "owner_id": "hlpok1lad.tg",
+   "score": 40,
+   "max_score": 40,
+   "grade": "A+",
+   "date": "2026-11-13",
+   "issued_at_ms": 1794587706990
+  }
+ ],
+ "transactions": [
+  {
+   "hash": "FDK7A2FjUgwfPrUHiFcxxMe4V3JisY1toBopS4HnsoXU",
+   "signer": "hlpok1lad.tg",
+   "receiver": "diploma.hlpok1lad.tg",
+   "methods": [
+    "mint_diploma"
+   ],
+   "block_timestamp_ms": 1794587706519,
+   "block_height": 224389232,
+   "success": true,
+   "rpc_status": "SuccessValue"
+  },
+  {
+   "hash": "AKxNJecismXPh8JcY8wXKsksGPNTmKMVxvdsy1RrcKRq",
+   "signer": "diploma.hlpok1lad.tg",
+   "receiver": "diploma.hlpok1lad.tg",
+   "methods": [
+    "set_track",
+    "set_attestor"
+   ],
+   "block_timestamp_ms": 1794587346753,
+   "block_height": 224388609,
+   "success": true,
+   "rpc_status": "SuccessValue"
+  },
+  {
+   "hash": "GseuxnfTTysWbyXSE863cbcisciaS6QHfZf6tpD2e7mS",
+   "signer": "hlpok1lad.tg",
+   "receiver": "diploma.hlpok1lad.tg",
+   "methods": [
+    "TRANSFER"
+   ],
+   "block_timestamp_ms": 1794587345041,
+   "block_height": 224388606,
+   "success": true,
+   "rpc_status": "SuccessValue"
+  },
+  {
+   "hash": "7rDfYmYFKHi2fZKzorCR849FK8Uym1vvHEGAZNQHX1nE",
+   "signer": "hlpok1lad.tg",
+   "receiver": "diploma.hlpok1lad.tg",
+   "methods": [
+    "CREATE_ACCOUNT",
+    "TRANSFER",
+    "ADD_KEY",
+    "DEPLOY_CONTRACT",
+    "new"
+   ],
+   "block_timestamp_ms": 1794587331064,
+   "block_height": 224388581,
+   "success": true,
+   "rpc_status": "SuccessValue"
+  }
+ ],
+ "tx_count": 4,
+ "balance_yocto": "2730049357441540800000000",
+ "storage_usage": 265751
+}

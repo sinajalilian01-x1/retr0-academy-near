@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/diploma`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE}/verify`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/leaderboard`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE}/proof`, changeFrequency: "daily", priority: 0.7 },
     { url: `${SITE}/advanced`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/near`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/near/quiz`, changeFrequency: "weekly", priority: 0.7 },

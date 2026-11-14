@@ -28,6 +28,7 @@ export const SUBJECTS: Subject[] = [
   { label: "Verify", href: "/verify", match: ["/verify"], group: "tools" },
   { label: "Certificate", href: "/diploma", match: ["/diploma", "/d"], group: "tools" },
   { label: "Leaderboard", href: "/leaderboard", match: ["/leaderboard"], group: "tools" },
+  { label: "Proof", href: "/proof", match: ["/proof"], group: "tools" },
 ];
 
 function isActive(subject: Subject, pathname: string) {
