@@ -181,26 +181,29 @@ export function SubjectBar({ onSearch }: { onSearch: () => void }) {
     target.scrollIntoView({ block: "nearest", inline: "nearest" });
   };
 
-  const arrow = "absolute inset-y-0 z-10 flex w-8 items-center justify-center border-line bg-sunken text-cyan hover:bg-raised hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan";
+  const arrow = "flex h-full w-8 items-center justify-center border-line bg-sunken text-cyan hover:bg-raised hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan";
 
   return (
     <div className="border-t-2 border-line bg-sunken" data-testid="subject-bar">
       <div className="mx-auto flex h-subjectbar w-full max-w-page items-stretch md:px-3">
-        <nav aria-label="Subjects" className="relative min-w-0 flex-1">
+        <nav aria-label="Subjects" className="grid min-w-0 flex-1 grid-cols-[2rem_minmax(0,1fr)_2rem] items-stretch">
           {edges.left ? (
-            <button type="button" onClick={() => page(-1)} aria-label="Scroll subjects left" data-testid="subject-prev" className={cn(arrow, "left-0 border-r-2")}>
+            <button type="button" onClick={() => page(-1)} aria-label="Scroll subjects left" data-testid="subject-prev" className={cn(arrow, "border-r-2")}>
               <ChevronLeft className="h-4 w-4" aria-hidden />
             </button>
-          ) : null}
-          {edges.left ? <div aria-hidden className="pointer-events-none absolute inset-y-0 left-8 z-[9] w-10 bg-gradient-to-r from-sunken to-transparent" /> : null}
-          {edges.right ? <div aria-hidden className="pointer-events-none absolute inset-y-0 right-8 z-[9] w-10 bg-gradient-to-l from-sunken to-transparent" /> : null}
+          ) : (
+            <div aria-hidden />
+          )}
+          <div className="relative min-w-0">
+          {edges.left ? <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-[9] w-8 bg-gradient-to-r from-sunken to-transparent" /> : null}
+          {edges.right ? <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-[9] w-8 bg-gradient-to-l from-sunken to-transparent" /> : null}
           <div
             ref={scroller}
             onKeyDown={onKeyDown}
             onDragStart={(event) => event.preventDefault()}
             data-dragging={dragging ? "true" : undefined}
             className={cn(
-              "no-scrollbar mx-8 flex h-full items-stretch overflow-x-auto select-none",
+              "no-scrollbar flex h-full items-stretch overflow-x-auto select-none",
               edges.left || edges.right ? (dragging ? "cursor-grabbing" : "cursor-grab") : "",
               dragging && "[&_a]:pointer-events-none",
             )}
@@ -232,11 +235,14 @@ export function SubjectBar({ onSearch }: { onSearch: () => void }) {
               );
             })}
           </div>
+          </div>
           {edges.right ? (
-            <button type="button" onClick={() => page(1)} aria-label="Scroll subjects right" data-testid="subject-next" className={cn(arrow, "right-0 border-l-2")}>
+            <button type="button" onClick={() => page(1)} aria-label="Scroll subjects right" data-testid="subject-next" className={cn(arrow, "border-l-2")}>
               <ChevronRight className="h-4 w-4" aria-hidden />
             </button>
-          ) : null}
+          ) : (
+            <div aria-hidden />
+          )}
         </nav>
         <button
           type="button"
