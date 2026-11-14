@@ -321,3 +321,61 @@ fn only_owner_rebrands() {
     ctx(accounts(1), NearToken::from_yoctonear(0));
     c.rebrand("x".into(), "a".into(), "b".into());
 }
+
+// ---- R1 C-25: properties the red-team review found under-asserted ----
+
+#[test]
+#[should_panic(expected = "Invalid grader signature")]
+fn attestation_for_another_contract_is_rejected() {
+    let mut c = setup();
+    // signed for a different contract id (e.g. the testnet beta contract)
+    let expires = TS_MS + 60_000;
+    let msg = attestation_message(&accounts(4), &accounts(1), "near", 8, 8, expires);
+    let sig = Base64VecU8(grader().sign(msg.as_bytes()).to_bytes().to_vec());
+    ctx(accounts(1), DEPOSIT);
+    c.mint_diploma("near".into(), 8, 8, expires, sig);
+}
+
+#[test]
+#[should_panic(expected = "Signature must be 64 bytes")]
+fn short_signature_is_rejected() {
+    let mut c = setup();
+    let (s, m, e, _) = attest(&accounts(1), "near", 8, 8);
+    ctx(accounts(1), DEPOSIT);
+    c.mint_diploma("near".into(), s, m, e, Base64VecU8(vec![0u8; 63]));
+}
+
+#[test]
+#[should_panic(expected = "Invalid grader signature")]
+fn rotating_the_attestor_invalidates_old_signatures() {
+    let mut c = setup();
+    let (s, m, e, sig) = attest(&accounts(1), "near", 8, 8);
+    ctx(accounts(0), NearToken::from_yoctonear(0));
+    let other = SigningKey::from_bytes(&[11u8; 32]);
+    let pk: PublicKey = format!("ed25519:{}", bs58::encode(other.verifying_key().to_bytes()).into_string()).parse().unwrap();
+    c.set_attestor(pk);
+    ctx(accounts(1), DEPOSIT);
+    c.mint_diploma("near".into(), s, m, e, sig);
+}
+
+#[test]
+fn rotating_the_attestor_keeps_existing_certificates_valid() {
+    let mut c = setup();
+    mint(&mut c, accounts(1), "near", 8, 8);
+    ctx(accounts(0), NearToken::from_yoctonear(0));
+    let other = SigningKey::from_bytes(&[11u8; 32]);
+    let pk: PublicKey = format!("ed25519:{}", bs58::encode(other.verifying_key().to_bytes()).into_string()).parse().unwrap();
+    c.set_attestor(pk);
+    let v = c.verify_diploma(accounts(1), "near".into()).expect("still verifies");
+    assert!(v.valid);
+    assert_eq!(v.score, 8);
+}
+
+#[test]
+#[should_panic(expected = "Diplomas are soulbound and cannot be transferred")]
+fn soulbound_transfer_call() {
+    let mut c = setup();
+    let t = mint(&mut c, accounts(1), "near", 8, 8);
+    ctx(accounts(1), NearToken::from_yoctonear(1));
+    c.nft_transfer_call(accounts(2), t.token_id, None, None, "hi".into());
+}

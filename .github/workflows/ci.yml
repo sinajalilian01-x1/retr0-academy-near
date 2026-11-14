@@ -1,0 +1,36 @@
+name: CI
+
+# R1 C-24: lives at the repository root so GitHub actually runs it (the old file under apps/ never ran).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/retr0school
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/retr0school/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts/diploma
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.96.0
+      - run: cargo test
