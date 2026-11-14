@@ -32,7 +32,7 @@ const themeBoot = `(function(){try{var stored=localStorage.getItem("w3h-theme");
 
 const siteDescription =
   "Retr0 Academy is a Web3 developer school on NEAR: a NEAR Developer path from fundamentals to smart contracts, tokens and dApps, with animated diagrams and runnable examples. Pass the server-graded final exam to mint a soulbound NEAR Developer Certificate on NEAR mainnet.";
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0-academy.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://retr0school-near.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

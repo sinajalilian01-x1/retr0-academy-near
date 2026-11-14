@@ -36,7 +36,7 @@ export const htmlExample: PlaygroundExample = {
     <li>Headings explain the outline</li>
     <li>Links take people somewhere</li>
   </ul>
-  <a href="https://retr0-academy.vercel.app/html">Learn HTML →</a>
+  <a href="https://retr0school-near.vercel.app/html">Learn HTML →</a>
 </main>`,
   css: `body {
   margin: 0;

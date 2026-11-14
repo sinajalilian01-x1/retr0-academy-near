@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import { chromium, devices } from "playwright";
 
-const R0 = (process.env.R0_URL || "https://retr0-academy.vercel.app").replace(/\/+$/, "");
+const R0 = (process.env.R0_URL || "https://retr0school-near.vercel.app").replace(/\/+$/, "");
 const CE = (process.env.CE_URL || "https://code-e-near.vercel.app").replace(/\/+$/, "");
 const OUT = process.env.OUT || new URL("../../../artifacts/e2e/", import.meta.url).pathname;
 // Mainnet certificate (minted via the real exam path) and a testnet beta certificate.
