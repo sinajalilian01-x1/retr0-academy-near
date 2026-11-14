@@ -93,7 +93,9 @@ Mobile homepage (390×844).
 
 <!-- PROMO_VIDEO_SLOT: keep this heading. Replace the placeholder line below with a 16:9 embed (or a link to the file) when the final render is ready. The 9:16 cut is for the X submission post. Do not delete these markers. -->
 
-_Official 16:9 demo video will be embedded here._
+https://github.com/user-attachments/assets/61eb5414-fb3e-41c9-a948-0297174fb7d6
+
+Also on X: https://x.com/Sina02275/status/2121683297411694595
 
 <!-- /PROMO_VIDEO_SLOT -->
 
