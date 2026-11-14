@@ -80,7 +80,7 @@ export function DiplomaFlow() {
         <Step n={1} title="Pass the final exam" done={passed}>
           {pass ? (
             <p>
-              You passed: <strong className="text-ink">{pass.score}/{pass.max}</strong>, grade {pass.grade}. The signed pass is valid for 7 days.
+              You passed: <strong className="text-ink">{pass.score}/{pass.max}</strong>, grade {pass.grade}. The signed pass is valid for 24 hours and mints for one account only.
             </p>
           ) : (
             <p>

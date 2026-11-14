@@ -8,7 +8,7 @@ export const EXAM = {
   passPercent: 80,
   maxScore: 40,
   passScore: 32,
-  passTokenTtlMs: 7 * 24 * 60 * 60 * 1000,
+  passTokenTtlMs: 24 * 60 * 60 * 1000, // R1 C-01: shortened from 7 days; the pass is also bound to one account
 } as const;
 
 /** Core courses whose quizzes must be completed before the exam unlocks. */

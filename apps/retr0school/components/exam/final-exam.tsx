@@ -196,7 +196,7 @@ export function FinalExam() {
         ) : (
           <>
             <p className="mt-3 text-sm text-muted">
-              Your pass ({pass?.score}/{pass?.max}, grade {pass?.grade}) is signed by the grader for 7 days. Connect a NEAR wallet and
+              Your pass ({pass?.score}/{pass?.max}, grade {pass?.grade}) is signed by the grader for 24 hours and can mint for one account. Connect a NEAR wallet and
               mint a soulbound NFT. The contract verifies the ed25519 attestation and records your score and grade on chain.
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
@@ -240,14 +240,7 @@ export function FinalExam() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 flex flex-wrap gap-1" aria-label="Per question">
-              {result.perQuestion.map((q, i) => (
-                <span key={q.id} title={`Q${i + 1}`} className={`inline-flex h-6 w-6 items-center justify-center text-[0.6rem] font-bold ${q.correct ? "bg-good text-canvas" : "bg-danger text-canvas"}`}>
-                  {i + 1}
-                </span>
-              ))}
-            </p>
-            <p className="mt-2 text-xs text-muted">Correct answers are not revealed: questions are reused across attempts.</p>
+            <p className="mt-2 text-xs text-muted">Per-question results and correct answers are not revealed: questions are reused across attempts.</p>
           </div>
           <div className="border-2 border-line bg-elevated p-5">
             <h2 className="font-pixel text-[0.7rem] uppercase text-highlight">Coding tasks · {result.tasks.reduce((s, t) => s + t.earned, 0)}/{result.tasks.reduce((s, t) => s + t.points, 0)}</h2>

@@ -35,7 +35,6 @@ export type ExamResult = {
   grade: string | null;
   practice: boolean;
   mcq: { correct: number; total: number; byTopic: Record<string, { correct: number; total: number }> };
-  perQuestion: { id: string; correct: boolean }[];
   tasks: TaskResult[];
   durationSec: number;
   passToken: string | null;

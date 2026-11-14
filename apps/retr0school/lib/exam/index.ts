@@ -5,12 +5,17 @@ import { loadBank, loadPracticeBank } from "@/lib/exam/bank";
 import { EXAM, letterGrade } from "@/lib/exam/config";
 import { runTask } from "@/lib/exam/runner";
 import type { ExamPaper, ExamResult, ExamTopic, PublicQuestion, PublicTask } from "@/lib/exam/types";
-import { kvGet, kvSet } from "@/lib/rate-limit";
+import { claimOnce } from "@/lib/once";
 import { openToken, sealToken, signToken, verifyToken } from "@/lib/server-secret";
 
 /** Sealed (encrypted) so the client cannot see which shuffled option is correct. */
 type ExamSession = { v: 1; n: string; q: string[]; p: number[][]; t: string[]; s: number; e: number; practice: boolean };
-export type PassClaim = { v: 1; score: number; max: number; grade: string; iat: number; exp: number; n: string };
+/**
+ * Signed pass (R1 C-01): v2 carries a unique id (`n`, the attempt nonce) and, when the learner was connected
+ * at grading time, the account (`a`). A pass without `a` is bound to the first account it is exchanged for,
+ * atomically, so one exam pass can only ever produce attestations for one account.
+ */
+export type PassClaim = { v: 2; score: number; max: number; grade: string; iat: number; exp: number; n: string; a?: string };
 
 
 function shuffle<T>(arr: T[]): T[] {
@@ -77,19 +82,29 @@ export class ExamError extends Error {
   }
 }
 
-export async function gradeExam(token: unknown, answers: unknown, code: unknown): Promise<ExamResult> {
+export type GradeOptions = {
+  /** Already validated, lowercased account id to bind the pass to (optional). */
+  accountId?: string | null;
+  /** Active failed-attempt cooldown for this caller (cookie or IP), enforced at grade time too (R1 C-02). */
+  cooldownUntil?: number;
+};
+
+export async function gradeExam(token: unknown, answers: unknown, code: unknown, opts: GradeOptions = {}): Promise<ExamResult> {
   const session = openToken<ExamSession>("exam", token);
   if (!session || session.v !== 1) throw new ExamError("Invalid or tampered exam session. Start a new attempt.");
   const now = Date.now();
   if (now > session.e + EXAM.graceMs) throw new ExamError("Time is up: this attempt expired. Start a new attempt.", 410);
-  if (await kvGet(`used:${session.n}`)) throw new ExamError("This attempt was already submitted.", 409);
-  await kvSet(`used:${session.n}`, 1, Math.ceil((session.e + EXAM.graceMs - now) / 1000) + 60);
+  if (!session.practice && opts.cooldownUntil && opts.cooldownUntil > now) {
+    throw new ExamError(`Cooldown after a failed attempt: you can submit again after ${new Date(opts.cooldownUntil).toISOString().slice(11, 16)} UTC.`, 429);
+  }
+  // Atomic single use (R1 C-29): exactly one concurrent submission of an attempt is graded.
+  const used = await claimOnce(`exam-used:${session.n}`, "1");
+  if (!used.claimed) throw new ExamError("This attempt was already submitted.", 409);
 
   const bank = session.practice ? loadPracticeBank() : loadBank();
   const byId = new Map(bank.questions.map((q) => [q.id, q]));
   const given = answers && typeof answers === "object" ? (answers as Record<string, unknown>) : {};
   const byTopic: ExamResult["mcq"]["byTopic"] = {};
-  const perQuestion: ExamResult["perQuestion"] = [];
   let correct = 0;
   session.q.forEach((id, i) => {
     const q = byId.get(id);
@@ -100,7 +115,6 @@ export async function gradeExam(token: unknown, answers: unknown, code: unknown)
     byTopic[q.topic] ??= { correct: 0, total: 0 };
     byTopic[q.topic].total++;
     if (ok) byTopic[q.topic].correct++;
-    perQuestion.push({ id, correct: ok });
   });
 
   const sources = code && typeof code === "object" ? (code as Record<string, unknown>) : {};
@@ -116,7 +130,16 @@ export async function gradeExam(token: unknown, answers: unknown, code: unknown)
   const grade = passed ? letterGrade(score, max) : null;
   const passToken =
     passed && !session.practice
-      ? signToken("pass", { v: 1, score, max, grade: grade ?? "B", iat: now, exp: now + EXAM.passTokenTtlMs, n: session.n } satisfies PassClaim)
+      ? signToken("pass", {
+          v: 2,
+          score,
+          max,
+          grade: grade ?? "B",
+          iat: now,
+          exp: now + EXAM.passTokenTtlMs,
+          n: session.n,
+          ...(opts.accountId ? { a: opts.accountId } : {}),
+        } satisfies PassClaim)
       : null;
   return {
     score,
@@ -126,8 +149,8 @@ export async function gradeExam(token: unknown, answers: unknown, code: unknown)
     passed,
     grade,
     practice: session.practice,
+    // Per-question correctness is not returned (R1 C-02): with stable option texts it was an answer oracle.
     mcq: { correct, total: session.q.length, byTopic },
-    perQuestion,
     tasks,
     durationSec: Math.round((now - session.s) / 1000),
     passToken,
@@ -137,9 +160,19 @@ export async function gradeExam(token: unknown, answers: unknown, code: unknown)
 
 export function readPassToken(token: unknown): PassClaim | null {
   const claim = verifyToken<PassClaim>("pass", token);
-  if (!claim || claim.v !== 1 || claim.exp < Date.now()) return null;
+  if (!claim || claim.v !== 2 || typeof claim.n !== "string" || claim.exp < Date.now()) return null;
   if (claim.max !== EXAM.maxScore || claim.score < EXAM.passScore) return null;
   return claim;
+}
+
+/**
+ * Bind a pass to exactly one account (R1 C-01). Returns true when `accountId` may receive an attestation
+ * for this pass: it is the account in the token, or the first (and therefore only) account it was claimed for.
+ */
+export async function bindPass(claim: PassClaim, accountId: string): Promise<boolean> {
+  if (claim.a) return claim.a === accountId;
+  const r = await claimOnce(`pass-bind:${claim.n}`, accountId);
+  return r.claimed || r.existing === accountId;
 }
 
 /** Signed cooldown marker kept in an HttpOnly cookie. */

@@ -7,7 +7,8 @@ import { ACCOUNT_RE, DIPLOMA_CONTRACT, NEAR_NETWORK } from "@/lib/near";
  * Off-chain attestation signer for the final exam (graded in lib/exam). The ed25519 seed lives only
  * in a server env var:
  *   NEAR_ATTESTOR_SEED_MAINNET   32-byte ed25519 seed, hex (mainnet contract)
- *   NEAR_ATTESTOR_SEED           32-byte ed25519 seed, hex (testnet beta contract; also the HMAC root in server-secret)
+ *   NEAR_ATTESTOR_SEED           32-byte ed25519 seed, hex (testnet beta contract)
+ * Session/pass-token HMAC keys use a separate R0_SESSION_SECRET (lib/server-secret.ts, R1 C-06).
  * The contract stores only the matching public key and verifies the signature before minting.
  */
 const PKCS8_ED25519_PREFIX = Buffer.from("302e020100300506032b657004220420", "hex");
@@ -46,11 +47,17 @@ export type Attestation = {
   signature: string; // base64, 64 bytes
 };
 
-/** Sign a mint attestation for a passed final exam. The contract re-checks the pass mark. */
-export function attest(accountIdRaw: unknown, score: number, maxScore: number): Attestation {
-  const accountId = String(accountIdRaw ?? "").toLowerCase();
+/** Validate and lowercase an account id that may receive an attestation. Throws GraderError. */
+export function normalizeAccount(accountIdRaw: unknown): string {
+  const accountId = String(accountIdRaw ?? "").trim().toLowerCase();
   if (!ACCOUNT_RE.test(accountId)) throw new GraderError("Invalid NEAR account id");
   if (NEAR_NETWORK === "mainnet" && accountId.endsWith(".testnet")) throw new GraderError("Certificates are minted on NEAR mainnet now. Connect a mainnet account (for example you.near).");
+  return accountId;
+}
+
+/** Sign a mint attestation for a passed final exam. The contract re-checks the pass mark. */
+export function attest(accountIdRaw: unknown, score: number, maxScore: number): Attestation {
+  const accountId = normalizeAccount(accountIdRaw);
   const expiresAtMs = Date.now() + ATTESTATION_TTL_MS;
   const message = attestationMessage(accountId, "near", score, maxScore, expiresAtMs);
   const signature = crypto.sign(null, Buffer.from(message, "utf8"), signingKey()).toString("base64");
