@@ -201,8 +201,8 @@ export function SubjectBar({ onSearch }: { onSearch: () => void }) {
             data-dragging={dragging ? "true" : undefined}
             className={cn(
               "no-scrollbar flex h-full items-stretch overflow-x-auto select-none",
-              edges.left && "pl-8",
-              edges.right && "pr-8",
+              edges.left && "ml-8",
+              edges.right && "mr-8",
               edges.left || edges.right ? (dragging ? "cursor-grabbing" : "cursor-grab") : "",
               dragging && "[&_a]:pointer-events-none",
             )}
